@@ -1,0 +1,31 @@
+//SetAuto 111 is MIDDLERIGHTSWITCHANDSCALE
+//SetAuto 999 is EMPTY
+
+SetAuto 111
+
+DriveTrainSettings .01
+
+//ShooterWheelSettings P I D F
+//1.5:1
+// 3 motor ShooterWheelSettings .0005 .00009 .0000 .000012
+// 2 motor with dragmtrr ShooterWheelSettings .0 .00 .0000 .0001
+//1:1
+//3 motor with mass 
+//ShooterWheelSettings .0002 .00000125 .000001 .000025 good shooter settings new mass
+ShooterWheelSettings .0002 .0000075 .0000005 .000025
+
+
+//TurretSettings P I D Min_Cmd
+//TurretSettings 0.002 0.0000022 0.000005 .06
+//TurretSettings     0.000800 0.000000  0.00000   0.02
+TurretSettings     0.000800 0.0000000  0.00001   0.02
+
+//TurretSettings2   0.00200 0.000010  0.00000   0.00
+TurretSettings2   0.0020 0.0000050  0.00000   0.00
+
+
+TurretYawCorrection 0.007
+
+//.013
+//EBrakeSettings .5
+

@@ -1,0 +1,12 @@
+
+DriveTimed 0 0 -.2 .2
+
+DriveTicksStrafeHeading -0.75 -450 -0.75 -2350 0
+
+DriveTicksHeading -1.0 -650 0 //-550 for turn auto
+
+DriveTimed .25 0 0 .05
+
+SearchForCubeStrafe 1.0 0
+
+Wait 0.5
