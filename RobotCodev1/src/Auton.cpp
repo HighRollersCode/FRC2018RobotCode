@@ -67,12 +67,12 @@ void Auton::AutonWait(float Seconds)
 void Auton::AutonWait2(float Seconds,int brake)
 {
 	float targ = AutonTimer->Get() + Seconds;
-	//DriveTrain->ResetEncoders_Timers();
+
 	while((AutonTimer->Get() < targ)&&(Running()))
 	{
 		Auto_System_Update();
-		//DriveTrain->UpdateEBrake(1,brake);
 	}
+
 	DriveTrain->StandardArcade(0.0f,0.0f, 0.0f, GYRO_CORRECTION_OFF, BRAKE_MODE_OFF);
 }
 void Auton::Auto_DriveTimer(float Forward, float Turn, float Strafe, float seconds)
@@ -345,7 +345,6 @@ void Auton::Auto_DriveEncoder(float Forward, float Turn, float Ticks)
 		{
 			DriveTrain->StandardArcade(Forward ,Turn, 0, GYRO_CORRECTION_OFF, BRAKE_MODE_OFF);
 			Auto_System_Update();
-			//DriveTrain->Failsafe_Update();
 		}
 	}
 	else
@@ -354,7 +353,6 @@ void Auton::Auto_DriveEncoder(float Forward, float Turn, float Ticks)
 		{
 			DriveTrain->StandardArcade(Forward, Turn, 0.0f, GYRO_CORRECTION_OFF, BRAKE_MODE_OFF);
 			Auto_System_Update();
-			//DriveTrain->FailSafe_Update();
 		}
 	}
 	printf("Finished Driving");

@@ -26,7 +26,9 @@ enum eBrakeMode
 #define Arm_Motor 2
 
 #define Claw_Motor_1 3
-#define Claw_Motor_2 4
+#define Claw_Motor_2 5
+
+#define Wrist_Motor 4
 
 //Encoders
 #define Right_Encoder_1 0
@@ -38,30 +40,50 @@ enum eBrakeMode
 #define Middle_Encoder_1 4
 #define Middle_Encoder_2 5
 
-
 #define Elevator_Encoder_1 6
 #define Elevator_Encoder_2 7
 
 #define Arm_Encoder_1 8
 #define Arm_Encoder_2 9
 
+#define Wrist_Encoder_1 10
+#define Wrist_Encoder_2 11
+
 //Solenoid
 #define Sol_High_Gear 0
 #define Sol_Low_Gear 1
-#define Sol_Claw_Intake 2
 
 
 //Elevator Values
-#define Elevator_Intake 10
-#define Elevator_Scale 3000
+#define Elevator_Intake 5000
+#define Elevator_Switch 20
+#define Elevator_Scale_Level_1 3000
 
-#define ElevatorMaxLimEncoder 4140
+#define ElevatorMaxLimEncoder 13200
 #define ElevatorMinLimEncoder 0
 
 //Arm Values
-#define ArmMaxLimEncoder 400
-#define ArmMinLimEncoder 0
+#define Arm_Intake 10
+#define Arm_Switch 100
+#define Arm_Scale_Level_1 100
 
+#define ArmMaxLimEncoder 5000
+#define ArmMinLimEncoder -5000
+
+//Wrist Values
+#define Wrist_Intake -100
+#define Wrist_Switch -70
+#define Wrist_Scale_Level_1 -70
+#define Wrist_Folded -70
+#define Wrist_Scale_Level_1_Back 70
+
+#define WristMaxLimEncoder -300
+#define WristMinLimEncoder 300
+
+//PDP Channels
+#define Arm_PDPChannel 4
+#define Wrist_PDPChannel 11
+#define Elevator_PDPChannel 12
 
 
 #endif //DEFINES_H

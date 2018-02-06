@@ -88,29 +88,17 @@ float Drivetrainclass::GyroCorrection(float desheading)
 
 	float GyroRate_P = prefs->GetDouble("GyroRate_P", 0.01f);
 
-	//float Gyro_min = prefs->GetDouble("Gyro_Min",0.1f);
-	//float Gyro_max = prefs->GetDouble("Gyro_Max", 0.25f);
-
-	float error = MAINTAIN - gyro->GetAngle();
-	float command = error * Gyro_P - (GyroRate_P * gyro->GetRate());
+	float error = MAINTAIN - GetHeading();
+	float command = error * Gyro_P - (GyroRate_P * -gyro->GetRate());
 
 	SmartDashboard::PutNumber("Gyro_P", Gyro_P);
 	SmartDashboard::PutNumber("GyroRate_P", GyroRate_P);
-	/*if(error > 0)
-	{
-		command = std::max(Gyro_min, command);
-		command = std::min(Gyro_max, command);
-	}
-	if(error < 0)
-	{
-		command = std::min(-Gyro_min, command);
-		command = std::max(-Gyro_max, command);
-	}*/
+
 	return command;
 }
 float Drivetrainclass::GetHeading()
 {
-	return gyro->GetAngle();
+	return -gyro->GetAngle();
 }
 float Drivetrainclass::GetFrontSonar()
 {
@@ -145,7 +133,7 @@ void Drivetrainclass::ResetEncoders_Timers()
 }
 float Drivetrainclass::ComputeAngleDelta(float t)
 {
-	float cur = gyro->GetAngle();
+	float cur = GetHeading();
 
 	if(t < 0 && cur > 0)
 	{
@@ -159,7 +147,7 @@ float Drivetrainclass::ComputeAngleDelta(float t)
 	}
 
 
-	return gyro->GetAngle() - cur;
+	return GetHeading() - cur;
 }
 float Drivetrainclass::LockLeft(float desticks)
 {
@@ -191,7 +179,7 @@ void Drivetrainclass::StandardArcade( float Forward, float Turn, float Strafe, e
 	{
 		leftcommand = Forward + Turn;
 		rightcommand = -Forward + Turn;
-		headingTarget = gyro->GetAngle();
+		headingTarget = GetHeading();
 	}
 	else if(gyroMode == GYRO_CORRECTION_ON)
 	{
@@ -234,8 +222,8 @@ void Drivetrainclass::StandardArcade_forwardOnly(float left,float right)
 
 void Drivetrainclass::StandardArcade_strafeOnly(float Strafe)
 {
-	strafeMotor->SetSpeed(-Strafe);
-	strafeMotor1->SetSpeed(-Strafe);
+	strafeMotor->SetSpeed(Strafe);
+	strafeMotor1->SetSpeed(Strafe);
 }
 
 float lerp(float a, float b, float f)
@@ -268,8 +256,8 @@ void Drivetrainclass::AutoUpdate()
 	}
 
 	float forward = 0;
-	float turn = 0;
 	float strafe = 0;
+
 	if (reachedForwardTarget == false)
 	{
 		forward = currentForwardSpeed;
@@ -279,7 +267,6 @@ void Drivetrainclass::AutoUpdate()
 	{
 		strafe = currentStrafeSpeed;
 	}
-	//turn = GyroCorrection(headingTarget);
 
 	StandardArcade(forward, 0.0f, strafe, GYRO_CORRECTION_ON, BRAKE_MODE_OFF);
 
@@ -339,8 +326,8 @@ void Drivetrainclass::ResetTargets()
 }
 void Drivetrainclass::Send_Data()
 {
-	SmartDashboard::PutNumber("Gyro Heading", gyro->GetAngle());
-	SmartDashboard::PutNumber("Front Sonar", GetFrontSonar());
+	SmartDashboard::PutNumber("Gyro Heading", GetHeading());
+	//SmartDashboard::PutNumber("Front Sonar", GetFrontSonar());
 	SmartDashboard::PutNumber("HeadingTarget", headingTarget);
 	SmartDashboard::PutNumber("LastDistance", lastdistance);
 	SmartDashboard::PutNumber("Left Encoder", GetLeftEncoder());

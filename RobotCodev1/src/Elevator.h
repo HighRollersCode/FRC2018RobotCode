@@ -11,15 +11,23 @@
 #include "WPILib.h"
 #include "Defines.h"
 #include "ctre/Phoenix.h"
+#include "CurrentLimitedJoint.h"
 
 class ElevatorClass
 {
 public:
-	WPI_VictorSPX *Elevator;
+	//WPI_VictorSPX *Elevator;
 
-	Encoder *ElevatorEncoder;
+	WPI_TalonSRX *ElevatorTalon;
 
-	PIDController *ElevatorPIDController;
+	float currentverticalcommand;
+	float prevverticalcommand;
+
+	//Encoder *ElevatorEncoder;
+
+	//PIDController *ElevatorPIDController;
+
+	//CurrentLimitedJoint *ElevatorJoint;
 
 	//Preferences *prefs;
 
@@ -27,11 +35,13 @@ public:
 	virtual ~ElevatorClass();
 	float GetElevatorEncoder();
 
-	void SetElevator(float targ);
+	void SetElevatorTarg(float targ);
+	bool ElevatorOnTarg(float tolerance = 5);
+
 	void ElevatorIntake();
 	void ElevatorScale();
 
-	void Update( float verticalcommand);//bool intake, bool scale);
+	void Update( float verticalcommand, bool intake);//, bool scale);
 	void Send_Data();
 };
 

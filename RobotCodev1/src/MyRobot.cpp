@@ -17,10 +17,13 @@ MyRobotClass::MyRobotClass()
 	TheRobot = this;
 
 	Drivetrain = new Drivetrainclass();
-	//Arm = new ArmClass();
-	//Elevator = new ElevatorClass();
-	//Claw = new ClawClass();
+	Arm = new ArmClass();
+	Elevator = new ElevatorClass();
+	Claw = new ClawClass();
 	AutonomousControl = new Auton(Drivetrain, &DriverStation::GetInstance());
+	LiftManager = new LiftManagerClass(Elevator, Arm, Claw);
+	PDP = new PowerDistributionPanel();
+
 	forwardcommand = 0;
 	turncommand = 0;
 	strafecommand = 0;
@@ -41,6 +44,10 @@ MyRobotClass::MyRobotClass()
 
 	m_ScriptSystem = 0;
 	Init_Scripts_System();
+
+	//dont use http
+	//CameraServer::GetInstance()->AddAxisCamera("limelightforlabviewHOSTNAME","limelight.local:5800");
+	//CameraServer::GetInstance()->AddServer("limelight.local",5800);
 }
 
 MyRobotClass::~MyRobotClass() {
@@ -105,7 +112,6 @@ void MyRobotClass::UpdateInputs()
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
 	float targetX = table->GetNumber("tx", 0);
-	//float targetY = table->GetNumber("ty", 0);
 	float targetA = table->GetNumber("ta", 0);
 	float targetV = table->GetNumber("tv", 0);
 
@@ -175,8 +181,8 @@ void MyRobotClass::Send_Data()
 
 	Drivetrain->Send_Data();
 	AutonomousControl->SendData();
-	//Elevator->Send_Data();
-	//Arm->Send_Data();
+	Elevator->Send_Data();
+	Arm->Send_Data();
 }
 void MyRobotClass::OperatorControl(void)
 {
@@ -186,6 +192,8 @@ void MyRobotClass::OperatorControl(void)
 	Drivetrain->Zero_Yaw();
 
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
+	CameraServer::GetInstance()->StartAutomaticCapture();
 
 	table->PutNumber("ledMode", 0);
 
@@ -218,7 +226,7 @@ void MyRobotClass::OperatorControl(void)
 				gyromode = GYRO_CORRECTION_OFF;
 			}
 		}
-		if(rightStick->GetRawButton(2))
+		if(leftStick->GetRawButton(2))
 		{
 			brakemode = BRAKE_MODE_ON;
 		}
@@ -228,9 +236,11 @@ void MyRobotClass::OperatorControl(void)
 		}
 
 		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
-		//Elevator->Update(turretStick->GetX());//urretStick->GetRawButton(2), turretStick->GetRawButton(3));
-		//Arm->Update(turretStick->GetY());
-		//Claw->Update(turretStick->GetRawButton(4),turretStick->GetRawButton(5));
+		//Elevator->Update((turretStick->GetX()*.3), turretStick->GetRawButton(3));//, turretStick->GetRawButton(3));
+		//Arm->Update(0/*turretStick->GetY()*/,turretStick->GetRawButton(4),turretStick->GetRawButton(5));
+		//Claw->Update(turretStick->GetTrigger(),turretStick->GetRawButton(2));
+		//LiftManager->UpdateLift(rightStick->GetRawButton(5),rightStick->GetRawButton(4),turretStick->GetRawButton(6));
+
 		Wait(0.005);
 	}
 }

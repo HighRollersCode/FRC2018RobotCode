@@ -16,6 +16,7 @@
 #include "Claw.h"
 #include "Defines.h"
 #include "Auton.h"
+#include "LiftManager.h"
 
 #include "HRscript.h"
 
@@ -35,10 +36,13 @@ public:
 	Joystick *turretStick;
 
 	Drivetrainclass *Drivetrain;
-	//ArmClass *Arm;
-	//ElevatorClass *Elevator;
-	//ClawClass *Claw;
+	ArmClass *Arm;
+	ElevatorClass *Elevator;
+	ClawClass *Claw;
 	Auton *AutonomousControl;
+	LiftManagerClass *LiftManager;
+
+	PowerDistributionPanel *PDP;
 
 	bool isTracking;
 

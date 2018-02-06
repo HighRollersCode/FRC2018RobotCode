@@ -16,7 +16,6 @@ class ClawClass {
 public:
 	VictorSPX *Claw1;
 	VictorSPX *Claw2;
-	//Solenoid *ClawIntake;
 
 	ClawClass();
 	virtual ~ClawClass();

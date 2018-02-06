@@ -7,7 +7,6 @@
 #include "MyRobot.h"
 #include "HRscript.h"
 #include "Defines.h"
-//#include "HRLogger.h"
 
 
 // Create commands for the robot scripts

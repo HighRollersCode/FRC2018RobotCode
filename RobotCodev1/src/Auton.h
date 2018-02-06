@@ -48,7 +48,6 @@ class Auton
 		void SendData();
 
 		void Auto_DriveEncoder(float Forward, float Turn, float Ticks);
-		//void Auto_CameraAim();
 
 		Auton
 		(

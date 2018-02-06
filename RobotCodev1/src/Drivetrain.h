@@ -12,7 +12,8 @@
 #include "Defines.h"
 #include "Preferences.h"
 
-class Drivetrainclass {
+class Drivetrainclass
+{
 public:
 
 	float mult;
@@ -39,10 +40,8 @@ public:
 	int currentStrafeTarget;
 
 	bool reachedForwardTarget;
-	//bool prevReachedForTarget;
 
 	bool reachedStrafeTarget;
-	//bool prevReachedStrafeTarget;
 
 	Victor *leftMotor;
 	Victor *leftMotor1;
