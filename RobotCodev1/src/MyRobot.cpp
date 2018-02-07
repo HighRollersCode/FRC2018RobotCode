@@ -236,8 +236,8 @@ void MyRobotClass::OperatorControl(void)
 		}
 
 		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
-		//Elevator->Update((turretStick->GetX()*.3), turretStick->GetRawButton(3));//, turretStick->GetRawButton(3));
-		//Arm->Update(0/*turretStick->GetY()*/,turretStick->GetRawButton(4),turretStick->GetRawButton(5));
+		Elevator->Update((turretStick->GetX()), turretStick->GetRawButton(3));//, turretStick->GetRawButton(3));
+		//Arm->Update(turretStick->GetY(),0,0);//turretStick->GetRawButton(4),turretStick->GetRawButton(5));
 		//Claw->Update(turretStick->GetTrigger(),turretStick->GetRawButton(2));
 		//LiftManager->UpdateLift(rightStick->GetRawButton(5),rightStick->GetRawButton(4),turretStick->GetRawButton(6));
 
