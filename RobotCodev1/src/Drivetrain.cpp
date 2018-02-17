@@ -10,8 +10,12 @@
 using namespace frc;
 Drivetrainclass::Drivetrainclass()
 {
-	mult = .03;
-	Strafe_P = .05;
+	mult = .05f;
+	Strafe_P = .1f;
+
+	forwardramp = .001f;
+	straferamp = .003f;
+
 
 	leftcommand = 0;
 	rightcommand = 0;
@@ -19,7 +23,7 @@ Drivetrainclass::Drivetrainclass()
 	lastdistance = 0;
 
 	Gyro_P = .01f;
-	Sonar_P = .06f;
+	Sonar_P = .005f;
 
 	curbrake = BRAKE_MODE_OFF;
 	prevbrake = BRAKE_MODE_OFF;
@@ -31,13 +35,21 @@ Drivetrainclass::Drivetrainclass()
 	headingTarget = 0;
 
 	currentForwardSpeed = 0;
-	targetForwardSpeed = 0;
+	targetForwardEncoderSpeed = 0;
+
+	targetForwardManualSpeed = 0;
+
+	ramp = true;
 
 	currentStrafeSpeed = 0;
-	targetStrafeSpeed = 0;
+	targetStrafeEncoderSpeed = 0;
+	targetStrafeManualSpeed = 0;
 
-	reachedForwardTarget = false;
-	reachedStrafeTarget = false;
+	reachedForwardEncoderTarget = false;
+	reachedStrafeEncoderTarget = false;
+
+	currentRightSonarTarget = 0;
+	reachedRightSonarTarget = true;
 
 	leftMotor = new Victor(Left_Motor_1);
 	leftMotor1 = new Victor(Left_Motor_2);
@@ -52,12 +64,16 @@ Drivetrainclass::Drivetrainclass()
 	rightEncoder = new Encoder( Right_Encoder_1, Right_Encoder_2, false, Encoder::EncodingType::k4X);
 	middleEncoder = new Encoder( Middle_Encoder_1, Middle_Encoder_2, false, Encoder::EncodingType::k4X);
 
-	gyro = new AnalogGyro(0);
+#if USINGGYRO == 0
+	gyro = new AnalogGyro(Gyro);
+#else
+	imu = new PigeonIMU(Pigeon_IMU);
+#endif
 
-	frontsonar = new AnalogInput(2);
-	//frontsonar = new Ultrasonic(8,9);
-	//frontsonar->SetEnabled(true);
-	//frontsonar->SetAutomaticMode(true);
+
+	rightsonar = new Ultrasonic(6 ,7);
+	rightsonar->SetEnabled(true);
+	rightsonar->SetAutomaticMode(true);
 
 	//rightsonar = new Ultrasonic(6, 7);
 	//rightsonar->SetEnabled(true);
@@ -76,7 +92,11 @@ Drivetrainclass::~Drivetrainclass() {
 
 void Drivetrainclass::Zero_Yaw()
 {
+#if USINGGYRO == 0
 	gyro->Reset();
+#else
+	imu->SetFusedHeading(0,1.0);
+#endif
 }
 float Drivetrainclass::GyroCorrection(float desheading)
 {
@@ -89,7 +109,12 @@ float Drivetrainclass::GyroCorrection(float desheading)
 	float GyroRate_P = prefs->GetDouble("GyroRate_P", 0.01f);
 
 	float error = MAINTAIN - GetHeading();
-	float command = error * Gyro_P - (GyroRate_P * -gyro->GetRate());
+#if USINGGYRO == 0
+	float command = error * Gyro_P - (GyroRate_P * gyro->GetRate());
+#else
+	//float command = error * Gyro_P - (GyroRate_P * imu->Get);
+	float command =0;
+#endif
 
 	SmartDashboard::PutNumber("Gyro_P", Gyro_P);
 	SmartDashboard::PutNumber("GyroRate_P", GyroRate_P);
@@ -98,11 +123,15 @@ float Drivetrainclass::GyroCorrection(float desheading)
 }
 float Drivetrainclass::GetHeading()
 {
-	return -gyro->GetAngle();
+#if USINGGYRO == 0
+	return gyro->GetAngle();
+#else
+	return imu->GetFusedHeading();
+#endif
 }
 float Drivetrainclass::GetFrontSonar()
 {
-	return frontsonar->GetValue();
+	return rightsonar->GetRangeInches();
 }
 /*float Drivetrainclass::GetLeftSonar()
 {
@@ -194,7 +223,7 @@ void Drivetrainclass::StandardArcade( float Forward, float Turn, float Strafe, e
 	{
 		ResetEncoders_Timers();
 	}
-
+/*
 	if(brakeMode == BRAKE_MODE_ON)
 	{
 		leftcommand = Forward + LockLeft(0) + Turn;// + GyroCorrection(lastheading);
@@ -208,7 +237,7 @@ void Drivetrainclass::StandardArcade( float Forward, float Turn, float Strafe, e
 		leftcommand = Forward + Turn;
 		rightcommand = -Forward + Turn;
 	}
-
+*/
 	StandardArcade_forwardOnly(leftcommand, rightcommand);
 	StandardArcade_strafeOnly(Strafe);
 }
@@ -233,48 +262,16 @@ float lerp(float a, float b, float f)
 
 void Drivetrainclass::AutoUpdate()
 {
-	float forwardError = targetForwardSpeed - currentForwardSpeed;
+	currentForwardSpeed = AutoUpdate_Forward();
+	currentStrafeSpeed = AutoUpdate_Strafe();
 
-	if(forwardError > 0)
-	{
-		currentForwardSpeed += 0.001f;
-	}
-	else if (forwardError < 0)
-	{
-		currentForwardSpeed -= 0.001f;
-	}
-
-	float strafeError = targetStrafeSpeed - currentStrafeSpeed;
-
-	if(strafeError > 0)
-	{
-		currentStrafeSpeed += 0.001f;
-	}
-	else if(strafeError < 0)
-	{
-		currentStrafeSpeed -= 0.001f;
-	}
-
-	float forward = 0;
-	float strafe = 0;
-
-	if (reachedForwardTarget == false)
-	{
-		forward = currentForwardSpeed;
-	}
-
-	if (reachedStrafeTarget == false)
-	{
-		strafe = currentStrafeSpeed;
-	}
-
-	StandardArcade(forward, 0.0f, strafe, GYRO_CORRECTION_ON, BRAKE_MODE_OFF);
+	StandardArcade(currentForwardSpeed, 0.0f, currentStrafeSpeed, GYRO_CORRECTION_ON, BRAKE_MODE_OFF);
 
 	if (currentForwardTarget > 0) {
 
 		if ((GetRightEncoder() >= currentForwardTarget) && (GetLeftEncoder() >= currentForwardTarget))
 		{
-			reachedForwardTarget = true;
+			reachedForwardEncoderTarget = true;
 		}
 	}
 
@@ -282,7 +279,7 @@ void Drivetrainclass::AutoUpdate()
 	{
 		if ((GetRightEncoder() <= currentForwardTarget) && (GetLeftEncoder() <= currentForwardTarget))
 		{
-			reachedForwardTarget = true;
+			reachedForwardEncoderTarget = true;
 		}
 	}
 
@@ -290,7 +287,7 @@ void Drivetrainclass::AutoUpdate()
 	{
 		if (GetMiddleEncoder() >= currentStrafeTarget)
 		{
-			reachedStrafeTarget = true;
+			reachedStrafeEncoderTarget = true;
 		}
 	}
 
@@ -298,43 +295,150 @@ void Drivetrainclass::AutoUpdate()
 	{
 		if (GetMiddleEncoder() <= currentStrafeTarget)
 		{
-			reachedStrafeTarget = true;
+			reachedStrafeEncoderTarget = true;
 		}
 	}
+
+	if(fabs(GetFrontSonar() - currentRightSonarTarget) < 1)
+	{
+		//reachedRightSonarTarget = true;
+	}
+}
+float Drivetrainclass::AutoUpdate_Forward()
+{
+	float forward = currentForwardSpeed;
+
+	if(reachedForwardEncoderTarget == false)
+	{
+		float forwardError = targetForwardEncoderSpeed - currentForwardSpeed;
+
+		if(forwardError > 0)
+		{
+			forward += forwardramp;
+		}
+		else if (forwardError < 0)
+		{
+			forward -= forwardramp;
+		}
+	}
+	else
+	{
+		forward = 0;
+	}
+
+	if(forward < -1)
+	{
+		forward = -1;
+	}
+	else if(forward > 1)
+	{
+		forward = 1;
+	}
+
+	return forward;
+}
+
+void Drivetrainclass::SetRawForwardSpeed(float speed)
+{
+	currentForwardSpeed = speed;
+	reachedForwardEncoderTarget = true;
 }
 
 void Drivetrainclass::SetForwardTarget(int target, float speed)
 {
-	reachedForwardTarget = false;
+	reachedForwardEncoderTarget = false;
 	leftEncoder->Reset();
 	rightEncoder->Reset();
 	currentForwardTarget = target;
-	targetForwardSpeed = speed;
+	targetForwardEncoderSpeed = speed;
+}
+
+float Drivetrainclass::AutoUpdate_Strafe()
+{
+	float strafe = currentStrafeSpeed;
+
+	if(reachedStrafeEncoderTarget == false)
+	{
+		float strafeError = targetStrafeEncoderSpeed - currentStrafeSpeed;
+
+		if(strafeError > 0)
+		{
+			strafe += straferamp;
+		}
+		else if(strafeError < 0)
+		{
+			strafe -= straferamp;
+		}
+	}
+	else
+	{
+		strafe = 0;
+	}
+
+	if(reachedRightSonarTarget == false)
+	{
+		float sonarError = currentRightSonarTarget - GetFrontSonar();
+		float sonarCommand = sonarError * Strafe_P;
+		strafe = sonarCommand;
+	}
+
+	if(strafe < -1)
+	{
+		strafe = -1;
+	}
+	else if(strafe > 1)
+	{
+		strafe = 1;
+	}
+	return strafe;
+}
+
+void Drivetrainclass::SetRawStrafeSpeed(float speed)
+{
+	currentStrafeSpeed = speed;
+	reachedStrafeEncoderTarget = true;
+	reachedRightSonarTarget = true;
 }
 
 void Drivetrainclass::SetStrafeTarget(int target, float speed)
 {
-	reachedStrafeTarget = false;
+	reachedStrafeEncoderTarget = false;
+	reachedRightSonarTarget = true;
+
 	middleEncoder->Reset();
+
 	currentStrafeTarget = target;
-	targetStrafeSpeed = speed;
+	targetStrafeEncoderSpeed = speed;
 }
+
+void Drivetrainclass::SetRightSonarTarg(float distance)
+{
+	reachedStrafeEncoderTarget = true;
+	reachedRightSonarTarget = false;
+	currentRightSonarTarget = distance;
+}
+
 void Drivetrainclass::ResetTargets()
 {
 	currentForwardTarget = 0;
 	currentStrafeTarget = 0;
+	currentRightSonarTarget = 0;
+
+	reachedForwardEncoderTarget = true;
+	reachedStrafeEncoderTarget = true;
+	reachedRightSonarTarget = true;
 }
 void Drivetrainclass::Send_Data()
 {
 	SmartDashboard::PutNumber("Gyro Heading", GetHeading());
-	//SmartDashboard::PutNumber("Front Sonar", GetFrontSonar());
+	SmartDashboard::PutNumber("Front Sonar", GetFrontSonar());
 	SmartDashboard::PutNumber("HeadingTarget", headingTarget);
 	SmartDashboard::PutNumber("LastDistance", lastdistance);
 	SmartDashboard::PutNumber("Left Encoder", GetLeftEncoder());
 	SmartDashboard::PutNumber("Right Encoder", GetRightEncoder());
 	SmartDashboard::PutNumber("Middle Encoder", GetMiddleEncoder());
-	SmartDashboard::PutBoolean("Reached Forward",reachedForwardTarget);
-	SmartDashboard::PutBoolean("Reached Strafe",reachedStrafeTarget);
+	SmartDashboard::PutBoolean("Reached Forward",reachedForwardEncoderTarget);
+	SmartDashboard::PutBoolean("Reached Strafe",reachedStrafeEncoderTarget);
 	SmartDashboard::PutNumber("Current Forward Speed", currentForwardSpeed);
 	SmartDashboard::PutNumber("Current Strafe Speed", currentStrafeSpeed);
 }

@@ -20,8 +20,10 @@ enum LiftMode
 	Free = 0,
 	Intake,
 	Switch_Front_Level,
-	Scale_Winning_Front_Level1,
-	Scale_Winning_Back_Level1
+	Scale_Losing_Level_Front,
+	Scale_Neutral_Front,
+	Scale_Winning_Back_Level1,
+	Set_Up
 };
 class LiftManagerClass {
 public:
@@ -42,13 +44,26 @@ bool SwitchState_Prev;
 bool ScaleLevel1State_Cur;
 bool ScaleLevel1State_Prev;
 
+bool ScaleNeutralLevelState_Cur;
+bool ScaleNeutralLevelState_Prev;
+
+bool ScaleLevel1BackState_Cur;
+bool ScaleLevel1BackState_Prev;
+
+bool SetUpState_Cur;
+bool SetUpState_Prev;
+
 bool transitioning;
+
+bool isreceivinginput;
 
 int CurrentState;
 
 void changeMode(LiftMode desiredLiftMode);
 
-void UpdateLift(bool IntakeState,bool SwitchState, bool ScaleLevel1State);
+void Send_Data();
+
+void UpdateLift(bool IntakeState,bool SwitchState, bool ScaleLevel1State,bool ScaleLevel1BackState, bool ScaleNeutralLevelState,bool SetUpState);
 void DisablePID();
 };
 

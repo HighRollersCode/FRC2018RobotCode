@@ -5,6 +5,7 @@
  *      Author: 987
  */
 #include "MyRobot.h"
+#include "LiftManager.h"
 #include "HRscript.h"
 #include "Defines.h"
 
@@ -56,7 +57,17 @@ public:
 		MyRobotClass::Get()->AutonomousControl->AutonWait2(m_Parameters[0],(int)m_Parameters[1]);
 	}
 };
-
+class WaitForTransitionCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "WaitForTransition"; }
+	virtual int Get_Parameter_Count() { return 0; }
+	virtual HrScriptCommandClass * Create_Command() { return new WaitForTransitionCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->AutonWaitForTransition();
+	}
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 										//Driving Code//
@@ -119,6 +130,17 @@ public:
 		MyRobotClass::Get()->AutonomousControl->Auto_GYROSTRAIGHTSONAR(m_Parameters[0],m_Parameters[1],m_Parameters[2],m_Parameters[3]);
 	}
 };
+class DistanceHeadingCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "DistanceHeading"; }
+	virtual int Get_Parameter_Count() { return 2; }
+	virtual HrScriptCommandClass * Create_Command() { return new DistanceHeadingCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_SONAR(m_Parameters[0],m_Parameters[1]);
+	}
+};
 class DriveHeadingDistanceCommand : public HrScriptCommandClass
 {
 public:
@@ -139,6 +161,17 @@ public:
 	virtual void Execute()
 	{
 		MyRobotClass::Get()->AutonomousControl->Auto_GYROSTRAFE(m_Parameters[0],m_Parameters[1],m_Parameters[2],m_Parameters[3],m_Parameters[4]);
+	}
+};
+class StrafeTicksCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "StrafeTicksHeading"; }
+	virtual int Get_Parameter_Count() { return 3; }
+	virtual HrScriptCommandClass * Create_Command() { return new StrafeTicksCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_STRAFE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
 	}
 };
 class DriveTicksCommand : public HrScriptCommandClass
@@ -186,12 +219,12 @@ class SearchForCubeCommand : public HrScriptCommandClass
 {
 
 public:
-	virtual const char * Get_Command_Name() { return "SearchForCubeStrafe"; }
-	virtual int Get_Parameter_Count() { return 2; }
+	virtual const char * Get_Command_Name() { return "SearchForCubeStrafeTimed"; }
+	virtual int Get_Parameter_Count() { return 3; }
 	virtual HrScriptCommandClass * Create_Command() { return new SearchForCubeCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBE(m_Parameters[0],m_Parameters[1]);
+		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
 	}
 };
 
@@ -201,7 +234,7 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*class SetIntakeCommand : public HrScriptCommandClass
+class SetIntakeCommand : public HrScriptCommandClass
 {
 
 public:
@@ -212,7 +245,7 @@ public:
 	{
 		if(m_Parameters[0] == 1)
 		{
-			MyRobotClass::Get()->AutonomousControl->Auto_Intake_On();
+			MyRobotClass::Get()->AutonomousControl->Auto_Intake_In();
 		}
 		else if (m_Parameters[0] == 0)
 		{
@@ -220,10 +253,72 @@ public:
 		}
 		else if (m_Parameters[0] == -1)
 		{
-			MyRobotClass::Get()->Intake->IntakeOut();
+			MyRobotClass::Get()->AutonomousControl->Auto_Intake_Out();
 		}
 	}
-};*/
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+										//Conveyor Code//
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SetConveyorCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "Conveyor"; }
+	virtual int Get_Parameter_Count() { return 1; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetConveyorCommand(); }
+	virtual void Execute()
+	{
+		if(m_Parameters[0] == 1)
+		{
+			MyRobotClass::Get()->Conveyor->Conveyor_For();
+		}
+		else if (m_Parameters[0] == 0)
+		{
+			MyRobotClass::Get()->Conveyor->Conveyor_Off();
+		}
+		else if (m_Parameters[0] == -1)
+		{
+			MyRobotClass::Get()->Conveyor->Conveyor_Rev();
+		}
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+										//Mode Code//
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SetIntakeModeCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "IntakeMode"; }
+	virtual int Get_Parameter_Count() { return 0; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetIntakeModeCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Intake);
+	}
+};
+
+class SetScaleBackModeCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "ScaleBackMode"; }
+	virtual int Get_Parameter_Count() { return 0; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetScaleBackModeCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Scale_Winning_Back_Level1);
+	}
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,6 +349,7 @@ void MyRobotClass::Init_Scripts_System()
 
 	m_ScriptSystem->Add_Command(new WaitCommand1());
 	m_ScriptSystem->Add_Command(new WaitForBrakeCommand());
+	m_ScriptSystem->Add_Command(new WaitForTransitionCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -262,7 +358,9 @@ void MyRobotClass::Init_Scripts_System()
 	m_ScriptSystem->Add_Command(new DriveHeadingTicksCommand());
 	m_ScriptSystem->Add_Command(new DriveTicksHeadingDistanceCommand());
 	m_ScriptSystem->Add_Command(new DriveHeadingDistanceCommand());
+	m_ScriptSystem->Add_Command(new DistanceHeadingCommand());
 	m_ScriptSystem->Add_Command(new DriveStrafeTicksCommand());
+	m_ScriptSystem->Add_Command(new StrafeTicksCommand());
 	m_ScriptSystem->Add_Command(new DriveTicksCommand());
 	m_ScriptSystem->Add_Command(new DriveCommand());
 	m_ScriptSystem->Add_Command(new GyroTurnCommand());
@@ -271,6 +369,19 @@ void MyRobotClass::Init_Scripts_System()
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
 	m_ScriptSystem->Add_Command(new SearchForCubeCommand());
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
+	m_ScriptSystem->Add_Command(new SetIntakeCommand);
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
+	m_ScriptSystem->Add_Command(new SetConveyorCommand);
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
+	m_ScriptSystem->Add_Command(new SetIntakeModeCommand);
+	m_ScriptSystem->Add_Command(new SetScaleBackModeCommand);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 

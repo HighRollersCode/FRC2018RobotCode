@@ -23,13 +23,7 @@ public:
 	float currentverticalcommand;
 	float prevverticalcommand;
 
-	//Encoder *ElevatorEncoder;
-
-	//PIDController *ElevatorPIDController;
-
-	//CurrentLimitedJoint *ElevatorJoint;
-
-	//Preferences *prefs;
+	bool isreceivingelevatorinput;
 
 	ElevatorClass();
 	virtual ~ElevatorClass();
@@ -41,7 +35,7 @@ public:
 	void ElevatorIntake();
 	void ElevatorScale();
 
-	void Update( float verticalcommand, bool intake);//, bool scale);
+	void Update(float verticalcommand);
 	void Send_Data();
 };
 

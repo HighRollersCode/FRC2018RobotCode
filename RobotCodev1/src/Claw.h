@@ -19,7 +19,7 @@ public:
 
 	ClawClass();
 	virtual ~ClawClass();
-	void Update (bool intake, bool outtake);
+	void Update(bool intake, bool switchouttake, bool outtake,bool slowout);
 };
 
 #endif /* SRC_CLAW_H_ */

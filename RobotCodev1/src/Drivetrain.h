@@ -11,12 +11,19 @@
 #include "WPILib.h"
 #include "Defines.h"
 #include "Preferences.h"
+#include "ctre/Phoenix.h"
+
+#define USINGGYRO 0
 
 class Drivetrainclass
 {
 public:
 
 	float mult;
+
+	float forwardramp;
+	float straferamp;
+
 	float lastdistance;
 	float leftcommand;
 	float rightcommand;
@@ -29,19 +36,28 @@ public:
 	eBrakeMode curbrake;
 
 	float currentForwardSpeed;
-	float targetForwardSpeed;
+	float targetForwardEncoderSpeed;
+
+	float targetForwardManualSpeed;
+
+	bool ramp;
 
 	float currentStrafeSpeed;
-	float targetStrafeSpeed;
+	float targetStrafeEncoderSpeed;
+
+	float targetStrafeManualSpeed;
 
 	float headingTarget;
 
 	int currentForwardTarget;
 	int currentStrafeTarget;
 
-	bool reachedForwardTarget;
+	float currentRightSonarTarget;
+	bool reachedRightSonarTarget;
 
-	bool reachedStrafeTarget;
+	bool reachedForwardEncoderTarget;
+
+	bool reachedStrafeEncoderTarget;
 
 	Victor *leftMotor;
 	Victor *leftMotor1;
@@ -54,10 +70,15 @@ public:
 	Encoder *rightEncoder;
 	Encoder *middleEncoder;
 
+#if USINGGYRO == 0
 	AnalogGyro *gyro;
+#else
+	PigeonIMU *imu;
+#endif
+
 	//Ultrasonic *leftsonar;
 	//Ultrasonic *rightsonar;
-	AnalogInput *frontsonar;
+	Ultrasonic *rightsonar;
 
 	Drivetrainclass();
 	virtual ~Drivetrainclass();
@@ -77,8 +98,13 @@ public:
 
 	void StandardArcade(float Forward, float Turn, float Strafe, eGyroMode gyroMode, eBrakeMode brakeMode);
 	void AutoUpdate();
+	float AutoUpdate_Forward();
+	float AutoUpdate_Strafe();
+	void SetRawForwardSpeed(float speed);
+	void SetRawStrafeSpeed(float speed);
 	void SetForwardTarget(int target, float speed);
 	void SetStrafeTarget(int target, float speed);
+	void SetRightSonarTarg(float distance);
 	void ResetTargets();
 	void StandardArcade_forwardOnly(float left, float right);
 	void StandardArcade_strafeOnly(float Strafe);

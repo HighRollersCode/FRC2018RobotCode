@@ -30,21 +30,17 @@ public:
 
 	//WPI_VictorSPX *Arm;
 	WPI_TalonSRX *ArmTalon;
-	//CurrentLimitedJoint *ArmJoint;
 
-	//WPI_VictorSPX *Wrist;
+	float prevArmCommand;
+	float curArmCommand;
+
 	TalonSRX *WristTalon;
 
-	//CurrentLimitedJoint *WristJoint;
+	float prevWristCommand;
+	float curWristCommand;
 
-	//Encoder *ArmEncoder;
-	//Encoder *WristEncoder;
-
-	//PIDController *WristPIDController;
-	//PIDController *ArmPIDController;
-
-	float armCurrent;
-	float wristCurrent;
+	bool isreceivingarminput;
+	bool isreceivingwristinput;
 
 	float GetArmEncoder();
 	float GetWristEncoder();

@@ -20,8 +20,9 @@ MyRobotClass::MyRobotClass()
 	Arm = new ArmClass();
 	Elevator = new ElevatorClass();
 	Claw = new ClawClass();
-	AutonomousControl = new Auton(Drivetrain, &DriverStation::GetInstance());
 	LiftManager = new LiftManagerClass(Elevator, Arm, Claw);
+	AutonomousControl = new Auton(Drivetrain, &DriverStation::GetInstance(),Claw,LiftManager);
+	Conveyor = new ConveyorClass();
 	PDP = new PowerDistributionPanel();
 
 	forwardcommand = 0;
@@ -44,10 +45,6 @@ MyRobotClass::MyRobotClass()
 
 	m_ScriptSystem = 0;
 	Init_Scripts_System();
-
-	//dont use http
-	//CameraServer::GetInstance()->AddAxisCamera("limelightforlabviewHOSTNAME","limelight.local:5800");
-	//CameraServer::GetInstance()->AddServer("limelight.local",5800);
 }
 
 MyRobotClass::~MyRobotClass() {
@@ -68,7 +65,7 @@ void MyRobotClass::Autonomous(void)
 {
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
-	table->PutNumber("ledMode", 0);
+	table->PutNumber("ledMode", 1);
 
 	Load_Scripts();
 	printf("loaded\n");
@@ -131,7 +128,7 @@ void MyRobotClass::UpdateInputs()
 		}
 	}*/
 
-	if(leftStick->GetRawButton(3))
+	if(leftStick->GetRawButton(5))
 	{
 		Preferences *prefs = Preferences::GetInstance();
 
@@ -146,7 +143,7 @@ void MyRobotClass::UpdateInputs()
 		isTracking = true;
 		if(targetV)
 		{
-			forwardcommand = -(track_area-targetA)*track_kforward;
+			forwardcommand = (track_area-targetA)*track_kforward;
 
 			float transition_range = prefs->GetDouble("Transition_Range", 20);
 
@@ -176,6 +173,11 @@ void MyRobotClass::UpdateInputs()
 }
 void MyRobotClass::Send_Data()
 {
+	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
+	SmartDashboard::PutNumber("Target X",table->GetNumber("tx",0));
+	SmartDashboard::PutNumber("Target y",table->GetNumber("ty",0));
+
 	SmartDashboard::PutBoolean("Is Tracking", isTracking);
 	SmartDashboard::PutString("Game Data", DriverStation::GetInstance().GetGameSpecificMessage());
 
@@ -183,6 +185,7 @@ void MyRobotClass::Send_Data()
 	AutonomousControl->SendData();
 	Elevator->Send_Data();
 	Arm->Send_Data();
+	LiftManager->Send_Data();
 }
 void MyRobotClass::OperatorControl(void)
 {
@@ -193,9 +196,9 @@ void MyRobotClass::OperatorControl(void)
 
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
-	CameraServer::GetInstance()->StartAutomaticCapture();
+	table->PutNumber("ledMode", 1);
 
-	table->PutNumber("ledMode", 0);
+	LiftManager->changeMode(LiftMode::Free);
 
 	while(IsOperatorControl() && IsEnabled())
 	{
@@ -217,7 +220,7 @@ void MyRobotClass::OperatorControl(void)
 		}
 		else
 		{
-			if(rightStick->GetRawButton(3))
+			if(leftStick->GetRawButton(3))
 			{
 				gyromode = GYRO_CORRECTION_ON;
 			}
@@ -236,10 +239,21 @@ void MyRobotClass::OperatorControl(void)
 		}
 
 		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
-		Elevator->Update((turretStick->GetX()), turretStick->GetRawButton(3));//, turretStick->GetRawButton(3));
-		//Arm->Update(turretStick->GetY(),0,0);//turretStick->GetRawButton(4),turretStick->GetRawButton(5));
-		//Claw->Update(turretStick->GetTrigger(),turretStick->GetRawButton(2));
-		//LiftManager->UpdateLift(rightStick->GetRawButton(5),rightStick->GetRawButton(4),turretStick->GetRawButton(6));
+
+		if(turretStick->GetRawButton(11))
+		{
+			Arm->WristTalon->SetSelectedSensorPosition(Wrist_Intake,0,1.0);
+		}
+
+		Elevator->Update(turretStick->GetX());
+		Arm->Update(turretStick->GetY(),turretStick->GetRawButton(4),turretStick->GetRawButton(5));
+
+		Claw->Update((turretStick->GetTrigger() || rightStick->GetTrigger()),rightStick->GetRawButton(2), turretStick->GetRawButton(2), turretStick->GetRawButton(3));
+
+		LiftManager->UpdateLift((rightStick->GetRawButton(4) || turretStick->GetRawButton(6)),rightStick->GetRawButton(3)
+				,turretStick->GetRawButton(7),turretStick->GetRawButton(8),turretStick->GetRawButton(9),leftStick->GetRawButton(6));
+
+		Conveyor->Update(rightStick->GetRawButton(11), rightStick->GetRawButton(10));
 
 		Wait(0.005);
 	}

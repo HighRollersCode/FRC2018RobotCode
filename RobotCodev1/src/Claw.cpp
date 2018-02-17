@@ -10,6 +10,7 @@
 ClawClass::ClawClass() {
 
 	Claw1 = new VictorSPX(Claw_Motor_1);
+	Claw1->SetInverted(false);
 
 	Claw2 = new VictorSPX(Claw_Motor_2);
 	Claw2->Set(ControlMode::Follower, Claw_Motor_1);
@@ -17,20 +18,26 @@ ClawClass::ClawClass() {
 }
 ClawClass::~ClawClass() {
 }
-void ClawClass::Update(bool intake, bool outtake)
+void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowout)
 {
 	if(intake)
 	{
-
-		Claw1->Set(ControlMode::PercentOutput, -0.75);
+		Claw1->Set(ControlMode::PercentOutput, 1.0);
+	}
+	else if(switchouttake)
+	{
+		Claw1->Set(ControlMode::PercentOutput, -1.0);
 	}
 	else if(outtake)
 	{
-		Claw1->Set(ControlMode::PercentOutput, 1.0);
+		Claw1->Set(ControlMode::PercentOutput, -0.75);
+	}
+	else if(slowout)
+	{
+		Claw1->Set(ControlMode::PercentOutput, -0.3);
 	}
 	else
 	{
 		Claw1->Set(ControlMode::PercentOutput, 0);
 	}
-
 }

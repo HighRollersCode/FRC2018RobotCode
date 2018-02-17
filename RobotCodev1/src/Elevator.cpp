@@ -39,6 +39,8 @@ ElevatorClass::ElevatorClass()
 
 	currentverticalcommand = 0;
 	prevverticalcommand = 0;
+
+	isreceivingelevatorinput = false;
 }
 
 ElevatorClass::~ElevatorClass() {
@@ -74,7 +76,7 @@ void ElevatorClass::ElevatorScale()
 	//SetElevatorTarg(Elevator_Scale);
 }
 
-void ElevatorClass::Update(float verticalcommand, bool intake)//, bool scale)
+void ElevatorClass::Update(float verticalcommand)
 {
 	prevverticalcommand = currentverticalcommand;
 	currentverticalcommand = verticalcommand;
@@ -82,16 +84,13 @@ void ElevatorClass::Update(float verticalcommand, bool intake)//, bool scale)
 	if(fabs(verticalcommand) > .2f)
 	{
 		ElevatorTalon->Set(ControlMode::PercentOutput, verticalcommand);
+		isreceivingelevatorinput = true;
 	}
 
 	if((fabs(prevverticalcommand) > .2) && (fabs(currentverticalcommand) <= .2))
 	{
 		SetElevatorTarg(GetElevatorEncoder());
-	}
-
-	if(intake)
-	{
-		SetElevatorTarg(Elevator_Intake);
+		isreceivingelevatorinput = false;
 	}
 }
 

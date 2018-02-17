@@ -17,6 +17,7 @@
 #include "Defines.h"
 #include "Auton.h"
 #include "LiftManager.h"
+#include "Conveyor.h"
 
 #include "HRscript.h"
 
@@ -41,6 +42,7 @@ public:
 	ClawClass *Claw;
 	Auton *AutonomousControl;
 	LiftManagerClass *LiftManager;
+	ConveyorClass *Conveyor;
 
 	PowerDistributionPanel *PDP;
 

@@ -10,6 +10,7 @@
 
 #include "WPILib.h"
 #include "Drivetrain.h"
+#include "LiftManager.h"
 #include "Defines.h"
 
 class Auton
@@ -17,8 +18,11 @@ class Auton
 	public:
 		Drivetrainclass *DriveTrain;
 		DriverStation *ds;
+		ClawClass *Claw;
+		LiftManagerClass *LiftManager;
 		Timer *AutonTimer;
 		Timer *SendTimer;
+		Timer *IntakeTimer;
 
 		bool Abort = false;
 		bool intake = false;
@@ -27,20 +31,30 @@ class Auton
 		bool downtake = false;
 		bool dotrack = false;
 
+		double auto_tx = 0;
+		double auto_ty = 0;
+		float auto_drive = 0;
+		float auto_turn = 0;
+		float auto_strafe = 0;
+
 		bool Running();
 		void AutonWait(float Seconds);
 		void AutonWait2(float Seconds, int brake);
+		void AutonWaitForTransition();
 		bool Auto_System_Update();
 
 		void Auto_DriveTimer(float Forward, float Turn, float Strafe, float seconds);
-		void Auto_Intake_On();
+		void Auto_Intake_In();
+		void Auto_Intake_Out();
 		void Auto_Intake_Off();
 		void Auto_GYROTURN(float heading);
 		void Auto_GYROTURN_TIMED(float heading, float seconds);
 		void Auto_GYROSTRAIGHT(float forward, float ticks, float desheading);
 		void Auto_GYROSTRAIGHTSONAR(float forward,float ticks,float desheading, float desdistance);
+		void Auto_SONAR(float desdistance,float desheading);
 		void Auto_GYROSTRAFE(float forward, float ticks, float strafe, float strafeTicks, float desheading);
-		void Auto_SEARCHFORCUBE(float strafe, float heading);
+		void Auto_STRAFE(float strafe, float strafeTicks,float desheading);
+		void Auto_SEARCHFORCUBE(float strafe, float heading,float time);
 		void Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, float desdistance);
 		void Auto_FOLLOWEDGE(float Forward, float desheading, float desdistance);
 		void Auto_DriveGyro_Encoder(float Forward, float Angle, float Ticks);
@@ -52,7 +66,9 @@ class Auton
 		Auton
 		(
 				Drivetrainclass *D,
-				DriverStation *Ds
+				DriverStation *Ds,
+				ClawClass *C,
+				LiftManagerClass *LM
 		);
 		~Auton();
 		void Auto_Start();

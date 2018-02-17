@@ -22,26 +22,28 @@ ArmClass::ArmClass()
 
 	hold_Wrist = 0;
 
-	armCurrent = 0;
-	wristCurrent = 0;
-
 	ArmTalon = new WPI_TalonSRX(Arm_Motor);
 
 	ArmTalon->ConfigContinuousCurrentLimit(20.0, 1.0f);
 
 	ArmTalon->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative,0,1.0f);
 	ArmTalon->SetSelectedSensorPosition(0,0,1.0f);
-	//ArmTalon->SetSensorPhase(true);
+	ArmTalon->SetSensorPhase(true);
 
-	ArmTalon->EnableCurrentLimit(true);
+	ArmTalon->EnableCurrentLimit(false);
 	ArmTalon->ConfigForwardSoftLimitThreshold(ArmMaxLimEncoder,1.0f);
 	ArmTalon->ConfigReverseSoftLimitThreshold(ArmMinLimEncoder,1.0f);
+	ArmTalon->ConfigForwardSoftLimitEnable(true,1.0);
+	ArmTalon->ConfigReverseSoftLimitEnable(true,1.0);
 
 	Preferences *prefs = Preferences::GetInstance();
 
 	ArmTalon->Config_kP(0,prefs->GetDouble("Arm_P",0.005f), 1.0);
 	ArmTalon->Config_kI(0,prefs->GetDouble("Arm_I",0.0f), 1.0);
 	ArmTalon->Config_kD(0,prefs->GetDouble("Arm_D",0.0f), 1.0);
+
+	prevArmCommand = 0;
+	curArmCommand = 0;
 
 	WristTalon = new TalonSRX(Wrist_Motor);
 	WristTalon->SetInverted(true);
@@ -55,13 +57,24 @@ ArmClass::ArmClass()
 
 	WristTalon->ConfigNominalOutputForward(0,1.0);
 	WristTalon->ConfigNominalOutputReverse(0,1.0);
+	WristTalon->ConfigPeakOutputForward(1.0,1.0);
+	WristTalon->ConfigPeakOutputReverse(-1.0,1.0);
 	WristTalon->EnableCurrentLimit(false);
 	WristTalon->ConfigForwardSoftLimitThreshold(WristMaxLimEncoder,1.0);
 	WristTalon->ConfigReverseSoftLimitThreshold(WristMinLimEncoder,1.0);
+	WristTalon->ConfigForwardSoftLimitEnable(true,1.0);
+	WristTalon->ConfigReverseSoftLimitEnable(true,1.0);
 
-	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.0001f),1.0);
+	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.05f),1.0);
 	WristTalon->Config_kI(0,prefs->GetDouble("Wrist_I",0.0f),1.0);
 	WristTalon->Config_kD(0,prefs->GetDouble("Wrist_D",0.0f),1.0);
+	WristTalon->Config_kF(0,0,1.0);
+
+	prevWristCommand = 0;
+	curWristCommand = 0;
+
+	isreceivingarminput = false;
+	isreceivingwristinput = false;
 }
 
 ArmClass::~ArmClass(){}
@@ -111,33 +124,53 @@ void ArmClass::Update(float arm_Command,float wrist_Up, float wrist_Down)
 }
 void ArmClass::Arm_Update(float command)
 {
-	if(fabs(command) > .1f)
+	prevArmCommand = curArmCommand;
+	curArmCommand = command;
+
+	if(fabs(command) > .3f)
 	{
 		ArmTalon->Set(ControlMode::PercentOutput,command);
-
+		isreceivingarminput = true;
 		hold_Arm = GetArmEncoder();
 	}
-	else
+	if(fabs(curArmCommand) < .3f && fabs(prevArmCommand) >= .3f)
 	{
-		ArmTalon->Set(ControlMode::Position,GetArmEncoder());
+		ArmTalon->Set(ControlMode::Position,hold_Arm);
+		isreceivingarminput = false;
 	}
 }
 void ArmClass::Wrist_Update(float upcommand, float downcommand)
 {
+	float wristCommand = 0;
 
 	if(upcommand)
 	{
-		WristTalon->Set(ControlMode::PercentOutput,.5);
-		hold_Wrist = GetWristEncoder();
+		wristCommand = .5;
 	}
 	else if(downcommand)
 	{
-		WristTalon->Set(ControlMode::PercentOutput,-.5);
-		hold_Wrist = GetWristEncoder();
+		wristCommand = -.5;
 	}
 	else
 	{
+		wristCommand = 0;
+	}
+
+	prevWristCommand = curWristCommand;
+	curWristCommand = wristCommand;
+
+
+	if(fabs(curWristCommand) > .1f)
+	{
+		WristTalon->Set(ControlMode::PercentOutput,wristCommand);
+		hold_Wrist = GetWristEncoder();
+		isreceivingwristinput = true;
+	}
+
+	if(fabs(curWristCommand) < .1f && fabs(prevWristCommand) >= .1f)
+	{
 		WristTalon->Set(ControlMode::Position, hold_Wrist);
+		isreceivingwristinput = false;
 	}
 }
 void ArmClass::Send_Data()
@@ -146,7 +179,7 @@ void ArmClass::Send_Data()
 	SmartDashboard::PutNumber("Hold Arm", hold_Arm);
 	SmartDashboard::PutNumber("Wrist Encoder", GetWristEncoder());
 	SmartDashboard::PutNumber("Hold Wrist", hold_Wrist);
+	SmartDashboard::PutNumber("Wrist Control Mode", (int)WristTalon->GetControlMode());
+	SmartDashboard::PutNumber("Wrist Error", WristTalon->GetClosedLoopError(0));
 	SmartDashboard::PutNumber("Arm Setpoint",ArmTalon->GetClosedLoopTarget(0));
-	SmartDashboard::PutNumber("Arm Current", armCurrent);
-	SmartDashboard::PutNumber("Wrist Current", wristCurrent);
 }
