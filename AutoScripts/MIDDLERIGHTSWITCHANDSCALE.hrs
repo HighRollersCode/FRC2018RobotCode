@@ -1,90 +1,87 @@
 //////////////////////////////////////////////Start///////////////////////////////////////////////////////////
 DriveTimed 0 0 -.2 .2
 
-DriveTicksStrafeHeading -0.75 -350 -1.0 -2500 0
+DriveTicksStrafeHeading -0.75 -400 -1.0 -2525 0
 
-DriveTimed 0 0 1.0 .3
+DriveTimed -0.75 0 1.0 .2
 
-DriveTicksHeadingDistance -.5 -50 0 54
+DriveTicksHeadingDistance -.5 -75 0 54
 
-DriveTicksHeadingDistance -.5 -50 0 58
+DriveTicksHeadingDistance -.5 -50 0 60
 
 Conveyor -1
 
 DriveTicksHeadingDistance -1.0 -100 0 58
 
-DriveTicksHeading -1.0 -370 0
+DriveTicksHeading -1.0 -325 0
 
-DriveTimed 1.0 0 0 .3
+//DriveTimed 1.0 0 0 .3
 
 Conveyor 0
 
 IntakeMode
 
-//Find the cube
+///////// Find cube 1 ////////////
 
 Intake 1
 
 SearchForCubeStrafeTimed 0.75 0 2.0
 
-Wait 0.2
+/////////  Drive Back for Cube 1 ////////////
+
+DriveTicksHeading -0.75 -25 0
 
 Intake 0
 
-//Drive to the scale
-
-DriveTicksHeadingDistance -0.4 -50 0 70
-
 ScaleBackMode
 
-DriveTicksHeadingDistance -0.4 -175 0 70
+DriveTicksHeadingDistance -0.75 -275 0 70
 
-DriveTimed 1.0 0 0 .3
+DriveTimed 0.75 0 0 .1
 
-GyroTurnTimed -35 1.0
+//GyroTurnTimed -15 0.25
 
-//Score the cube
+/////////  Score Cube 1 ////////////
+
 WaitForTransition
 
 Intake -1
 
-Wait 0.5
-
-Intake 0
-
-//Go into intake mode
-IntakeMode
-
-//Get back to the alley
-DriveTicksHeading 0.5 130 0
-
-DriveTimed -1.0 0 0 .3
-
-//Search for second cube and intake cube
-Intake 1
-
-SearchForCubeStrafeTimed 0.5 0 2.0
-
 Wait 0.2
 
 Intake 0
 
+IntakeMode
+
+///////// Go Get Cube 2 ////////////
+
+DriveTicksHeading 0.75 225 0
+
+DriveTimed -0.75 0 0 .1
+
+//Search for second cube and intake cube
+Intake 1
+
+SearchForCubeStrafeTimed 0.75 0 2.0
+
 //Drive to scale and set up to score
-DriveTicksStrafeHeading -0.5 -25 -0.75 -130 0
+DriveTicksStrafeHeading -0.5 -50 -0.75 -500 0
+
+Intake 0
 
 ScaleBackMode
 
-StrafeTicksHeading -0.5 -700 -0
+DriveTicksStrafeHeading -0.75 -50 -0.75 -700 0 //-900
 
-DistanceHeading 70 0
+//DistanceHeading 70 0
 
-DriveTimed 0 0 1.0 .3
+//DriveTimed 0 0 1.0 .1
 
-DriveTicksHeading -0.5 -150 0
+DriveTicksHeadingDistance -0.75 -170 0 70
 
-DriveTimed -1.0 0 0 .3
+DriveTimed 0.75 0 0 .125
 
-GyroTurnTimed -48 1.0
+GyroTurnTimed -20 0.5
 
 //Score cube
 WaitForTransition
