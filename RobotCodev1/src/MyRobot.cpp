@@ -180,12 +180,15 @@ void MyRobotClass::Send_Data()
 
 	SmartDashboard::PutBoolean("Is Tracking", isTracking);
 	SmartDashboard::PutString("Game Data", DriverStation::GetInstance().GetGameSpecificMessage());
+	SmartDashboard::PutNumber("Claw1 Current",PDP->GetCurrent(Claw1_PDPChannel));
+	SmartDashboard::PutNumber("Claw2 Current",PDP->GetCurrent(Claw2_PDPChannel));
 
 	Drivetrain->Send_Data();
 	AutonomousControl->SendData();
 	Elevator->Send_Data();
 	Arm->Send_Data();
 	LiftManager->Send_Data();
+	Claw->Send_Data();
 }
 void MyRobotClass::OperatorControl(void)
 {

@@ -38,7 +38,7 @@ ArmClass::ArmClass()
 
 	Preferences *prefs = Preferences::GetInstance();
 
-	ArmTalon->Config_kP(0,prefs->GetDouble("Arm_P",0.005f), 1.0);
+	ArmTalon->Config_kP(0,prefs->GetDouble("Arm_P",0.8f), 1.0);
 	ArmTalon->Config_kI(0,prefs->GetDouble("Arm_I",0.0f), 1.0);
 	ArmTalon->Config_kD(0,prefs->GetDouble("Arm_D",0.0f), 1.0);
 
@@ -65,7 +65,7 @@ ArmClass::ArmClass()
 	WristTalon->ConfigForwardSoftLimitEnable(true,1.0);
 	WristTalon->ConfigReverseSoftLimitEnable(true,1.0);
 
-	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.05f),1.0);
+	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.9f),1.0);
 	WristTalon->Config_kI(0,prefs->GetDouble("Wrist_I",0.0f),1.0);
 	WristTalon->Config_kD(0,prefs->GetDouble("Wrist_D",0.0f),1.0);
 	WristTalon->Config_kF(0,0,1.0);

@@ -14,6 +14,13 @@ enum eBrakeMode
 	BRAKE_MODE_OFF
 };
 
+enum eSonar
+{
+	LEFT_SONAR = 0,
+	RIGHT_SONAR,
+	FRONT_SONAR
+};
+
 //Motors
 #define Left_Motor_1 0
 #define Left_Motor_2 1
@@ -63,11 +70,11 @@ enum eBrakeMode
 //Elevator Values
 #define Elevator_Intake 1300
 #define Elevator_Switch 12000
-#define Elevator_Scale_Level_1 11000
-
+//#define Elevator_Scale_Level_1 11000
+#define Elevator_Scale_Level_1 7250
 #define Elevator_tolerance 500
 
-#define ElevatorMaxLimEncoder 13200
+#define ElevatorMaxLimEncoder 13750
 #define ElevatorMinLimEncoder 0
 
 //Arm Values
@@ -86,7 +93,9 @@ enum eBrakeMode
 #define Wrist_Switch -13500
 #define Wrist_Scale_Level_1 -14750
 #define Wrist_Folded 0
-#define Wrist_Scale_Level_1_Back 14000
+#define Wrist_Scale_Level_1_Back 12000
+//#define Wrist_Scale_Level_1_Back 14000
+
 #define Wrist_Scale_Neutral -14000
 
 #define Wrist_tolerance 100
@@ -96,6 +105,8 @@ enum eBrakeMode
 
 //PDP Channels
 #define Arm_PDPChannel 4
+#define Claw1_PDPChannel 6
+#define Claw2_PDPChannel 7
 #define Wrist_PDPChannel 11
 #define Elevator_PDPChannel 12
 

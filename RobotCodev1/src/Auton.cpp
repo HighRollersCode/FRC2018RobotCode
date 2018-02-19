@@ -37,7 +37,7 @@ void Auton::Auto_Start()
 	SendTimer->Reset();
 	SendTimer->Start();
 	DriveTrain->ResetEncoders_Timers();
-	DriveTrain->currentRightSonarTarget = DriveTrain->GetFrontSonar();
+	DriveTrain->currentRightSonarTarget = DriveTrain->GetActiveSonar();
 	DriveTrain->headingTarget = DriveTrain->GetHeading();
 	DriveTrain->SetForwardTarget(0,0);
 	DriveTrain->SetStrafeTarget(0,0);
@@ -50,17 +50,17 @@ bool Auton::Running()
 {
 	if(Abort)
 	{
-		printf("ABORTING: ABORT SET %f /r/n", AutonTimer->Get());
+		printf("ABORTING: ABORT SET %f \r\n", AutonTimer->Get());
 		return false;
 	}
 	else if (ds->IsOperatorControl() == true)
 	{
-		printf("ABORTING: OPERATOR CONTROL %f /r/n", AutonTimer->Get());
+		printf("ABORTING: OPERATOR CONTROL %f \r\n", AutonTimer->Get());
 		return false;
 	}
 	else if (ds->IsEnabled() == false)
 	{
-		printf("ABORTING: DS DISABLED %f /r/n", AutonTimer->Get());
+		printf("ABORTING: DS DISABLED %f \r\n", AutonTimer->Get());
 		return false;
 	}
 	return true;
@@ -86,7 +86,7 @@ void Auton::AutonWait2(float Seconds,int brake)
 }
 void Auton::AutonWaitForTransition()
 {
-	while(LiftManager->transitioning == true)
+	while((Running()) && (LiftManager->transitioning == true))
 	{
 		Auto_System_Update();
 	}
@@ -156,7 +156,7 @@ void Auton::Auto_GYROSTRAIGHTSONAR(float forward,float ticks,float desheading,fl
 
 	DriveTrain->headingTarget = desheading;
 	DriveTrain->SetForwardTarget(ticks,forward);
-	DriveTrain->SetRightSonarTarg(desdistance);
+	DriveTrain->SetSonarTarg(desdistance);
 
 	bool complete = (DriveTrain->reachedForwardEncoderTarget);
 
@@ -171,15 +171,15 @@ void Auton::Auto_GYROSTRAIGHTSONAR(float forward,float ticks,float desheading,fl
 }
 void Auton::Auto_SONAR(float desdistance,float desheading)
 {
-	DriveTrain->SetRightSonarTarg(desdistance);
+	DriveTrain->SetSonarTarg(desdistance);
 	DriveTrain->headingTarget = desheading;
 
-	float sonarerror = desdistance - DriveTrain->GetFrontSonar();
+	float sonarerror = desdistance - DriveTrain->GetActiveSonar();
 
 	while((Running()) && (fabs(sonarerror) > 2))
 	{
 		Auto_System_Update();
-		sonarerror = desdistance - DriveTrain->GetFrontSonar();
+		sonarerror = desdistance - DriveTrain->GetActiveSonar();
 	}
 }
 void Auton::Auto_GYROSTRAFE(float forward, float ticks, float strafe, float strafeTicks, float desheading)
@@ -215,8 +215,35 @@ void Auton::Auto_STRAFE(float strafe, float strafeTicks, float desheading)
 	DriveTrain->SetRawStrafeSpeed(0);
 	DriveTrain->SetRawForwardSpeed(0);
 }
+void Auton::Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance)
+{
+	DriveTrain->ResetEncoders_Timers();
+	DriveTrain->SetRawStrafeSpeed(strafe);
+	DriveTrain->headingTarget = desheading;
+
+	float currentdistance = DriveTrain->GetActiveSonar();
+	float initialerror = desdistance - currentdistance;
+
+	if(initialerror > 0)
+	{
+		while (Running() && (DriveTrain->GetActiveSonar() < desdistance))
+		{
+			Auto_System_Update();
+		}
+	}
+	else if(initialerror < 0)
+	{
+		while (Running() && (DriveTrain->GetActiveSonar() > desdistance))
+		{
+			Auto_System_Update();
+		}
+	}
+
+	DriveTrain->SetRawStrafeSpeed(0);
+}
 void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 {
+#if 0
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
 	DriveTrain->headingTarget = heading;
@@ -242,27 +269,38 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 		float tx = table->GetNumber("tx", 0);
 		float ty = table->GetNumber("ty", 0);
 
-		float distance_error = ty;
+		float distance_error = ty + 5;
 		float cube_error = tx;
 
-		auto_drive = distance_error * DriveTrain->mult;
-		auto_turn = cube_error * DriveTrain->Gyro_P;
-		auto_strafe = 0; //cube_error * DriveTrain->Strafe_P;
+		auto_drive = distance_error * DriveTrain->Drive_P;
+		auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
+		auto_strafe = cube_error * DriveTrain->Strafe_P;
 
-		DriveTrain->StandardArcade(auto_drive,auto_turn,auto_strafe,GYRO_CORRECTION_OFF,BRAKE_MODE_OFF);
-
-		//printf("Target: %.2f %.2f   turn: %f", tx,ty,auto_turn);
+		DriveTrain->StandardArcade(auto_drive,auto_turn,auto_strafe,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
 
 		if(IntakeTimer->Get() > time)
 		{
 			gotcube = true;
 		}
 
-		if((fabs(cube_error) < 7) && (distance_error <= 1))
+		/*if((fabs(cube_error) < 7) && (distance_error <= 1))
 		{
 			counter++;
 		}
-		else if((fabs(cube_error) < 2) && (distance_error <= 6))
+		else if((fabs(cube_error) < 2) && (distance_error <= .01))
+		{
+			counter++;
+		}
+		else
+		{
+			counter--;// = 0;
+			if(counter < 0)
+			{
+				counter = 0;
+			}
+		}*/
+
+		if(Claw->GotCube())
 		{
 			counter++;
 		}
@@ -275,13 +313,85 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 			}
 		}
 
-		if (counter > 200)
+		if (counter > 20)
 		{
 			printf("Got Cube !!!!");
 			gotcube = true;
 		}
 	}
-	DriveTrain->StandardArcade(0,0,0,GYRO_CORRECTION_OFF,BRAKE_MODE_OFF);
+	DriveTrain->SetRawForwardSpeed(0);
+	DriveTrain->SetRawTurnSpeed(0);
+	DriveTrain->SetRawStrafeSpeed(0);
+#else
+	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
+	DriveTrain->headingTarget = heading;
+
+	DriveTrain->SetRawStrafeSpeed(strafe);
+
+	// strafe until we see the cube
+	bool saw_cube = false;
+	while(!saw_cube && (Running()))
+	{
+		float tx = table->GetNumber("tx",0);
+		float tv = table->GetNumber("tv",0);
+		saw_cube = ((tv != 0) && (fabs(tx) < 1.75));
+		Auto_System_Update();
+	}
+
+	// Now grab the cube
+	bool gotcube = false;
+	int counter = 0;
+
+	IntakeTimer->Reset();
+	IntakeTimer->Start();
+
+	while(gotcube == false && (Running()))
+	{
+		Auto_System_Update();
+
+		float tx = table->GetNumber("tx", 0);
+		float ty = table->GetNumber("ty", 0);
+
+		float distance_error = ty + 5;
+		float cube_error = tx;
+
+		auto_drive = distance_error * DriveTrain->Drive_P;
+		auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
+		auto_strafe = cube_error * DriveTrain->Strafe_P;
+
+		DriveTrain->SetRawForwardSpeed(auto_drive);
+		DriveTrain->SetRawTurnSpeed(auto_turn);
+		DriveTrain->SetRawStrafeSpeed(auto_strafe);
+
+		if(IntakeTimer->Get() > time)
+		{
+			gotcube = true;
+		}
+
+		if(Claw->GotCube())
+		{
+			counter++;
+		}
+		else
+		{
+			counter--;// = 0;
+			if(counter < 0)
+			{
+				counter = 0;
+			}
+		}
+
+		if (counter > 50)
+		{
+			printf("Got Cube !!!!");
+			gotcube = true;
+		}
+	}
+	DriveTrain->SetRawForwardSpeed(0);
+	DriveTrain->SetRawTurnSpeed(0);
+	DriveTrain->SetRawStrafeSpeed(0);
+#endif
 }
 
 void Auton::Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, float desdistance)
@@ -297,14 +407,14 @@ void Auton::Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, fl
 
 	float SonarMaintain = desdistance;
 	float Strafe_P = DriveTrain->Sonar_P;
-	float Sonar_error = SonarMaintain - DriveTrain->GetFrontSonar();
+	float Sonar_error = SonarMaintain - DriveTrain->GetActiveSonar();
 	float forward = Sonar_error * Strafe_P;
 
 	if(ticks > 0)
 	{
 		while((-DriveTrain->GetLeftEncoder() < ticks)&&(Running()))
 		{
-			Sonar_error = SonarMaintain - DriveTrain->GetFrontSonar();
+			Sonar_error = SonarMaintain - DriveTrain->GetActiveSonar();
 			forward = Sonar_error * Strafe_P;
 
 			DriveTrain->StandardArcade(forward, 0,strafe,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
@@ -319,7 +429,7 @@ void Auton::Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, fl
 
 			turn = err * GYRO_P;
 
-			Sonar_error = SonarMaintain - DriveTrain->GetFrontSonar();
+			Sonar_error = SonarMaintain - DriveTrain->GetActiveSonar();
 			forward = Sonar_error * Strafe_P;
 
 			DriveTrain->StandardArcade(forward, turn,strafe,GYRO_CORRECTION_OFF,BRAKE_MODE_OFF);
@@ -333,12 +443,12 @@ void Auton::Auto_FOLLOWEDGE(float Forward, float desheading, float desdistance)
 
 	float SonarMaintain = desdistance;
 	float Strafe_P = DriveTrain->Sonar_P;
-	float Sonar_error = SonarMaintain - DriveTrain->GetFrontSonar();
+	float Sonar_error = SonarMaintain - DriveTrain->GetActiveSonar();
 	float strafe = Sonar_error * Strafe_P;
 
 	while((fabs(Sonar_error) < 50) && (Running()))
 	{
-		Sonar_error = SonarMaintain - DriveTrain->GetFrontSonar();
+		Sonar_error = SonarMaintain - DriveTrain->GetActiveSonar();
 		strafe = Sonar_error * Strafe_P;
 
 		DriveTrain->StandardArcade(Forward, 0,strafe,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
@@ -364,6 +474,8 @@ bool Auton::Auto_System_Update()
 
 		DriveTrain->AutoUpdate();
 
+		Claw->Auto_Update();
+
 		if(AutonTimer->Get() > 14.95)
 		{
 		}
@@ -378,7 +490,7 @@ void Auton::SendData()
 		SendTimer->Reset();
 		SendTimer->Start();
 
-		DriveTrain->Send_Data();
+		MyRobotClass::Get()->Send_Data();
 		SmartDashboard::PutNumber("AUTOTIMER",AutonTimer->Get());
 		SmartDashboard::PutNumber("Auto Tx",auto_tx);
 		SmartDashboard::PutNumber("Auto Ty",auto_ty);
@@ -399,26 +511,17 @@ void Auton::Auto_Intake_Off()
 {
 	Claw->Update(false,false,false,false);
 }
-void Auton::Auto_DriveEncoder(float Forward, float Turn, float Ticks)
+void Auton::Auto_DriveEncoder(float Forward, float Ticks)
 {
 	DriveTrain->ResetEncoders_Timers();
+	DriveTrain->SetForwardTarget(Ticks,Forward);
 
-	if(Ticks > 0)
+	bool complete = DriveTrain->reachedForwardEncoderTarget;
+
+	while((!complete) && (Running()))
 	{
-		while((DriveTrain->GetLeftEncoder() < Ticks)&& Running())
-		{
-			DriveTrain->StandardArcade(Forward ,Turn, 0, GYRO_CORRECTION_OFF, BRAKE_MODE_OFF);
-			Auto_System_Update();
-		}
+		Auto_System_Update();
+		complete = DriveTrain->reachedForwardEncoderTarget;
 	}
-	else
-	{
-		while((DriveTrain->GetLeftEncoder() > Ticks)&& Running())
-		{
-			DriveTrain->StandardArcade(Forward, Turn, 0.0f, GYRO_CORRECTION_OFF, BRAKE_MODE_OFF);
-			Auto_System_Update();
-		}
-	}
-	printf("Finished Driving");
-	DriveTrain->StandardArcade(0, 0, 0, GYRO_CORRECTION_OFF, BRAKE_MODE_OFF);
+	DriveTrain->SetRawForwardSpeed(0);
 }

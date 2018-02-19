@@ -6,6 +6,8 @@
  */
 
 #include <Claw.h>
+#include "MyRobot.h"
+
 
 ClawClass::ClawClass() {
 
@@ -16,10 +18,25 @@ ClawClass::ClawClass() {
 	Claw2->Set(ControlMode::Follower, Claw_Motor_1);
 	Claw2->SetInverted(true);
 }
+
 ClawClass::~ClawClass() {
 }
+
+void ClawClass::Sense_Current()
+{
+	float alpha = 0.05f;
+
+	float curleft = MyRobotClass::Get()->PDP->GetCurrent(Claw1_PDPChannel);
+	float curright = MyRobotClass::Get()->PDP->GetCurrent(Claw2_PDPChannel);
+
+	leftCurrent = alpha * curleft + (1.0f - alpha) * leftCurrent;
+	rightCurrent = alpha * curright + (1.0f - alpha) * rightCurrent;
+
+}
+
 void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowout)
 {
+	Sense_Current();
 	if(intake)
 	{
 		Claw1->Set(ControlMode::PercentOutput, 1.0);
@@ -39,5 +56,29 @@ void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowou
 	else
 	{
 		Claw1->Set(ControlMode::PercentOutput, 0);
+	}
+}
+void ClawClass::Auto_Update()
+{
+	Sense_Current();
+}
+void ClawClass::Send_Data()
+{
+	SmartDashboard::PutNumber("Claw1 Filter Current",leftCurrent);
+	SmartDashboard::PutNumber("Claw1 Raw Current",MyRobotClass::Get()->PDP->GetCurrent(Claw1_PDPChannel));
+	SmartDashboard::PutNumber("Claw2 Filter Current",rightCurrent);
+	SmartDashboard::PutNumber("Claw2 Raw Current",MyRobotClass::Get()->PDP->GetCurrent(Claw2_PDPChannel));
+	SmartDashboard::PutBoolean("Got Cube",GotCube());
+
+}
+bool ClawClass::GotCube()
+{
+	if((leftCurrent > 50) || (rightCurrent > 50))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

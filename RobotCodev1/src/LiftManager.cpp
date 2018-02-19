@@ -155,7 +155,7 @@ void LiftManagerClass::UpdateLift(
 					{
 						_arm->SetArmTarg(Arm_Intake);
 
-						if(_arm->ArmOnTarg(Arm_tolerance))
+						if(_arm->ArmOnTarg(Arm_tolerance * 2))
 						{
 							CurrentState = 3;
 						}
@@ -164,7 +164,7 @@ void LiftManagerClass::UpdateLift(
 				case 3:
 					{
 						_arm->SetWristTarg(Wrist_Intake);
-						if(_arm->WristOnTarg(Wrist_tolerance))
+						if(_arm->WristOnTarg(Wrist_tolerance) && _arm->ArmOnTarg(Arm_tolerance))
 						{
 							CurrentState = 4;
 						}
@@ -311,7 +311,7 @@ void LiftManagerClass::UpdateLift(
 				case 2:
 					{
 						_arm->SetArmTarg(Arm_Scale_Level_1);
-						if(_arm->ArmOnTarg(Arm_tolerance * 1.5) && _elevator->ElevatorOnTarg(Elevator_tolerance))
+						if(_arm->ArmOnTarg(Arm_tolerance * 2) && _elevator->ElevatorOnTarg(Elevator_tolerance))
 						{
 							CurrentState = 3;
 						}

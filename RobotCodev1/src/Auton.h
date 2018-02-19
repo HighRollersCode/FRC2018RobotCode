@@ -54,6 +54,7 @@ class Auton
 		void Auto_SONAR(float desdistance,float desheading);
 		void Auto_GYROSTRAFE(float forward, float ticks, float strafe, float strafeTicks, float desheading);
 		void Auto_STRAFE(float strafe, float strafeTicks,float desheading);
+		void Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance);
 		void Auto_SEARCHFORCUBE(float strafe, float heading,float time);
 		void Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, float desdistance);
 		void Auto_FOLLOWEDGE(float Forward, float desheading, float desdistance);
@@ -61,7 +62,7 @@ class Auton
 
 		void SendData();
 
-		void Auto_DriveEncoder(float Forward, float Turn, float Ticks);
+		void Auto_DriveEncoder(float Forward, float Ticks);
 
 		Auton
 		(

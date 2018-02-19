@@ -174,15 +174,26 @@ public:
 		MyRobotClass::Get()->AutonomousControl->Auto_STRAFE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
 	}
 };
+class StrafeUntilCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "StrafeHeadingDistance"; }
+	virtual int Get_Parameter_Count() { return 3; }
+	virtual HrScriptCommandClass * Create_Command() { return new StrafeUntilCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_STRAFEUNTIL(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
+	}
+};
 class DriveTicksCommand : public HrScriptCommandClass
 {
 public:
 	virtual const char * Get_Command_Name() { return "DriveTicks"; }
-	virtual int Get_Parameter_Count() { return 3; }
+	virtual int Get_Parameter_Count() { return 2; }
 	virtual HrScriptCommandClass * Create_Command() { return new DriveTicksCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->AutonomousControl->Auto_DriveEncoder(m_Parameters[0], m_Parameters[1],m_Parameters[2]);
+		MyRobotClass::Get()->AutonomousControl->Auto_DriveEncoder(m_Parameters[0],m_Parameters[2]);
 	}
 };
 class GyroTurnCommand : public HrScriptCommandClass
@@ -206,6 +217,29 @@ public:
 	virtual void Execute()
 	{
 		MyRobotClass::Get()->AutonomousControl->Auto_GYROTURN_TIMED(m_Parameters[0],m_Parameters[1]);
+	}
+};
+
+class SetActiveSonarCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "SetActiveSonar"; }
+	virtual int Get_Parameter_Count() { return 1; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetActiveSonarCommand(); }
+	virtual void Execute()
+	{
+		if(m_Parameters[0] == 0)
+		{
+			MyRobotClass::Get()->Drivetrain->SetActiveSonar(eSonar::LEFT_SONAR);
+		}
+		else if(m_Parameters[0] == 1)
+		{
+			MyRobotClass::Get()->Drivetrain->SetActiveSonar(eSonar::RIGHT_SONAR);
+		}
+		else if(m_Parameters[0] == 2)
+		{
+			MyRobotClass::Get()->Drivetrain->SetActiveSonar(eSonar::FRONT_SONAR);
+		}
 	}
 };
 
@@ -255,6 +289,44 @@ public:
 		{
 			MyRobotClass::Get()->AutonomousControl->Auto_Intake_Out();
 		}
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+										//Elevator Code//
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SetElevatorCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "SetElevator"; }
+	virtual int Get_Parameter_Count() { return 1; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetElevatorCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->Elevator->SetElevatorTarg(m_Parameters[0]);
+	}
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+										//Elevator Code//
+////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+class SetWristCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "SetWrist"; }
+	virtual int Get_Parameter_Count() { return 1; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetWristCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->Arm->SetWristTarg(m_Parameters[0]);
 	}
 };
 
@@ -360,6 +432,7 @@ void MyRobotClass::Init_Scripts_System()
 	m_ScriptSystem->Add_Command(new DriveHeadingDistanceCommand());
 	m_ScriptSystem->Add_Command(new DistanceHeadingCommand());
 	m_ScriptSystem->Add_Command(new DriveStrafeTicksCommand());
+	m_ScriptSystem->Add_Command(new StrafeUntilCommand());
 	m_ScriptSystem->Add_Command(new StrafeTicksCommand());
 	m_ScriptSystem->Add_Command(new DriveTicksCommand());
 	m_ScriptSystem->Add_Command(new DriveCommand());
@@ -368,15 +441,24 @@ void MyRobotClass::Init_Scripts_System()
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
+	m_ScriptSystem->Add_Command(new SetActiveSonarCommand());
 	m_ScriptSystem->Add_Command(new SearchForCubeCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
-	m_ScriptSystem->Add_Command(new SetIntakeCommand);
+	m_ScriptSystem->Add_Command(new SetIntakeCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
-	m_ScriptSystem->Add_Command(new SetConveyorCommand);
+	m_ScriptSystem->Add_Command(new SetElevatorCommand());
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
+	m_ScriptSystem->Add_Command(new SetWristCommand());
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+
+	m_ScriptSystem->Add_Command(new SetConveyorCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -400,6 +482,8 @@ void MyRobotClass::Load_Scripts()
 
 	// Load all of the auto-mode scripts
 	m_ScriptSystem->Set_Auto_Script(111,"MIDDLERIGHTSWITCHANDSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(112,"MIDDLERIGHTSWITCHANDLEFTSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(113,"MIDDLEALLSCALERIGHT.hrs");
 
 	//EmptyAuto
 	m_ScriptSystem->Set_Auto_Script(999,"EMPTY.hrs");

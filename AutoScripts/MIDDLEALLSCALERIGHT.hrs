@@ -5,25 +5,34 @@ DriveTimed 0 0 -.2 .2
 
 DriveTicksStrafeHeading -0.75 -400 -1.0 -2375 0
 
-DriveTimed -0.75 0 1.0 .2
+DriveTicksHeadingDistance -0.5 -625 0 55
 
-DriveTicksHeadingDistance -.5 -75 0 54
+ScaleBackMode
 
-DriveTicksHeadingDistance -.5 -50 0 60
+DriveTicksHeadingDistance 0.5 -75 0 70
 
-DriveTicksHeadingDistance -1.0 -50 0 60
+//Make Sure Cube is in claw
+Intake 1
 
-Conveyor -1
+DriveTicksHeadingDistance -0.5 -100 0 70
 
-DriveTicksHeadingDistance -1.0 -50 0 58
+Intake 0
 
-DriveTicksHeading -1.0 -325 0
+DriveTicksHeadingDistance -0.5 -150 0 70
 
-//DriveTimed 1.0 0 0 .3
+DriveTimed 0.75 0 0 .1
 
-Conveyor 0
+WaitForTransition
+
+Intake -1
+
+Wait 0.5
+
+Intake 0
 
 IntakeMode
+
+DriveTicksHeading 0.5 100 0
 
 ///////// Find cube 1 ////////////
 
@@ -51,15 +60,14 @@ WaitForTransition
 
 Intake -1
 
-Wait 0.2
-
-Intake 0
-
 IntakeMode
 
 ///////// Go Get Cube 2 ////////////
 
 DriveTicksHeading 0.75 225 0
+
+Intake 0
+
 
 DriveTimed -0.75 0 0 .1
 
@@ -75,7 +83,7 @@ Intake 0
 
 ScaleBackMode
 
-DriveTicksStrafeHeading -0.75 -75 -0.75 -375 0
+DriveTicksStrafeHeading -0.75 -75 -0.75 -350 0
  //-900
 
 //DistanceHeading 70 0
@@ -95,6 +103,6 @@ WaitForTransition
 
 Intake -1
 
-Wait 0.5
+Wait 2.0
 
 Intake 0
