@@ -24,11 +24,17 @@ public:
 
 	ClawClass();
 	virtual ~ClawClass();
-	void Update(bool intake, bool switchouttake, bool outtake,bool slowout);
+	void Update(bool intake, bool switchouttake, bool outtake,bool slowout,bool istracking);
 	void Auto_Update();
 	void Sense_Current();
 	void Send_Data();
 	bool GotCube();
+
+	void Claw_Intake();
+	void Claw_Switch_Outake();
+	void Claw_Scale_Outake();
+	void Claw_Slow_Outake();
+	void Claw_Off();
 };
 
 #endif /* SRC_CLAW_H_ */

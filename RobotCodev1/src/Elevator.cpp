@@ -5,17 +5,15 @@
  *      Author: 987
  */
 
-#include <Elevator.h>
+#include "Elevator.h"
 
 ElevatorClass::ElevatorClass()
 {
 	ElevatorTalon = new WPI_TalonSRX(Elevator_Motor);
 	ElevatorTalon->SetInverted(true);
 
-	//ElevatorTalon->Set(ControlMode::PercentOutput, 0.0);
+	ElevatorTalon->Set(ControlMode::PercentOutput, 0.0);
 
-	ElevatorTalon->ConfigContinuousCurrentLimit(20.0, 1.0);
-	ElevatorTalon->EnableCurrentLimit(false);
 	ElevatorTalon->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative,0,1.0f);
 	ElevatorTalon->SetSensorPhase(true);
 
@@ -29,6 +27,9 @@ ElevatorClass::ElevatorClass()
 
 	ElevatorTalon->ConfigForwardSoftLimitEnable(true,1.0);
 	ElevatorTalon->ConfigReverseSoftLimitEnable(true,1.0);
+
+	ElevatorTalon->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
+	ElevatorTalon->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
 
 	Preferences *prefs = Preferences::GetInstance();
 
@@ -50,7 +51,13 @@ float ElevatorClass::GetElevatorEncoder()
 {
 	return ElevatorTalon->GetSelectedSensorPosition(0);
 }
+void ElevatorClass::ResetElevatorEncoder()
+{
+	ElevatorTalon->Set(ControlMode::PercentOutput,0);
+	SetElevatorTarg(0);
 
+	ElevatorTalon->SetSelectedSensorPosition(0,0,1.0f);
+}
 void ElevatorClass::SetElevatorTarg(float targ)
 {
 	ElevatorTalon->Set(ControlMode::Position,targ);
@@ -66,28 +73,25 @@ bool ElevatorClass::ElevatorOnTarg(float tolerance)
 	{
 		return false;
 	}
-}
-void ElevatorClass::ElevatorIntake()
-{
-	SetElevatorTarg(Elevator_Intake);
-}
-void ElevatorClass::ElevatorScale()
-{
-	//SetElevatorTarg(Elevator_Scale);
+	return false;
 }
 
+void ElevatorClass::PIDOff()
+{
+	ElevatorTalon->Set(ControlMode::PercentOutput, 0);
+}
 void ElevatorClass::Update(float verticalcommand)
 {
 	prevverticalcommand = currentverticalcommand;
 	currentverticalcommand = verticalcommand;
 
-	if(fabs(verticalcommand) > .2f)
+	if(fabs(verticalcommand) > .1f)
 	{
 		ElevatorTalon->Set(ControlMode::PercentOutput, verticalcommand);
 		isreceivingelevatorinput = true;
 	}
 
-	if((fabs(prevverticalcommand) > .2) && (fabs(currentverticalcommand) <= .2))
+	if((fabs(prevverticalcommand) > .1) && (fabs(currentverticalcommand) <= .1))//.2
 	{
 		SetElevatorTarg(GetElevatorEncoder());
 		isreceivingelevatorinput = false;
@@ -97,5 +101,4 @@ void ElevatorClass::Update(float verticalcommand)
 void ElevatorClass::Send_Data()
 {
 	SmartDashboard::PutNumber("Elevator Encoder", GetElevatorEncoder());
-	SmartDashboard::PutNumber("Elevator Command", ElevatorTalon->Get());
 }

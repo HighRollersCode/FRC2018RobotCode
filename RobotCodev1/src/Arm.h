@@ -11,7 +11,6 @@
 #include "WPILib.h"
 #include "Defines.h"
 #include "ctre/Phoenix.h"
-#include "CurrentLimitedJoint.h"
 
 class ArmClass
 {
@@ -44,9 +43,11 @@ public:
 
 	float GetArmEncoder();
 	float GetWristEncoder();
+	void ResetEncoder();
 
 	ArmClass();
 	virtual ~ArmClass();
+	void PIDOff();
 	void Update(float arm_Command,float wrist_Up,float wrist_Down);
 	void Arm_Update(float command);
 	void Wrist_Update(float upcommand, float downcommand);

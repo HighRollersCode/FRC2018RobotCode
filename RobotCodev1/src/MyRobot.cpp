@@ -16,19 +16,28 @@ MyRobotClass::MyRobotClass()
 {
 	TheRobot = this;
 
-	Drivetrain = new Drivetrainclass();
+	Conveyor = new ConveyorClass();
+	Drivetrain = new Drivetrainclass(Conveyor->Conveyor);
 	Arm = new ArmClass();
 	Elevator = new ElevatorClass();
 	Claw = new ClawClass();
-	LiftManager = new LiftManagerClass(Elevator, Arm, Claw);
+	Endgame = new EndgameClass();
+
+	LiftManager = new LiftManagerClass(Elevator, Arm, Claw,Endgame);
+
 	AutonomousControl = new Auton(Drivetrain, &DriverStation::GetInstance(),Claw,LiftManager);
-	Conveyor = new ConveyorClass();
 	PDP = new PowerDistributionPanel();
+
+	Comp = new Compressor();
+	Comp->SetClosedLoopControl(true);
 
 	forwardcommand = 0;
 	turncommand = 0;
 	strafecommand = 0;
 	turnbias = 0;
+
+	tracking_cur = 0;
+	tracking_prev = 0;
 
 	leftStick = new Joystick(0);
 	rightStick = new Joystick(1);
@@ -58,6 +67,7 @@ void MyRobotClass::Disabled(void)
 	{
 		table->PutNumber("ledMode", 1);
 		//Arm->ArmPIDController->Disable();
+		Wait(0.005);
 	}
 }
 
@@ -78,9 +88,9 @@ void MyRobotClass::Autonomous(void)
 }
 void MyRobotClass::UpdateInputs()
 {
-	forwardcommand = -leftStick->GetY();
-	strafecommand = leftStick->GetX();
-	turncommand = rightStick->GetX();
+	forwardcommand = -Forward_Command; //leftStick->GetY();
+	strafecommand = Strafe_Command; //leftStick->GetX();
+	turncommand = Turn_Command; //rightStick->GetX();
 
 	if (leftStick->GetZ() < 0)
 	{
@@ -127,15 +137,17 @@ void MyRobotClass::UpdateInputs()
 			steering_adjust += 0.1f;
 		}
 	}*/
+	tracking_prev = tracking_cur;
+	tracking_cur = Track_Enable;
 
-	if(leftStick->GetRawButton(5))
+	if(Track_Enable)
 	{
 		Preferences *prefs = Preferences::GetInstance();
 
 		float track_area = prefs->GetDouble("Track_Area",50);
 		float track_kforward = prefs->GetDouble("Track_kForward",.025f);
-		float track_kturn = prefs->GetDouble("Track_kTurn",-.025f);
-		float track_kstrafe = prefs->GetDouble("Track_kStrafe",-.030f);
+		float track_kturn = prefs->GetDouble("Track_kTurn",-.0125f);
+		float track_kstrafe = prefs->GetDouble("Track_kStrafe",-.015f);
 
 		float steering_adjust = track_kturn * targetX;
 		float strafe_adjust = track_kstrafe * targetX;
@@ -164,7 +176,7 @@ void MyRobotClass::UpdateInputs()
 		isTracking = false;
 	}
 
-	if(leftStick->GetRawButton(11))
+	if(Random_Number)
 		{
 		int newNum = rand() % 4 + 1; // number 1 through 4
 		SmartDashboard::PutNumber("Random Number", newNum);
@@ -182,6 +194,7 @@ void MyRobotClass::Send_Data()
 	SmartDashboard::PutString("Game Data", DriverStation::GetInstance().GetGameSpecificMessage());
 	SmartDashboard::PutNumber("Claw1 Current",PDP->GetCurrent(Claw1_PDPChannel));
 	SmartDashboard::PutNumber("Claw2 Current",PDP->GetCurrent(Claw2_PDPChannel));
+	SmartDashboard::PutNumber("Elevator Current", PDP->GetCurrent(Elevator_PDPChannel));
 
 	Drivetrain->Send_Data();
 	AutonomousControl->SendData();
@@ -201,7 +214,12 @@ void MyRobotClass::OperatorControl(void)
 
 	table->PutNumber("ledMode", 1);
 
+	Arm->PIDOff();
+	Elevator->PIDOff();
+
 	LiftManager->changeMode(LiftMode::Free);
+
+	Comp->SetClosedLoopControl(true);
 
 	while(IsOperatorControl() && IsEnabled())
 	{
@@ -223,7 +241,7 @@ void MyRobotClass::OperatorControl(void)
 		}
 		else
 		{
-			if(leftStick->GetRawButton(3))
+			if(Gyro_Correction_Enable)
 			{
 				gyromode = GYRO_CORRECTION_ON;
 			}
@@ -232,31 +250,47 @@ void MyRobotClass::OperatorControl(void)
 				gyromode = GYRO_CORRECTION_OFF;
 			}
 		}
-		if(leftStick->GetRawButton(2))
+		/*if(Brake_Mode_Enable)
 		{
 			brakemode = BRAKE_MODE_ON;
 		}
 		else
 		{
 			brakemode = BRAKE_MODE_OFF;
-		}
+		}*/
 
 		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
+		Drivetrain->Shifter_Update(Shifter_Command);
 
-		if(turretStick->GetRawButton(11))
+		if(Reset_Intake_Mode)
 		{
-			Arm->WristTalon->SetSelectedSensorPosition(Wrist_Intake,0,1.0);
+			Arm->ResetEncoder();
+			Elevator->ResetElevatorEncoder();
 		}
 
-		Elevator->Update(turretStick->GetX());
-		Arm->Update(turretStick->GetY(),turretStick->GetRawButton(4),turretStick->GetRawButton(5));
+		Endgame->Update(Deploy_Lock,Deploy_Claw);
 
-		Claw->Update((turretStick->GetTrigger() || rightStick->GetTrigger()),rightStick->GetRawButton(2), turretStick->GetRawButton(2), turretStick->GetRawButton(3));
+		if(Enable_Elevator)
+		{
+			Elevator->Update(Elevator_Command);
+			Arm->Update(0,Wrist_Up_Command,Wrist_Down_Command);
+		}
+		else
+		{
+			Elevator->Update(0);
+			Arm->Update(Arm_Command,Wrist_Up_Command,Wrist_Down_Command);
+		}
 
-		LiftManager->UpdateLift((rightStick->GetRawButton(4) || turretStick->GetRawButton(6)),rightStick->GetRawButton(3)
-				,turretStick->GetRawButton(7),turretStick->GetRawButton(8),turretStick->GetRawButton(9),leftStick->GetRawButton(6));
+		//Elevator->Update(Elevator_Command);
+		//Arm->Update(Arm_Command,Wrist_Up_Command,Wrist_Down_Command);
 
-		Conveyor->Update(rightStick->GetRawButton(11), rightStick->GetRawButton(10));
+		Claw->Update(Intake_Command, Outake_Command, Turret_Outake,
+				Turret_Slow_Outake,Track_Enable);
+
+		LiftManager->UpdateLift(Intake_Mode_Preset,Switch_Mode_Preset ,Scale_Front_Level_1_Preset,
+				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Claw_Deploy_Preset,Climb_Preset,Portal_Preset);
+
+		Conveyor->Update(Conveyor_Left, Conveyor_Right);
 
 		Wait(0.005);
 	}

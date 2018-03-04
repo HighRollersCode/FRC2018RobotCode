@@ -18,6 +18,7 @@
 #include "Auton.h"
 #include "LiftManager.h"
 #include "Conveyor.h"
+#include "Endgame.h"
 
 #include "HRscript.h"
 
@@ -28,6 +29,9 @@ public:
 	float turncommand;
 	float strafecommand;
 	float turnbias;
+
+	float tracking_cur;
+	float tracking_prev;
 
 	eGyroMode gyromode;
 	eBrakeMode brakemode;
@@ -43,8 +47,11 @@ public:
 	Auton *AutonomousControl;
 	LiftManagerClass *LiftManager;
 	ConveyorClass *Conveyor;
+	EndgameClass *Endgame;
 
 	PowerDistributionPanel *PDP;
+
+	Compressor *Comp;
 
 	bool isTracking;
 

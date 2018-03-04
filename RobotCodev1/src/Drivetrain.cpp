@@ -6,18 +6,38 @@
  */
 
 #include "Drivetrain.h"
+#include "MyRobot.h"
 
 using namespace frc;
-Drivetrainclass::Drivetrainclass()
+
+
+float sign(float value)
+{
+	if(value > 0.0f)
+	{
+		value = 1.0f;
+	}
+	else if(value < 0.0f)
+	{
+		value = -1.0f;
+	}
+	else
+	{
+		value = 0.0f;
+	}
+	return value;
+}
+
+Drivetrainclass::Drivetrainclass(WPI_TalonSRX *GyroTalon)
 {
 
 	Preferences *prefs = Preferences::GetInstance();
 
-	Drive_P = .05f;
+	Drive_P = .025f;
 	Strafe_P = prefs->GetDouble("Sonar_P",.05f);
 
-	forwardramp = .001f;
-	straferamp = .003f;
+	forwardramp = .01f; //.001f
+	straferamp = .2f; //.01f saturday after build //.003f
 
 
 	leftcommand = 0;
@@ -56,6 +76,11 @@ Drivetrainclass::Drivetrainclass()
 
 	manualForward = false;
 
+	shifterPrev = false;
+	shifterCur = false;
+
+	toggleState = 1;
+
 	currentRightSonarTarget = 0;
 	reachedRightSonarTarget = true;
 
@@ -74,10 +99,18 @@ Drivetrainclass::Drivetrainclass()
 	rightEncoder = new Encoder( Right_Encoder_1, Right_Encoder_2, false, Encoder::EncodingType::k4X);
 	middleEncoder = new Encoder( Middle_Encoder_1, Middle_Encoder_2, false, Encoder::EncodingType::k4X);
 
+	shifterPiston = new DoubleSolenoid(Sol_Low_Gear,Sol_High_Gear);
+
 #if USINGGYRO == 0
 	gyro = new AnalogGyro(Gyro);
 #else
-	imu = new PigeonIMU(Pigeon_IMU);
+	GyroTalon->SetStatusFramePeriod(StatusFrame::Status_4_AinTempVbat_,10,1.0);
+	GyroTalon->SetStatusFramePeriod(StatusFrame::Status_2_Feedback0_,10,1.0);
+	GyroTalon->SetStatusFramePeriod(StatusFrame::Status_1_General_,10,1.0);
+	imu = NULL;
+	imu = new PigeonIMU(GyroTalon);
+	imu->SetYaw(0.0,1.0);
+	imu->SetFusedHeading(0.0,1.0);
 #endif
 
 
@@ -97,6 +130,7 @@ Drivetrainclass::Drivetrainclass()
 
 	leftEncoder->Reset();
 	rightEncoder->Reset();
+	SetActiveSonar(eSonar::LEFT_SONAR);
 }
 
 Drivetrainclass::~Drivetrainclass() {
@@ -107,8 +141,23 @@ void Drivetrainclass::Zero_Yaw()
 #if USINGGYRO == 0
 	gyro->Reset();
 #else
-	imu->SetFusedHeading(0,1.0);
+	imu->SetYaw(0.0,1.0);
+	imu->SetFusedHeading(0.0,1.0);
 #endif
+}
+
+float Drivetrainclass::GetTurnRate()
+{
+#if USINGGYRO == 0
+	return gyro->GetRate();
+#else
+	double xyz[3] = {0,0,0};
+
+	imu->GetRawGyro(xyz);
+
+	return -(xyz[2]);
+#endif
+
 }
 float Drivetrainclass::GyroCorrection(float desheading)
 {
@@ -121,15 +170,11 @@ float Drivetrainclass::GyroCorrection(float desheading)
 	float GyroRate_P = prefs->GetDouble("GyroRate_P", 0.01f);
 
 	float error = MAINTAIN - GetHeading();
-#if USINGGYRO == 0
-	float command = error * Gyro_P - (GyroRate_P * gyro->GetRate());
-#else
-	//float command = error * Gyro_P - (GyroRate_P * imu->Get);
-	float command =0;
-#endif
+	float command = error * Gyro_P - (GyroRate_P * GetTurnRate());
 
 	SmartDashboard::PutNumber("Gyro_P", Gyro_P);
 	SmartDashboard::PutNumber("GyroRate_P", GyroRate_P);
+	SmartDashboard::PutNumber("Gyro Correction Command", command);
 
 	return command;
 }
@@ -138,7 +183,7 @@ float Drivetrainclass::GetHeading()
 #if USINGGYRO == 0
 	return gyro->GetAngle();
 #else
-	return imu->GetFusedHeading();
+	return -(imu->GetFusedHeading());
 #endif
 }
 
@@ -204,13 +249,15 @@ int Drivetrainclass::GetRightEncoder()
 }
 int Drivetrainclass::GetMiddleEncoder()
 {
-	return middleEncoder->Get();
+	return MiddleEncoderCount;
 }
 void Drivetrainclass::ResetEncoders_Timers()
 {
 	leftEncoder->Reset();
 	rightEncoder->Reset();
 	middleEncoder->Reset();
+	MiddleEncoderCount = 0;
+	lastRawMiddleEncCount = 0;
 }
 float Drivetrainclass::ComputeAngleDelta(float t)
 {
@@ -229,6 +276,16 @@ float Drivetrainclass::ComputeAngleDelta(float t)
 
 
 	return GetHeading() - cur;
+}
+void Drivetrainclass::Sense_Current()
+{
+	float alpha = 0.05f;
+
+	float curleft = MyRobotClass::Get()->PDP->GetCurrent(Strafe1_PDPChannel);
+	float curright = MyRobotClass::Get()->PDP->GetCurrent(Strafe2_PDPChannel);
+
+	leftCurrent = alpha * curleft + (1.0f - alpha) * leftCurrent;
+	rightCurrent = alpha * curright + (1.0f - alpha) * rightCurrent;
 }
 float Drivetrainclass::LockLeft(float desticks)
 {
@@ -254,8 +311,23 @@ float Drivetrainclass::LockRight(float desticks)
 
 	return command;
 }
+void Drivetrainclass::UpdateMiddleEncoder()
+{
+	int rawenc = middleEncoder->Get();
+	if(strafeHasTraction)
+	{
+		MiddleEncoderCount += (rawenc-lastRawMiddleEncCount);
+	}
+	lastRawMiddleEncCount = rawenc;
+}
 void Drivetrainclass::StandardArcade( float Forward, float Turn, float Strafe, eGyroMode gyroMode, eBrakeMode brakeMode)
 {
+
+	Sense_Current();
+
+	UpdateMiddleEncoder();
+
+	float correction = 0;
 	if(gyroMode == GYRO_CORRECTION_OFF)
 	{
 		leftcommand = Forward + Turn;
@@ -264,32 +336,51 @@ void Drivetrainclass::StandardArcade( float Forward, float Turn, float Strafe, e
 	}
 	else if(gyroMode == GYRO_CORRECTION_ON)
 	{
-		leftcommand = Forward + Turn + GyroCorrection(headingTarget);
-		rightcommand = -Forward + Turn + GyroCorrection(headingTarget);
+		correction = GyroCorrection(headingTarget);
+		leftcommand = Forward + Turn + correction;
+		rightcommand = -Forward + Turn + correction;
+		SmartDashboard::PutNumber("Correction", correction);
 	}
 
 	prevbrake = curbrake;
 	curbrake = brakeMode;
-
+/*
 	if(prevbrake == BRAKE_MODE_OFF && curbrake == BRAKE_MODE_ON)
 	{
 		ResetEncoders_Timers();
 	}
-/*
+
 	if(brakeMode == BRAKE_MODE_ON)
 	{
-		leftcommand = Forward + LockLeft(0) + Turn;// + GyroCorrection(lastheading);
-		rightcommand = -Forward - LockRight(0) + Turn;// + GyroCorrection(lastheading);
+		leftcommand = Forward + LockLeft(0) + Turn + correction;
+		rightcommand = -Forward - LockRight(0) + Turn + correction;
 
 		SmartDashboard::PutNumber("Lock Left", LockLeft(GetLeftEncoder()));
 		SmartDashboard::PutNumber("Lock Right", LockLeft(GetRightEncoder()));
 	}
 	else if(brakeMode == BRAKE_MODE_OFF)
 	{
-		leftcommand = Forward + Turn;
-		rightcommand = -Forward + Turn;
+		leftcommand = Forward + Turn + correction;
+		rightcommand = -Forward + Turn + correction;
 	}
 */
+
+	if(brakeEnabled)
+	{
+		LeftSideTicks = GetLeftEncoder();
+		RightSideTicks = GetRightEncoder();
+
+		float Lerror = LeftSideTicks+brakeTarg;
+		float Rerror = RightSideTicks+brakeTarg;
+
+		float Leftout = -Lerror*Ebrakemult;
+		float Rightout = Rerror*Ebrakemult;
+
+		leftcommand = Leftout;
+		rightcommand = Rightout;
+	}
+
+
 	StandardArcade_forwardOnly(leftcommand, rightcommand);
 	StandardArcade_strafeOnly(Strafe);
 }
@@ -303,13 +394,170 @@ void Drivetrainclass::StandardArcade_forwardOnly(float left,float right)
 
 void Drivetrainclass::StandardArcade_strafeOnly(float Strafe)
 {
-	strafeMotor->SetSpeed(Strafe);
-	strafeMotor1->SetSpeed(Strafe);
+	if((leftCurrent > 1.4) || (rightCurrent > 1.4))
+	{
+		strafeHasTraction = true;
+		float strafeError = Strafe - strafeMotor->Get();
+
+		if(/*fabs(strafeError) > 1 ||*/ Strafe == 0)
+		{
+			Strafe = 0.0f;
+		}
+		if(strafeError > 0)
+		{
+			Strafe = strafeMotor->Get() + straferamp;
+		}
+		else if(strafeError < 0)
+		{
+			Strafe = strafeMotor->Get() - straferamp;
+		}
+	}
+	if(sign(Strafe) == 1)
+	{
+		Strafe = fmax(0,Strafe);
+	}
+	else if(sign(Strafe) == -1)
+	{
+		Strafe = fmin(0,Strafe);
+	}
+	else
+	{
+		Strafe = 0;
+	}
+	if(sign(Strafe) != sign(prevStrafeCommand))
+	{
+		strafeHasTraction = false;
+		leftCurrent = -fabs(leftCurrent)/2.f;
+		rightCurrent = -fabs(rightCurrent)/2.f;
+	}
+
+	prevStrafeCommand = Strafe;
+	float finalstrafecommand = Strafe;
+
+	if(!strafeHasTraction)
+	{
+		if(finalstrafecommand > .2f)
+		{
+			finalstrafecommand = .2f;
+		}
+		else if(finalstrafecommand < -.2f)
+		{
+			finalstrafecommand = -.2f;
+		}
+	}
+
+	strafeMotor->SetSpeed(finalstrafecommand);
+	strafeMotor1->SetSpeed(finalstrafecommand);
+
+}
+
+void Drivetrainclass::Shifter_Update(bool ShifterUpdate)
+{
+
+	shifterPrev = shifterCur;
+	shifterCur = ShifterUpdate;
+
+	if(!shifterPrev && shifterCur)
+	{
+		toggleState = -toggleState;
+	}
+
+	if(toggleState == 1)
+	{
+		shifterPiston->Set(DoubleSolenoid::Value::kForward);
+	}
+	else if(toggleState == -1)
+	{
+		shifterPiston->Set(DoubleSolenoid::Value::kReverse);
+	}
 }
 
 float lerp(float a, float b, float f)
 {
 	return a + f * (b - a);
+}
+
+/*void Drivetrainclass::CHOOSE_TARGET(float& outx, float& outy)
+{
+	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
+	float cx0 = table->GetNumber("cx0",0);
+	float cy0 = table->GetNumber("cy0",0);
+
+	float tx0 = 50;
+	float tx1 = 50;
+	float tx2 = 50;
+
+	float ty0 = 50;
+	float ty1 = 50;
+	float ty2 = 50;
+
+	float ta0 = table->GetNumber("ta0",0);
+	float ta1 = table->GetNumber("ta1",0);
+	float ta2 = table->GetNumber("ta2",0);
+
+	if(ta0 != 0)
+	{
+		tx0 = table->GetNumber("tx0",0);
+		ty0 = table->GetNumber("ty0",0);
+	}
+
+	if(ta1 != 0)
+	{
+		tx1 = table->GetNumber("tx1",0);
+		ty1 = table->GetNumber("ty1",0);
+	}
+
+	if(ta2 != 0)
+	{
+		tx2 = table->GetNumber("tx2",0);
+		ty2 = table->GetNumber("ty2",0);
+	}
+
+	float valid_tx = 0;
+	float valid_ty = 0;
+
+	float tx0error = fabs(tx0-cx0);
+	float tx1error = fabs(tx1-cx0);
+	float tx2error = fabs(tx2-cx0);
+
+	if((tx0error < tx1error) && (tx0error < tx2error))
+	{
+		valid_tx = tx0;
+		valid_ty = ty0;
+	}
+	else if((tx1error < tx0error) && (tx1error < tx2error))
+	{
+		valid_tx = tx1;
+		valid_ty = ty1;
+	}
+	else if((tx2error < tx0error) && (tx2error < tx1error))
+	{
+		valid_tx = tx2;
+		valid_ty = ty2;
+	}
+
+	cx0 *= 27.0f;
+	cy0 *= 20.5f;
+
+	outx = ((valid_tx * 27.0f) - cx0);
+	outy = ((valid_ty * 20.5f) - cy0);
+}*/
+
+void Drivetrainclass::EnabledEBrake(bool enable, int targ)
+{
+	brakeEnabled = enable;
+	if(enable)
+	{
+		brakeTarg = targ;
+		ResetEncoders_Timers();
+	}
+	else
+	{
+		SetRawForwardSpeed(0);
+		SetRawTurnSpeed(0);
+		SetRawStrafeSpeed(0);
+	}
 }
 
 void Drivetrainclass::AutoUpdate()
@@ -447,7 +695,7 @@ float Drivetrainclass::AutoUpdate_Strafe()
 		}
 		else if(strafeError < 0)
 		{
-			strafe -= straferamp;
+			strafe -= straferamp * .6;
 		}
 		SmartDashboard::PutNumber("Strafe Errror", strafeError);
 
@@ -478,6 +726,8 @@ void Drivetrainclass::SetStrafeTarget(int target, float speed)
 	manualStrafe = false;
 
 	middleEncoder->Reset();
+	MiddleEncoderCount = 0;
+	lastRawMiddleEncCount = 0;
 
 	currentStrafeTarget = target;
 	targetStrafeEncoderSpeed = speed;
@@ -517,6 +767,7 @@ void Drivetrainclass::Send_Data()
 {
 	SmartDashboard::PutNumber("Gyro Heading", GetHeading());
 	SmartDashboard::PutNumber("HeadingTarget", headingTarget);
+	SmartDashboard::PutNumber("Turn Rate",GetTurnRate());
 
 	SmartDashboard::PutNumber("Left Sonar Value", GetLeftSonar());
 	SmartDashboard::PutNumber("Right Sonar Value", GetRightSonar());
@@ -536,4 +787,19 @@ void Drivetrainclass::Send_Data()
 
 	SmartDashboard::PutNumber("Current Forward Speed", currentForwardSpeed);
 	SmartDashboard::PutNumber("Current Strafe Speed", currentStrafeSpeed);
+
+
+	SmartDashboard::PutNumber("Left Current", leftCurrent);
+	SmartDashboard::PutNumber("Right Current", rightCurrent);
+	SmartDashboard::PutBoolean("TRACTION",strafeHasTraction);
+
+	SmartDashboard::PutNumber("Shifter",shifterPiston->Get());
+
+	//float targetX = 0;
+	//float targetY = 0;
+
+	//CHOOSE_TARGET(targetX,targetY);
+
+	//SmartDashboard::PutNumber("Tx", targetX);
+	//SmartDashboard::PutNumber("Ty", targetY);
 }

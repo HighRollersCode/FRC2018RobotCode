@@ -1,38 +1,39 @@
-/////////////////////////////////////////////Start///////////////////////////////////////////////////////////
-SetPipeline 0
+//////////////////////////////////////////////Start///////////////////////////////////////////////////////////
+SetPipeline 1
 
-DriveTimed 0 0 -0.5 .2
+DriveTimed 0 0 0.5 .2
 
-SetActiveSonar 0
+SetActiveSonar 1
 
-DriveTicksStrafeHeading -0.5 -400 -1.0 -2325 0
+DriveTicksStrafeHeading -0.5 -400 1.0 2200 0
 
 DriveTimed -0.75 0 1.0 .1
 
 DriveTicksHeadingDistance -.5 -75 0 58 //-125
 
-Conveyor -1
+Conveyor 1
 
 DriveTicksHeadingDistance -1.0 -150 0 56 //-125
 
 DriveTicksHeading -1.0 -200 0
 
-DriveTicksHeading -0.5 -100 0
+DriveTicksHeading -0.5 -50 0
 
-DriveTicksHeading -0.2 -200 0
+DriveTicksHeading -0.2 -100 0
 
 BrakeWait .2 0
 
 //DriveTimed 1.0 0 0 .3
 
 Conveyor 0
+
 IntakeMode
 
 ///////// Find cube 1 ////////////
 
 Intake 1
 
-SearchForCubeStrafeTimed 0.75 0 2.0
+SearchForCubeStrafeTimed -0.75 0 2.0
 
 /////////  Drive Back for Cube 1 ////////////
 
@@ -42,14 +43,11 @@ Intake 0
 
 ScaleBackMode
 
-DriveTicksHeading -0.75 -120 0
-//DriveTicksHeadingDistance -0.75 -100 0 70 //-250
+DriveTicksHeading -0.75 -170 0 
 
 DriveTicksHeading -0.4 -75 0
-//DriveTicksHeadingDistance -0.4 -75 0 70
 
 BrakeWait .1 0
-
 //DriveTimed 0.75 0 0 .1
 
 //GyroTurnTimed -15 0.25
@@ -73,22 +71,21 @@ DriveTicksHeading 0.75 125 0
 DriveTicksHeading 0.4 75 0
 
 BrakeWait .1 0
-
 //DriveTimed -0.75 0 0 .1
 
 //Search for second cube and intake cube
 Intake 1
 
-SearchForCubeStrafeTimed 1.0 0 2.0
+SearchForCubeStrafeTimed -1.0 0 2.0
 
 //Drive to scale and set up to score
-DriveTicksStrafeHeading -0.5 -25 -0.75 -475 0 //425
+DriveTicksStrafeHeading -0.5 -25 0.75 475 0
 
 Intake 0
 
 ScaleBackMode
 
-DriveTicksStrafeHeading -0.75 -75 -0.75 -375 0
+DriveTicksStrafeHeading -0.75 -75 0.75 375 0
  //-900
 
 //DistanceHeading 70 0
@@ -97,7 +94,7 @@ DriveTicksStrafeHeading -0.75 -75 -0.75 -375 0
 
 DriveTicksHeadingDistance -0.75 -75 0 70
 
-DriveTicksHeadingDistance -0.4 -50 0 70
+DriveTicksHeadingDistance -0.4 -75 0 70
 
 BrakeWait .1 0
 
@@ -105,7 +102,7 @@ BrakeWait .1 0
 
 Wait 0.1
 
-GyroTurnTimed -20 0.5
+GyroTurnTimed 20 0.5
 
 //Score cube
 WaitForTransition

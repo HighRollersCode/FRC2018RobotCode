@@ -101,6 +101,14 @@ void Auton::Auto_DriveTimer(float Forward, float Turn, float Strafe, float secon
 	DriveTrain->SetRawForwardSpeed(0);
 	DriveTrain->SetRawStrafeSpeed(0);
 }
+void Auton::EBrake(float Seconds,int enctarg)
+{
+	DriveTrain->EnabledEBrake(true,enctarg);
+
+	AutonWait(Seconds);
+
+	DriveTrain->EnabledEBrake(false,enctarg);
+}
 void Auton::Auto_GYROTURN(float heading)
 {
 	DriveTrain->ResetEncoders_Timers();
@@ -241,6 +249,7 @@ void Auton::Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance)
 
 	DriveTrain->SetRawStrafeSpeed(0);
 }
+
 void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 {
 #if 0
@@ -334,8 +343,20 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 	while(!saw_cube && (Running()))
 	{
 		float tx = table->GetNumber("tx",0);
+		float ty = 0;
 		float tv = table->GetNumber("tv",0);
-		saw_cube = ((tv != 0) && (fabs(tx) < 1.75));
+
+		/*DriveTrain->CHOOSE_TARGET(tx, ty);
+		ty+=10;
+*/
+
+		if(strafe < 0)
+		{
+			tx += 9;
+		}
+		auto_tx = tx;
+		auto_ty = ty;
+		saw_cube = ((tv != 0) && (fabs(tx) < 3.0));
 		Auto_System_Update();
 	}
 
@@ -349,16 +370,39 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 	while(gotcube == false && (Running()))
 	{
 		Auto_System_Update();
+		float tv  = table->GetNumber("tv", 0);
 
-		float tx = table->GetNumber("tx", 0);
-		float ty = table->GetNumber("ty", 0);
+		float tx = 0;
+		float ty = 0;
+
+		if(tv != 0)
+		{
+			/*DriveTrain->CHOOSE_TARGET(tx ,ty);
+			ty += 10;
+*/
+			auto_tx = tx;
+			auto_ty = ty;
+
+			tx = table->GetNumber("tx", 0);
+			ty = table->GetNumber("ty", 0);
+		}
 
 		float distance_error = ty + 5;
 		float cube_error = tx;
 
-		auto_drive = distance_error * DriveTrain->Drive_P;
-		auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
-		auto_strafe = cube_error * DriveTrain->Strafe_P;
+		if(tv == 0)
+		{
+			distance_error = 0;
+			auto_strafe = strafe;
+			auto_drive = 0;
+			auto_turn = 0;
+		}
+		else
+		{
+			auto_drive = distance_error * DriveTrain->Drive_P;
+			auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
+			auto_strafe = cube_error * DriveTrain->Strafe_P;
+		}
 
 		DriveTrain->SetRawForwardSpeed(auto_drive);
 		DriveTrain->SetRawTurnSpeed(auto_turn);
@@ -394,6 +438,17 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 #endif
 }
 
+void Auton::Auto_SETPIPELINE(float pipeline)
+{
+	int pipe = (int) pipeline;
+
+	if(pipe >= 0 && pipe < 10)
+	{
+		std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
+		table->PutNumber("pipeline", pipe);
+	}
+}
 void Auton::Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, float desdistance)
 {
 	/*DriveTrain->ResetEncoders_Timers();
@@ -470,7 +525,7 @@ bool Auton::Auto_System_Update()
 	{
 		SendData();
 
-		LiftManager->UpdateLift(false,false,false,false,false,false);
+		LiftManager->UpdateLift(false,false,false,false,false,false,false,false,false);
 
 		DriveTrain->AutoUpdate();
 
@@ -501,15 +556,15 @@ void Auton::SendData()
 }
 void Auton::Auto_Intake_In()
 {
-	Claw->Update(true,false,false,false);
+	Claw->Claw_Intake();
 }
 void Auton::Auto_Intake_Out()
 {
-	Claw->Update(false,false,true,false);
+	Claw->Claw_Scale_Outake();
 }
 void Auton::Auto_Intake_Off()
 {
-	Claw->Update(false,false,false,false);
+	Claw->Claw_Off();
 }
 void Auton::Auto_DriveEncoder(float Forward, float Ticks)
 {

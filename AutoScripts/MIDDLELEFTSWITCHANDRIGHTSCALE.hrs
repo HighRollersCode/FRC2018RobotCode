@@ -1,28 +1,28 @@
 //////////////////////////////////////////////Start///////////////////////////////////////////////////////////
-SetPipeline 0
+SetPipeline 1
 
-SetActiveSonar 0 //Set to Left Sonar
+SetActiveSonar 1 //Set to Right Sonar
 
-DriveTicksStrafeHeading -0.5 -400 -1.0 -2475 0
+DriveTicksStrafeHeading -0.5 -400 1.0 2500 0
 
-DriveTimed -0.75 0 1.0 .1
+DriveTimed -0.75 0 -1.0 .1
 
 DriveTicksHeadingDistance -.5 -75 0 54
 
 DriveTicksHeadingDistance -.5 -50 0 60
 
-Conveyor -1
+Conveyor 1
 
 DriveTicksHeadingDistance -1.0 -100 0 58
 
-DriveTicksHeading -1.0 -375 0
+DriveTicksHeading -0.75 -260 0
 
-//DriveTimed 1.0 0 0 .3
+DriveTimed 1.0 0 0 .125
 
 Conveyor 0
 
-//Set to Right Sonar
-SetActiveSonar 1
+//Set to Left Sonar
+SetActiveSonar 0
 
 IntakeMode
 
@@ -30,7 +30,7 @@ IntakeMode
 
 Intake 1
 
-SearchForCubeStrafeTimed 0.9 0 5.0
+SearchForCubeStrafeTimed -0.75 0 5.0
 
 SetElevator 6500
 
@@ -42,19 +42,19 @@ SetWrist -10000
 
 Intake 0
 
-StrafeTicksHeading .9 3100 0
+StrafeTicksHeading -.9 -3100 0
 
 ScaleBackMode
 
-StrafeTicksHeading .9 475 0
+StrafeTicksHeading -.9 -675 0
 
-//DistanceHeading 75 0
+DistanceHeading 75 0
 
 DriveTicksHeadingDistance -0.5 -190 0 70
 
 DriveTimed 0.5 0 0 .125
 
-GyroTurnTimed 30 0.5
+GyroTurnTimed -30 0.5
 
 WaitForTransition
 
@@ -68,14 +68,14 @@ Wait 0.5
 
 Intake 0
 
-SetPipeline 1
+SetPipeline 0
 
 //Find Next Cube
 DriveTicksHeading 0.5 60 0
 
 Intake 1
 
-SearchForCubeStrafeTimed -0.5 0 5.0
+SearchForCubeStrafeTimed 0.5 0 5.0
 
 Intake 0
 
@@ -90,7 +90,7 @@ DriveTicksHeadingDistance -0.75 -220 0 70
 
 DriveTimed 0.75 0 0 .1
 
-GyroTurnTimed 30 0.5
+GyroTurnTimed -30 0.5
 
 WaitForTransition
 

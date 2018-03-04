@@ -38,9 +38,13 @@ ArmClass::ArmClass()
 
 	Preferences *prefs = Preferences::GetInstance();
 
-	ArmTalon->Config_kP(0,prefs->GetDouble("Arm_P",0.8f), 1.0);
+	ArmTalon->Config_kP(0,prefs->GetDouble("Arm_P",0.6f), 1.0);
 	ArmTalon->Config_kI(0,prefs->GetDouble("Arm_I",0.0f), 1.0);
 	ArmTalon->Config_kD(0,prefs->GetDouble("Arm_D",0.0f), 1.0);
+
+	ArmTalon->Config_kP(1,0.1f, 1.0);
+	ArmTalon->Config_kI(1,0.0f, 1.0);
+	ArmTalon->Config_kD(1,0.0f, 1.0);
 
 	prevArmCommand = 0;
 	curArmCommand = 0;
@@ -60,12 +64,17 @@ ArmClass::ArmClass()
 	WristTalon->ConfigPeakOutputForward(1.0,1.0);
 	WristTalon->ConfigPeakOutputReverse(-1.0,1.0);
 	WristTalon->EnableCurrentLimit(false);
+
 	WristTalon->ConfigForwardSoftLimitThreshold(WristMaxLimEncoder,1.0);
 	WristTalon->ConfigReverseSoftLimitThreshold(WristMinLimEncoder,1.0);
-	WristTalon->ConfigForwardSoftLimitEnable(true,1.0);
-	WristTalon->ConfigReverseSoftLimitEnable(true,1.0);
 
-	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.9f),1.0);
+	WristTalon->ConfigForwardSoftLimitEnable(false,1.0);
+	WristTalon->ConfigReverseSoftLimitEnable(false,1.0);
+
+	WristTalon->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
+	WristTalon->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);\
+
+	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.7f),1.0); //0.9
 	WristTalon->Config_kI(0,prefs->GetDouble("Wrist_I",0.0f),1.0);
 	WristTalon->Config_kD(0,prefs->GetDouble("Wrist_D",0.0f),1.0);
 	WristTalon->Config_kF(0,0,1.0);
@@ -79,6 +88,11 @@ ArmClass::ArmClass()
 
 ArmClass::~ArmClass(){}
 
+void ArmClass::PIDOff()
+{
+	ArmTalon->Set(ControlMode::PercentOutput,0);
+	WristTalon->Set(ControlMode::PercentOutput,0);
+}
 float ArmClass::GetArmEncoder()
 {
 	return ArmTalon->GetSelectedSensorPosition(0);
@@ -87,8 +101,27 @@ float ArmClass::GetWristEncoder()
 {
 	return WristTalon->GetSelectedSensorPosition(0);
 }
+void ArmClass::ResetEncoder()
+{
+	hold_Wrist = 0;
+	hold_Arm = 0;
+
+	ArmTalon->Set(ControlMode::PercentOutput,0);
+	WristTalon->Set(ControlMode::PercentOutput,0);
+
+	ArmTalon->SetSelectedSensorPosition(0,0,1.0f);
+	WristTalon->SetSelectedSensorPosition(0,0,1.0f);
+}
 void ArmClass::SetArmTarg(float targ)
 {
+	if(targ < GetArmEncoder())
+	{
+		ArmTalon->SelectProfileSlot(1,0);
+	}
+	else
+	{
+		ArmTalon->SelectProfileSlot(0,0);
+	}
 	ArmTalon->Set(ControlMode::Position, targ);
 }
 void ArmClass::SetWristTarg(float targ)

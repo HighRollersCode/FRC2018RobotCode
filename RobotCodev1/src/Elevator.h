@@ -11,12 +11,12 @@
 #include "WPILib.h"
 #include "Defines.h"
 #include "ctre/Phoenix.h"
-#include "CurrentLimitedJoint.h"
+
+using namespace frc;
 
 class ElevatorClass
 {
 public:
-	//WPI_VictorSPX *Elevator;
 
 	WPI_TalonSRX *ElevatorTalon;
 
@@ -28,13 +28,12 @@ public:
 	ElevatorClass();
 	virtual ~ElevatorClass();
 	float GetElevatorEncoder();
+	void ResetElevatorEncoder();
 
 	void SetElevatorTarg(float targ);
 	bool ElevatorOnTarg(float tolerance = 5);
 
-	void ElevatorIntake();
-	void ElevatorScale();
-
+	void PIDOff();
 	void Update(float verticalcommand);
 	void Send_Data();
 };

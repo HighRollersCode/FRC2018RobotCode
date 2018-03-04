@@ -21,6 +21,75 @@ enum eSonar
 	FRONT_SONAR
 };
 
+//Left Joystick Controls
+
+#define Forward_Command leftStick->GetY()
+
+#define Strafe_Command leftStick->GetX()
+
+#define Shifter_Command leftStick->GetTrigger()
+
+//#define Brake_Mode_Enable leftStick->GetRawButton(2)
+#define Portal_Preset leftStick->GetRawButton(2)
+
+#define Gyro_Correction_Enable leftStick->GetRawButton(3)
+
+#define Deploy_Lock leftStick->GetRawButton(7)
+
+#define Deploy_Claw leftStick->GetRawButton(8)
+
+#define Set_Up_Preset leftStick->GetRawButton(9)
+
+#define Random_Number leftStick->GetRawButton(11)
+
+
+//Right Joystick Controls
+#define Turn_Command rightStick->GetX()
+
+#define Intake_Command rightStick->GetTrigger()
+
+#define Outake_Command rightStick->GetRawButton(2)
+
+#define Track_Enable rightStick->GetRawButton(3)
+
+#define Intake_Mode_Preset rightStick->GetRawButton(4)
+
+#define Switch_Mode_Preset rightStick->GetRawButton(5)
+
+#define Conveyor_Left rightStick->GetRawButton(6)
+
+#define Conveyor_Right rightStick->GetRawButton(7)
+
+#define Climb_Preset rightStick->GetRawButton(10)
+
+#define Claw_Deploy_Preset rightStick->GetRawButton(11)
+
+
+//Turret Joystick Controls
+#define Elevator_Command turretStick->GetY()
+
+#define Arm_Command turretStick->GetY()
+
+#define Enable_Elevator turretStick->GetTrigger()
+
+#define Turret_Outake turretStick->GetRawButton(2)
+
+#define Turret_Slow_Outake turretStick->GetRawButton(3)
+
+#define Wrist_Up_Command turretStick->GetRawButton(4)
+
+#define Wrist_Down_Command turretStick->GetRawButton(5)
+
+#define Scale_Neutral_Preset turretStick->GetRawButton(6)
+
+#define Scale_Front_Level_1_Preset turretStick->GetRawButton(7)
+
+#define Scale_Back_Preset turretStick->GetRawButton(8)
+
+#define Reset_Intake_Mode turretStick->GetRawButton(11)
+
+
+
 //Motors
 #define Left_Motor_1 0
 #define Left_Motor_2 1
@@ -63,25 +132,36 @@ enum eSonar
 #define Gyro 0
 
 //Solenoid
-#define Sol_High_Gear 0
-#define Sol_Low_Gear 1
+#define Sol_High_Gear 6
+#define Sol_Low_Gear 7
+
+#define Lock_On 5
+#define Lock_Off 4
+
+#define Claw_Deploy_On 3
+#define Claw_Deploy_Off 2
 
 
 //Elevator Values
-#define Elevator_Intake 1300
-#define Elevator_Switch 12000
+#define Elevator_Intake 100
+#define Elevator_Switch 13500
 //#define Elevator_Scale_Level_1 11000
 #define Elevator_Scale_Level_1 7250
+#define Elevator_Scale_Level_1_Back 12000
+#define Elevator_Claw_Deploy 13750
+#define Elevator_Portal 10600
+
 #define Elevator_tolerance 500
 
-#define ElevatorMaxLimEncoder 13750
+#define ElevatorMaxLimEncoder 15200
 #define ElevatorMinLimEncoder 0
 
 //Arm Values
-#define Arm_Intake 100
+#define Arm_Intake 2300
 #define Arm_Switch 100
 #define Arm_Scale_Level_1 22000
 #define Arm_Scale_Neutral 22000
+#define Arm_Portal 2300
 
 #define ArmMaxLimEncoder 23000
 #define ArmMinLimEncoder 0
@@ -90,11 +170,12 @@ enum eSonar
 
 //Wrist Values
 #define Wrist_Intake -16500
-#define Wrist_Switch -13500
+#define Wrist_Switch -14000
 #define Wrist_Scale_Level_1 -14750
 #define Wrist_Folded 0
-#define Wrist_Scale_Level_1_Back 12000
+#define Wrist_Scale_Level_1_Back 14500
 //#define Wrist_Scale_Level_1_Back 14000
+#define Wrist_Portal -14100
 
 #define Wrist_Scale_Neutral -14000
 
@@ -105,10 +186,16 @@ enum eSonar
 
 //PDP Channels
 #define Arm_PDPChannel 4
-#define Claw1_PDPChannel 6
+
+#define Claw1_PDPChannel 5
 #define Claw2_PDPChannel 7
-#define Wrist_PDPChannel 11
-#define Elevator_PDPChannel 12
+
+#define Wrist_PDPChannel 12
+
+#define Elevator_PDPChannel 12//Comp Bot:2
+
+#define Strafe1_PDPChannel 2
+#define Strafe2_PDPChannel 3
 
 
 #endif //DEFINES_H

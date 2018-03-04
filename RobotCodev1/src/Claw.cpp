@@ -12,11 +12,11 @@
 ClawClass::ClawClass() {
 
 	Claw1 = new VictorSPX(Claw_Motor_1);
-	Claw1->SetInverted(false);
+	Claw1->SetInverted(true);
 
 	Claw2 = new VictorSPX(Claw_Motor_2);
 	Claw2->Set(ControlMode::Follower, Claw_Motor_1);
-	Claw2->SetInverted(true);
+	Claw2->SetInverted(false);
 }
 
 ClawClass::~ClawClass() {
@@ -24,7 +24,7 @@ ClawClass::~ClawClass() {
 
 void ClawClass::Sense_Current()
 {
-	float alpha = 0.05f;
+	float alpha = 0.1f;
 
 	float curleft = MyRobotClass::Get()->PDP->GetCurrent(Claw1_PDPChannel);
 	float curright = MyRobotClass::Get()->PDP->GetCurrent(Claw2_PDPChannel);
@@ -34,10 +34,10 @@ void ClawClass::Sense_Current()
 
 }
 
-void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowout)
+void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowout,bool istracking)
 {
 	Sense_Current();
-	if(intake)
+	if(intake || istracking)
 	{
 		Claw1->Set(ControlMode::PercentOutput, 1.0);
 	}
@@ -62,6 +62,32 @@ void ClawClass::Auto_Update()
 {
 	Sense_Current();
 }
+
+void ClawClass::Claw_Intake()
+{
+	Claw1->Set(ControlMode::PercentOutput, 1.0);
+}
+
+void ClawClass::Claw_Switch_Outake()
+{
+	Claw1->Set(ControlMode::PercentOutput, -1.0);
+}
+
+void ClawClass::Claw_Scale_Outake()
+{
+	Claw1->Set(ControlMode::PercentOutput, -0.75);
+}
+
+void ClawClass::Claw_Slow_Outake()
+{
+	Claw1->Set(ControlMode::PercentOutput, -0.3);
+}
+
+void ClawClass::Claw_Off()
+{
+	Claw1->Set(ControlMode::PercentOutput, 0.0);
+}
+
 void ClawClass::Send_Data()
 {
 	SmartDashboard::PutNumber("Claw1 Filter Current",leftCurrent);

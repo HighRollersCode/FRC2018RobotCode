@@ -54,7 +54,7 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new WaitForBrakeCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->AutonomousControl->AutonWait2(m_Parameters[0],(int)m_Parameters[1]);
+		MyRobotClass::Get()->AutonomousControl->EBrake(m_Parameters[0],(int)m_Parameters[1]);
 	}
 };
 class WaitForTransitionCommand : public HrScriptCommandClass
@@ -262,6 +262,18 @@ public:
 	}
 };
 
+class SetPipelineCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "SetPipeline"; }
+	virtual int Get_Parameter_Count() { return 1; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetPipelineCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_SETPIPELINE(m_Parameters[0]);
+	}
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 										//Intake Code//
@@ -443,6 +455,7 @@ void MyRobotClass::Init_Scripts_System()
 
 	m_ScriptSystem->Add_Command(new SetActiveSonarCommand());
 	m_ScriptSystem->Add_Command(new SearchForCubeCommand());
+	m_ScriptSystem->Add_Command(new SetPipelineCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -484,6 +497,10 @@ void MyRobotClass::Load_Scripts()
 	m_ScriptSystem->Set_Auto_Script(111,"MIDDLERIGHTSWITCHANDSCALE.hrs");
 	m_ScriptSystem->Set_Auto_Script(112,"MIDDLERIGHTSWITCHANDLEFTSCALE.hrs");
 	m_ScriptSystem->Set_Auto_Script(113,"MIDDLEALLSCALERIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(114,"MIDDLELEFTSWITCHANDSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(115,"MIDDLELEFTSWITCHANDRIGHTSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(116,"MIDDLERIGHTSWITCHANDLEFTSCALETURN.hrs");
+	m_ScriptSystem->Set_Auto_Script(117,"MIDDLELEFTSWITCHANDRIGHTSCALETURN.hrs");
 
 	//EmptyAuto
 	m_ScriptSystem->Set_Auto_Script(999,"EMPTY.hrs");

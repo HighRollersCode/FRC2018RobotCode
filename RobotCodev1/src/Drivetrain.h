@@ -64,6 +64,10 @@ public:
 	bool manualStrafe;
 	bool manualForward;
 
+	bool shifterPrev;
+	bool shifterCur;
+	float toggleState;
+
 	Victor *leftMotor;
 	Victor *leftMotor1;
 	Victor *rightMotor;
@@ -75,7 +79,9 @@ public:
 	Encoder *rightEncoder;
 	Encoder *middleEncoder;
 
-	eSonar currentActiveSonar = eSonar::LEFT_SONAR;
+	DoubleSolenoid *shifterPiston;
+
+	eSonar currentActiveSonar = eSonar::RIGHT_SONAR;
 
 #if USINGGYRO == 0
 	AnalogGyro *gyro;
@@ -83,14 +89,37 @@ public:
 	PigeonIMU *imu;
 #endif
 
-	//Ultrasonic *leftsonar;
+	//Ultrasonic *frontsonar;
 	Ultrasonic *rightsonar;
 	Ultrasonic *leftsonar;
 	AnalogInput *maxboticsonar;
 
-	Drivetrainclass();
+	float leftCurrent = 0.0f;
+	float rightCurrent = 0.0f;
+	bool strafeHasTraction = false;
+	float prevStrafeCommand = 0.0f;
+
+	float tx = 0;
+	float ty = 0;
+
+	int LeftSideTicks = 0;
+	int MidSideTicks = 0;
+	int RightSideTicks = 0;
+
+	float Ebrakemult = .150f;
+	bool PrevBrakeEnabled = 0;
+
+	bool brakeEnabled = false;
+	int brakeTarg = 0;
+
+	int MiddleEncoderCount = 0;
+	int lastRawMiddleEncCount = 0;
+	//bool lastStrafeHadTraction = false;
+
+	Drivetrainclass(WPI_TalonSRX *GyroTalon);
 	virtual ~Drivetrainclass();
 	void Zero_Yaw();
+	void UpdateMiddleEncoder();
 	void ResetEncoders_Timers();
 
 	float GyroCorrection(float desheading);
@@ -98,8 +127,11 @@ public:
 	float LockLeft(float desticks);
 	float LockRight(float desticks);
 
+
 	float ComputeAngleDelta(float t);
 	float GetHeading();
+
+	float GetTurnRate();
 
 	float GetLeftSonar();
 	float GetRightSonar();
@@ -109,8 +141,13 @@ public:
 
 	void SetActiveSonar(eSonar sonar);
 
+	void Sense_Current();
 
 	void StandardArcade(float Forward, float Turn, float Strafe, eGyroMode gyroMode, eBrakeMode brakeMode);
+
+	void CHOOSE_TARGET(float& outx, float& outy);
+
+	void EnabledEBrake(bool enable, int targ);
 	void AutoUpdate();
 	float AutoUpdate_Forward();
 	float AutoUpdate_Turn();
@@ -124,6 +161,8 @@ public:
 	void ResetTargets();
 	void StandardArcade_forwardOnly(float left, float right);
 	void StandardArcade_strafeOnly(float Strafe);
+
+	void Shifter_Update(bool ShifterUpdate);
 
 	void Send_Data();
 

@@ -41,6 +41,7 @@ class Auton
 		void AutonWait(float Seconds);
 		void AutonWait2(float Seconds, int brake);
 		void AutonWaitForTransition();
+		void EBrake(float Seconds, int enctarg);
 		bool Auto_System_Update();
 
 		void Auto_DriveTimer(float Forward, float Turn, float Strafe, float seconds);
@@ -56,6 +57,7 @@ class Auton
 		void Auto_STRAFE(float strafe, float strafeTicks,float desheading);
 		void Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance);
 		void Auto_SEARCHFORCUBE(float strafe, float heading,float time);
+		void Auto_SETPIPELINE(float pipeline);
 		void Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, float desdistance);
 		void Auto_FOLLOWEDGE(float Forward, float desheading, float desdistance);
 		void Auto_DriveGyro_Encoder(float Forward, float Angle, float Ticks);
