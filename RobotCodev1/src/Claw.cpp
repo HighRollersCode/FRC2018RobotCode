@@ -63,26 +63,15 @@ void ClawClass::Auto_Update()
 	Sense_Current();
 }
 
-void ClawClass::Claw_Intake()
+void ClawClass::Claw_Intake(float value)
 {
-	Claw1->Set(ControlMode::PercentOutput, 1.0);
+	Claw1->Set(ControlMode::PercentOutput, value);
 }
 
-void ClawClass::Claw_Switch_Outake()
+void ClawClass::Claw_Outake(float value)
 {
-	Claw1->Set(ControlMode::PercentOutput, -1.0);
+	Claw1->Set(ControlMode::PercentOutput, value); // Switch: -1.0, Scale: -0.75, Soft: -0.3
 }
-
-void ClawClass::Claw_Scale_Outake()
-{
-	Claw1->Set(ControlMode::PercentOutput, -0.75);
-}
-
-void ClawClass::Claw_Slow_Outake()
-{
-	Claw1->Set(ControlMode::PercentOutput, -0.3);
-}
-
 void ClawClass::Claw_Off()
 {
 	Claw1->Set(ControlMode::PercentOutput, 0.0);

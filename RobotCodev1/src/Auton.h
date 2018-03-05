@@ -45,8 +45,8 @@ class Auton
 		bool Auto_System_Update();
 
 		void Auto_DriveTimer(float Forward, float Turn, float Strafe, float seconds);
-		void Auto_Intake_In();
-		void Auto_Intake_Out();
+		void Auto_Intake_In(float value);
+		void Auto_Intake_Out(float value);
 		void Auto_Intake_Off();
 		void Auto_GYROTURN(float heading);
 		void Auto_GYROTURN_TIMED(float heading, float seconds);
@@ -56,8 +56,13 @@ class Auton
 		void Auto_GYROSTRAFE(float forward, float ticks, float strafe, float strafeTicks, float desheading);
 		void Auto_STRAFE(float strafe, float strafeTicks,float desheading);
 		void Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance);
-		void Auto_SEARCHFORCUBE(float strafe, float heading,float time);
+
+		void Auto_SEARCHFORCUBESTRAFE(float strafe, float heading,float time);
+		void Auto_SEARCHFORCUBETURN(float strafe, float heading,float time);
+
+		void Auto_TRACKSWITCH(float strafe, float heading,float time);
 		void Auto_SETPIPELINE(float pipeline);
+		void Auto_SETLIGHTS(float mode = 1);
 		void Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, float desdistance);
 		void Auto_FOLLOWEDGE(float Forward, float desheading, float desdistance);
 		void Auto_DriveGyro_Encoder(float Forward, float Angle, float Ticks);

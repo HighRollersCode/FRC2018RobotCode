@@ -60,7 +60,7 @@ WaitForTransition
 
 Wait 0.25
 
-Intake -1
+Intake -0.75
 
 IntakeMode
 
@@ -94,7 +94,7 @@ GyroTurnTimed -30 0.5
 
 WaitForTransition
 
-Intake -1
+Intake -0.75
 
 Wait 0.5 
 

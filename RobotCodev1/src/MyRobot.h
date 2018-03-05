@@ -72,6 +72,15 @@ public:
 
 	int Auto_Index = 0;
 
+	int Auto_Index_LL = 0;
+
+	int Auto_Index_RR = 0;
+
+	int Auto_Index_LR = 0;
+
+	int Auto_Index_RL = 0;
+
+
 protected:
 
 	HrScriptSystemClass * m_ScriptSystem;

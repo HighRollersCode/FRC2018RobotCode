@@ -249,10 +249,8 @@ void Auton::Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance)
 
 	DriveTrain->SetRawStrafeSpeed(0);
 }
-
-void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
+void Auton::Auto_SEARCHFORCUBETURN(float strafe, float heading, float time)
 {
-#if 0
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
 	DriveTrain->headingTarget = heading;
@@ -331,7 +329,10 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 	DriveTrain->SetRawForwardSpeed(0);
 	DriveTrain->SetRawTurnSpeed(0);
 	DriveTrain->SetRawStrafeSpeed(0);
-#else
+
+}
+void Auton::Auto_SEARCHFORCUBESTRAFE(float strafe, float heading,float time)
+{
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
 	DriveTrain->headingTarget = heading;
@@ -345,10 +346,6 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 		float tx = table->GetNumber("tx",0);
 		float ty = 0;
 		float tv = table->GetNumber("tv",0);
-
-		/*DriveTrain->CHOOSE_TARGET(tx, ty);
-		ty+=10;
-*/
 
 		if(strafe < 0)
 		{
@@ -377,9 +374,6 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 
 		if(tv != 0)
 		{
-			/*DriveTrain->CHOOSE_TARGET(tx ,ty);
-			ty += 10;
-*/
 			auto_tx = tx;
 			auto_ty = ty;
 
@@ -435,9 +429,87 @@ void Auton::Auto_SEARCHFORCUBE(float strafe, float heading,float time)
 	DriveTrain->SetRawForwardSpeed(0);
 	DriveTrain->SetRawTurnSpeed(0);
 	DriveTrain->SetRawStrafeSpeed(0);
-#endif
 }
+void Auton::Auto_TRACKSWITCH(float strafe,float heading,float time)
+{
+	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
+	DriveTrain->headingTarget = heading;
+/*
+	DriveTrain->SetRawStrafeSpeed(strafe);
+
+	// strafe until we see the cube
+	bool saw_switch = false;
+	while(!saw_switch && (Running()))
+	{
+		float tx = table->GetNumber("tx",0);
+		float ty = 0;
+		float tv = table->GetNumber("tv",0);
+
+		auto_tx = tx;
+		auto_ty = ty;
+		saw_switch = ((tv != 0) && (fabs(tx) < 3.0));
+		Auto_System_Update();
+	}
+*/
+	// Now go to Switch
+	bool done = false;
+
+	IntakeTimer->Reset();
+	IntakeTimer->Start();
+
+	while(done == false && (Running()))
+	{
+		Auto_System_Update();
+		float tv  = table->GetNumber("tv", 0);
+
+		float tx = 0;
+		float ty = 0;
+
+		if(tv != 0)
+		{
+			auto_tx = tx;
+			auto_ty = ty;
+
+			tx = table->GetNumber("tx", 0);
+			ty = table->GetNumber("ty", 0);
+		}
+
+		float distance_error = ty;
+		float cube_error = tx;
+
+		if(tv == 0)
+		{
+			distance_error = 0;
+			auto_strafe = 0;
+			auto_drive = 0;
+			auto_turn = 0;
+		}
+		else
+		{
+			auto_drive = distance_error * DriveTrain->Drive_P;
+			auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
+			auto_strafe = cube_error * DriveTrain->Strafe_P;
+		}
+
+		DriveTrain->SetRawForwardSpeed(auto_drive);
+		DriveTrain->SetRawTurnSpeed(auto_turn);
+		DriveTrain->SetRawStrafeSpeed(auto_strafe);
+
+		if(IntakeTimer->Get() > time)
+		{
+			done = true;
+		}
+
+		if(distance_error < 5)
+		{
+			done = true;
+		}
+	}
+	DriveTrain->SetRawForwardSpeed(0);
+	DriveTrain->SetRawTurnSpeed(0);
+	DriveTrain->SetRawStrafeSpeed(0);
+}
 void Auton::Auto_SETPIPELINE(float pipeline)
 {
 	int pipe = (int) pipeline;
@@ -447,6 +519,17 @@ void Auton::Auto_SETPIPELINE(float pipeline)
 		std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
 		table->PutNumber("pipeline", pipe);
+	}
+}
+void Auton::Auto_SETLIGHTS(float mode)
+{
+	int light = (int) mode;
+
+	if(light >= 0 && light < 3)
+	{
+		std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
+		table->PutNumber("ledMode", light);
 	}
 }
 void Auton::Auto_GYROSTRAFESONAR(float ticks, float strafe, float desheading, float desdistance)
@@ -554,13 +637,13 @@ void Auton::SendData()
 		SmartDashboard::PutNumber("Auto Strafe",auto_strafe);
 	}
 }
-void Auton::Auto_Intake_In()
+void Auton::Auto_Intake_In(float value)
 {
-	Claw->Claw_Intake();
+	Claw->Claw_Intake(value);
 }
-void Auton::Auto_Intake_Out()
+void Auton::Auto_Intake_Out(float value)
 {
-	Claw->Claw_Scale_Outake();
+	Claw->Claw_Outake(value);
 }
 void Auton::Auto_Intake_Off()
 {

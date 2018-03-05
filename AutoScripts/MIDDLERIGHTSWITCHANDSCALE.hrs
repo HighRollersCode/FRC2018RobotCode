@@ -5,15 +5,15 @@ DriveTimed 0 0 -0.5 .2
 
 SetActiveSonar 0
 
-DriveTicksStrafeHeading -0.5 -400 -1.0 -2325 0
+DriveTicksStrafeHeading -0.5 -400 -1.0 -2300 0
 
 DriveTimed -0.75 0 1.0 .1
 
-DriveTicksHeadingDistance -.5 -75 0 58 //-125
+DriveTicksHeadingDistance -.5 -25 0 58 //-125
 
 Conveyor -1
 
-DriveTicksHeadingDistance -1.0 -150 0 56 //-125
+DriveTicksHeadingDistance -1.0 -200 0 56 //-125
 
 DriveTicksHeading -1.0 -200 0
 
@@ -58,7 +58,7 @@ BrakeWait .1 0
 
 WaitForTransition
 
-Intake -1
+Intake -0.75
 
 Wait 0.2
 
@@ -68,9 +68,9 @@ IntakeMode
 
 ///////// Go Get Cube 2 ////////////
 
-DriveTicksHeading 0.75 125 0
+DriveTicksHeading 0.75 100 0
 
-DriveTicksHeading 0.4 75 0
+DriveTicksHeading 0.3 75 0
 
 BrakeWait .1 0
 
@@ -105,12 +105,12 @@ BrakeWait .1 0
 
 Wait 0.1
 
-GyroTurnTimed -20 0.5
+GyroTurnTimed -35 0.5
 
 //Score cube
 WaitForTransition
 
-Intake -1
+Intake -0.75
 
 Wait 0.5
 

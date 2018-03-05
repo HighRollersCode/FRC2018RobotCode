@@ -30,10 +30,8 @@ public:
 	void Send_Data();
 	bool GotCube();
 
-	void Claw_Intake();
-	void Claw_Switch_Outake();
-	void Claw_Scale_Outake();
-	void Claw_Slow_Outake();
+	void Claw_Intake(float value = 1.0f);
+	void Claw_Outake(float value = -1.0f);
 	void Claw_Off();
 };
 

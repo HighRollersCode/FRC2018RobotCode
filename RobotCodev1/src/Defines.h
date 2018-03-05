@@ -143,7 +143,7 @@ enum eSonar
 
 
 //Elevator Values
-#define Elevator_Intake 100
+#define Elevator_Intake 200 //100
 #define Elevator_Switch 13500
 //#define Elevator_Scale_Level_1 11000
 #define Elevator_Scale_Level_1 7250
@@ -157,7 +157,7 @@ enum eSonar
 #define ElevatorMinLimEncoder 0
 
 //Arm Values
-#define Arm_Intake 2300
+#define Arm_Intake 3500 //2300
 #define Arm_Switch 100
 #define Arm_Scale_Level_1 22000
 #define Arm_Scale_Neutral 22000

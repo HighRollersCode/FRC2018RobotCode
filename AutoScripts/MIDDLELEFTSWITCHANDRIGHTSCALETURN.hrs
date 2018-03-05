@@ -5,7 +5,7 @@ DriveTimed 0 0 0.5 .2
 
 SetActiveSonar 1
 
-DriveTicksStrafeHeading -0.5 -400 1.0 2200 0
+DriveTicksStrafeHeading -0.5 -400 1.0 2050 0 //2200
 
 DriveTimed -0.75 0 1.0 .1
 
@@ -73,7 +73,7 @@ BrakeWait .1 0
 
 WaitForTransition
 
-Intake -1
+Intake -0.75
 
 Wait 1.0
 
@@ -110,7 +110,7 @@ GyroTurnTimed -30 0.5
 
 WaitForTransition
 
-Intake -1
+Intake -0.75
 
 Wait 0.5 
 

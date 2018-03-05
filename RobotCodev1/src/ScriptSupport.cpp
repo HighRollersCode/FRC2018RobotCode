@@ -258,7 +258,20 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new SearchForCubeCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
+		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBESTRAFE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
+	}
+};
+
+class TrackSwitchCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "StrafeTrackToSwitch"; }
+	virtual int Get_Parameter_Count() { return 3; }
+	virtual HrScriptCommandClass * Create_Command() { return new TrackSwitchCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBESTRAFE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
 	}
 };
 
@@ -272,6 +285,19 @@ public:
 	virtual void Execute()
 	{
 		MyRobotClass::Get()->AutonomousControl->Auto_SETPIPELINE(m_Parameters[0]);
+	}
+};
+
+class SetLightsCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "SetLights"; }
+	virtual int Get_Parameter_Count() { return 1; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetLightsCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_SETLIGHTS(m_Parameters[0]);
 	}
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -289,17 +315,17 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new SetIntakeCommand(); }
 	virtual void Execute()
 	{
-		if(m_Parameters[0] == 1)
+		if(m_Parameters[0] < 0)
 		{
-			MyRobotClass::Get()->AutonomousControl->Auto_Intake_In();
+			MyRobotClass::Get()->AutonomousControl->Auto_Intake_Out(m_Parameters[0]);
 		}
-		else if (m_Parameters[0] == 0)
+		else if(m_Parameters[0] > 0)
+		{
+			MyRobotClass::Get()->AutonomousControl->Auto_Intake_In(m_Parameters[0]);
+		}
+		else
 		{
 			MyRobotClass::Get()->AutonomousControl->Auto_Intake_Off();
-		}
-		else if (m_Parameters[0] == -1)
-		{
-			MyRobotClass::Get()->AutonomousControl->Auto_Intake_Out();
 		}
 	}
 };
@@ -404,6 +430,19 @@ public:
 	}
 };
 
+class SetSwitchModeCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "SwitchMode"; }
+	virtual int Get_Parameter_Count() { return 0; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetSwitchModeCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Switch_Front_Level);
+	}
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
 										//Support Code//
@@ -420,6 +459,59 @@ public:
 	virtual void Execute()
 	{
 		MyRobotClass::Get()->Auto_Index = (int)m_Parameters[0];
+		printf("Set Up Autos");
+	}
+};
+
+class SetAutoRRRCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "SetAutoRR"; }
+	virtual int Get_Parameter_Count() { return 1; }
+
+	virtual HrScriptCommandClass * Create_Command() { return new SetAutoRRRCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->Auto_Index_RR = (int)m_Parameters[0];
+		printf("Set Up Autos");
+	}
+};
+class SetAutoLLLCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "SetAutoLL"; }
+	virtual int Get_Parameter_Count() { return 1; }
+
+	virtual HrScriptCommandClass * Create_Command() { return new SetAutoLLLCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->Auto_Index_LL = (int)m_Parameters[0];
+		printf("Set Up Autos");
+	}
+};
+class SetAutoLRLCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "SetAutoLR"; }
+	virtual int Get_Parameter_Count() { return 1; }
+
+	virtual HrScriptCommandClass * Create_Command() { return new SetAutoLRLCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->Auto_Index_LR = (int)m_Parameters[0];
+		printf("Set Up Autos");
+	}
+};
+class SetAutoRLRCommand : public HrScriptCommandClass
+{
+public:
+	virtual const char * Get_Command_Name() { return "SetAutoRL"; }
+	virtual int Get_Parameter_Count() { return 1; }
+
+	virtual HrScriptCommandClass * Create_Command() { return new SetAutoRLRCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->Auto_Index_RL = (int)m_Parameters[0];
 		printf("Set Up Autos");
 	}
 };
@@ -455,7 +547,9 @@ void MyRobotClass::Init_Scripts_System()
 
 	m_ScriptSystem->Add_Command(new SetActiveSonarCommand());
 	m_ScriptSystem->Add_Command(new SearchForCubeCommand());
+	m_ScriptSystem->Add_Command(new TrackSwitchCommand());
 	m_ScriptSystem->Add_Command(new SetPipelineCommand());
+	m_ScriptSystem->Add_Command(new SetLightsCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -475,12 +569,17 @@ void MyRobotClass::Init_Scripts_System()
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
-	m_ScriptSystem->Add_Command(new SetIntakeModeCommand);
-	m_ScriptSystem->Add_Command(new SetScaleBackModeCommand);
+	m_ScriptSystem->Add_Command(new SetIntakeModeCommand());
+	m_ScriptSystem->Add_Command(new SetScaleBackModeCommand());
+	m_ScriptSystem->Add_Command(new SetSwitchModeCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
 	m_ScriptSystem->Add_Command(new SetAutoCommand());
+	m_ScriptSystem->Add_Command(new SetAutoRRRCommand());
+	m_ScriptSystem->Add_Command(new SetAutoLLLCommand());
+	m_ScriptSystem->Add_Command(new SetAutoLRLCommand());
+	m_ScriptSystem->Add_Command(new SetAutoRLRCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -501,6 +600,9 @@ void MyRobotClass::Load_Scripts()
 	m_ScriptSystem->Set_Auto_Script(115,"MIDDLELEFTSWITCHANDRIGHTSCALE.hrs");
 	m_ScriptSystem->Set_Auto_Script(116,"MIDDLERIGHTSWITCHANDLEFTSCALETURN.hrs");
 	m_ScriptSystem->Set_Auto_Script(117,"MIDDLELEFTSWITCHANDRIGHTSCALETURN.hrs");
+	m_ScriptSystem->Set_Auto_Script(118,"RIGHTALLSCALERIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(119,"MIDDLELEFTSWITCH.hrs");
+	m_ScriptSystem->Set_Auto_Script(120,"MIDDLERIGHTSWITCH.hrs");
 
 	//EmptyAuto
 	m_ScriptSystem->Set_Auto_Script(999,"EMPTY.hrs");

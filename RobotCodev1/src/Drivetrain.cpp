@@ -394,41 +394,49 @@ void Drivetrainclass::StandardArcade_forwardOnly(float left,float right)
 
 void Drivetrainclass::StandardArcade_strafeOnly(float Strafe)
 {
-	if((leftCurrent > 1.4) || (rightCurrent > 1.4))
+	//strafeHasTraction = true;
+	if(MyRobotClass::Get()->AutonomousControl->Running())
 	{
-		strafeHasTraction = true;
-		float strafeError = Strafe - strafeMotor->Get();
+		if((leftCurrent > 1.4) || (rightCurrent > 1.4))
+		{
+			strafeHasTraction = true;
+			float strafeError = Strafe - strafeMotor->Get();
 
-		if(/*fabs(strafeError) > 1 ||*/ Strafe == 0)
-		{
-			Strafe = 0.0f;
+			if(/*fabs(strafeError) > 1 ||*/ Strafe == 0)
+			{
+				Strafe = 0.0f;
+			}
+			if(strafeError > 0)
+			{
+				Strafe = strafeMotor->Get() + straferamp;
+			}
+			else if(strafeError < 0)
+			{
+				Strafe = strafeMotor->Get() - straferamp;
+			}
 		}
-		if(strafeError > 0)
+		if(sign(Strafe) == 1)
 		{
-			Strafe = strafeMotor->Get() + straferamp;
+			Strafe = fmax(0,Strafe);
 		}
-		else if(strafeError < 0)
+		else if(sign(Strafe) == -1)
 		{
-			Strafe = strafeMotor->Get() - straferamp;
+			Strafe = fmin(0,Strafe);
 		}
-	}
-	if(sign(Strafe) == 1)
-	{
-		Strafe = fmax(0,Strafe);
-	}
-	else if(sign(Strafe) == -1)
-	{
-		Strafe = fmin(0,Strafe);
+		else
+		{
+			Strafe = 0;
+		}
+		if(sign(Strafe) != sign(prevStrafeCommand))
+		{
+			strafeHasTraction = false;
+			leftCurrent = -fabs(leftCurrent)/2.f;
+			rightCurrent = -fabs(rightCurrent)/2.f;
+		}
 	}
 	else
 	{
-		Strafe = 0;
-	}
-	if(sign(Strafe) != sign(prevStrafeCommand))
-	{
-		strafeHasTraction = false;
-		leftCurrent = -fabs(leftCurrent)/2.f;
-		rightCurrent = -fabs(rightCurrent)/2.f;
+		strafeHasTraction = true;
 	}
 
 	prevStrafeCommand = Strafe;

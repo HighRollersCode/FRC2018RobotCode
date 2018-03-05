@@ -83,8 +83,36 @@ void MyRobotClass::Autonomous(void)
 	printf("ransettings\n");
 	AutonomousControl->Auto_Start();
 	printf("startfunction\n");
+
+	//Set Auto Index based on field
+	std::string message = DriverStation::GetInstance().GetGameSpecificMessage();
+
+	while(message.length() < 2)
+	{
+		message = DriverStation::GetInstance().GetGameSpecificMessage();
+	}
+
+	if(message[0] == 'R' && message[1] == 'R')
+	{
+		Auto_Index = Auto_Index_RR;
+	}
+	else if(message[0] == 'L' && message[1] == 'L')
+	{
+		Auto_Index = Auto_Index_LL;
+	}
+	else if(message[0] == 'L' && message[1] == 'R')
+	{
+		Auto_Index = Auto_Index_LR;
+	}
+	else if(message[0] == 'R' && message[1] == 'L')
+	{
+		Auto_Index = Auto_Index_RL;
+	}
+
 	m_ScriptSystem->Run_Auto_Script(Auto_Index);
 	AutonomousControl->Auto_End();
+
+	table->PutNumber("ledMode", 1);
 }
 void MyRobotClass::UpdateInputs()
 {
@@ -212,7 +240,7 @@ void MyRobotClass::OperatorControl(void)
 
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
-	table->PutNumber("ledMode", 1);
+	table->PutNumber("ledMode", 0);
 
 	Arm->PIDOff();
 	Elevator->PIDOff();
