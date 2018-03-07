@@ -148,7 +148,7 @@ enum eSonar
 //#define Elevator_Scale_Level_1 11000
 #define Elevator_Scale_Level_1 7250
 #define Elevator_Scale_Level_1_Back 12000
-#define Elevator_Claw_Deploy 13750
+#define Elevator_Claw_Deploy 15150
 #define Elevator_Portal 10600
 
 #define Elevator_tolerance 500
@@ -173,7 +173,7 @@ enum eSonar
 #define Wrist_Switch -14000
 #define Wrist_Scale_Level_1 -14750
 #define Wrist_Folded 0
-#define Wrist_Scale_Level_1_Back 14500
+#define Wrist_Scale_Level_1_Back 10000
 //#define Wrist_Scale_Level_1_Back 14000
 #define Wrist_Portal -14100
 

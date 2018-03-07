@@ -483,7 +483,7 @@ void LiftManagerClass::UpdateLift(
 			{
 				case 0 :
 					{
-						WaitForElevator(0,10);
+						WaitForElevator(400,50);
 						break;
 					}
 				case 1:

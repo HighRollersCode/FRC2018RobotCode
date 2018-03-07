@@ -3,7 +3,7 @@ SetPipeline 0
 
 SetActiveSonar 0 //Set to Left Sonar
 
-DriveTicksStrafeHeading -0.5 -400 -1.0 -2475 0
+DriveTicksStrafeHeading -0.5 -400 -1.0 -2400 0
 
 DriveTimed -0.75 0 1.0 .1
 
