@@ -10,18 +10,30 @@
 //SetAuto 120 is MIDDLERIGHTSWITCH
 //SetAuto 999 is EMPTY
 
-//SetAuto 111
+//SetAuto 1
 
 //Switch and Scale
-SetAutoLL 114
-SetAutoRR 111
-SetAutoLR 117
-SetAutoRL 116
+//SetAutoLL 114
+//SetAutoRR 111
+//SetAutoLR 117
+//SetAutoRL 116
 
 //Switch Only
 //SetAutoLL 119
 //SetAutoRR 120
 //SetAutoLR 119
 //SetAutoRL 120
+
+//Scale Only Left
+SetAutoLL 122
+SetAutoRR 121
+SetAutoLR 121
+SetAutoRL 122
+
+//Pyramid
+//SetAutoLL 124
+//SetAutoRR 124
+//SetAutoLR 124
+//SetAutoRL 124
 
 DriveTrainSettings .01

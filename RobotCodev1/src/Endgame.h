@@ -18,7 +18,7 @@ public:
 
 	DoubleSolenoid *lock;
 
-	DoubleSolenoid *clawDeploy;
+	Solenoid *clawDeploy;
 
 	bool lockEnable_prev;
 	bool lockEnable_cur;
@@ -30,9 +30,11 @@ public:
 
 	float clawToggleState;
 
+	float shutOffTime = 134.95f;
+
 	EndgameClass();
 	virtual ~EndgameClass();
-	void Update(bool LockEnable, bool ClawEnable);
+	void Update(bool LockEnable, bool ClawEnable,float timer);
 	void Send_Data();
 
 	void LockOn();

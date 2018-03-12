@@ -1,0 +1,98 @@
+//////////////////////////////////////////////Start///////////////////////////////////////////////////////////
+SetLights 0
+SetActiveSonar 1
+
+DriveTimed 0 0 -.2 .2
+
+DriveTicksHeading -1.0 -400 0
+
+DriveTicksHeadingDistance -0.75 -425 0 55
+
+DriveTicksHeading -0.2 -300 0
+
+BrakeWait 0.4 0
+
+GyroTurnTimed 90 0.4
+
+DriveTimed 0 0 0 0.1
+
+DriveTicksHeading -0.5 -415 90
+//StrafeTicksHeading .9 3100 0
+
+DriveTicksHeading -0.5 -325 90
+
+DriveTicksHeading -0.3 -300 90
+
+BrakeWait .1 0
+
+GyroTurnTimed -10 1.0
+
+Intake 1.0
+
+ScaleBackMode
+
+DriveTicksHeading -0.5 -175 -10
+
+Intake 0
+
+DriveTicksHeading -0.3 -40 -10
+
+BrakeWait .1 0
+
+WaitForTransition
+
+Intake -0.5
+
+Wait 1.0
+
+IntakeMode
+
+///////// Go Get Cube 2 ////////////
+
+DriveTicksHeading 0.5 150 0
+
+Intake 0
+
+DriveTicksHeading 0.3 50 0
+
+BrakeWait .2 0
+//DriveTimed -0.75 0 0 .1
+
+//Search for second cube and intake cube
+Intake 1
+
+SearchForCubeStrafeTimed 1.0 0 2.0
+
+//Drive to scale and set up to score
+DriveTicksStrafeHeading -0.5 -25 -0.75 -425 0
+
+Intake 0
+
+ScaleBackMode
+
+DriveTicksStrafeHeading -0.5 -5 -0.75 -350 0
+ //-900
+
+//DistanceHeading 70 0
+
+//DriveTimed 0 0 1.0 .1
+
+DriveTicksHeadingDistance -0.5 -50 0 70
+
+DriveTicksHeadingDistance -0.3 -50 0 70
+
+BrakeWait .2 0
+//DriveTimed 0.75 0 0 .05
+
+Wait 0.1
+
+GyroTurnTimed -20 0.5
+
+//Score cube
+WaitForTransition
+
+Intake -0.5
+
+Wait 2.0
+
+Intake 0

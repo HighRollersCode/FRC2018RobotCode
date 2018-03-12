@@ -99,7 +99,7 @@ Drivetrainclass::Drivetrainclass(WPI_TalonSRX *GyroTalon)
 	rightEncoder = new Encoder( Right_Encoder_1, Right_Encoder_2, false, Encoder::EncodingType::k4X);
 	middleEncoder = new Encoder( Middle_Encoder_1, Middle_Encoder_2, false, Encoder::EncodingType::k4X);
 
-	shifterPiston = new DoubleSolenoid(Sol_Low_Gear,Sol_High_Gear);
+	shifterPiston = new DoubleSolenoid(16,Sol_Low_Gear,Sol_High_Gear);
 
 #if USINGGYRO == 0
 	gyro = new AnalogGyro(Gyro);
@@ -130,7 +130,8 @@ Drivetrainclass::Drivetrainclass(WPI_TalonSRX *GyroTalon)
 
 	leftEncoder->Reset();
 	rightEncoder->Reset();
-	SetActiveSonar(eSonar::LEFT_SONAR);
+	SetActiveSonar(eSonar::LEFT_AND_RIGHT_SONAR);
+
 }
 
 Drivetrainclass::~Drivetrainclass() {
@@ -226,6 +227,15 @@ void Drivetrainclass::SetActiveSonar(eSonar sonar)
 		rightsonar->SetEnabled(true);
 		rightsonar->SetAutomaticMode(true);
 		leftsonar->SetEnabled(false);
+	}
+	else if(currentActiveSonar == eSonar::LEFT_AND_RIGHT_SONAR)
+	{
+		rightsonar->SetEnabled(true);
+		rightsonar->SetAutomaticMode(true);
+		leftsonar->SetEnabled(true);
+		leftsonar->SetAutomaticMode(true);
+
+
 	}
 	else
 	{
@@ -478,6 +488,10 @@ void Drivetrainclass::Shifter_Update(bool ShifterUpdate)
 	{
 		shifterPiston->Set(DoubleSolenoid::Value::kReverse);
 	}
+}
+void Drivetrainclass::Shifter_High()
+{
+	shifterPiston->Set(DoubleSolenoid::Value::kForward);
 }
 
 float lerp(float a, float b, float f)
@@ -800,8 +814,16 @@ void Drivetrainclass::Send_Data()
 	SmartDashboard::PutNumber("Left Current", leftCurrent);
 	SmartDashboard::PutNumber("Right Current", rightCurrent);
 	SmartDashboard::PutBoolean("TRACTION",strafeHasTraction);
-
-	SmartDashboard::PutNumber("Shifter",shifterPiston->Get());
+	bool shiftPosition = true;
+	if(shifterPiston->Get() == 1)
+	{
+		shiftPosition = false;
+	}
+	else
+	{
+		shiftPosition = true;
+	}
+	SmartDashboard::PutBoolean("Shifter Position",shiftPosition);
 
 	//float targetX = 0;
 	//float targetY = 0;

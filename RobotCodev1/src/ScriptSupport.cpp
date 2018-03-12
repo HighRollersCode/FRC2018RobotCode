@@ -274,7 +274,18 @@ public:
 		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBESTRAFE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
 	}
 };
+class SearchForCubeForwardCommand : public HrScriptCommandClass
+{
 
+public:
+	virtual const char * Get_Command_Name() { return "SearchForCubeForward"; }
+	virtual int Get_Parameter_Count() { return 3; }
+	virtual HrScriptCommandClass * Create_Command() { return new SearchForCubeForwardCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBEFORWARD(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
+	}
+};
 class SetPipelineCommand : public HrScriptCommandClass
 {
 
@@ -547,6 +558,7 @@ void MyRobotClass::Init_Scripts_System()
 
 	m_ScriptSystem->Add_Command(new SetActiveSonarCommand());
 	m_ScriptSystem->Add_Command(new SearchForCubeCommand());
+	m_ScriptSystem->Add_Command(new SearchForCubeForwardCommand());
 	m_ScriptSystem->Add_Command(new TrackSwitchCommand());
 	m_ScriptSystem->Add_Command(new SetPipelineCommand());
 	m_ScriptSystem->Add_Command(new SetLightsCommand());
@@ -603,6 +615,11 @@ void MyRobotClass::Load_Scripts()
 	m_ScriptSystem->Set_Auto_Script(118,"RIGHTALLSCALERIGHT.hrs");
 	m_ScriptSystem->Set_Auto_Script(119,"MIDDLELEFTSWITCH.hrs");
 	m_ScriptSystem->Set_Auto_Script(120,"MIDDLERIGHTSWITCH.hrs");
+	m_ScriptSystem->Set_Auto_Script(121,"LEFTALLSCALERIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(122,"LEFTALLSCALELEFT.hrs");
+	m_ScriptSystem->Set_Auto_Script(123,"MIDDLEPYRAMIDRIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(124,"MIDDLEPYRAMIDLEFT.hrs");
+
 
 	//EmptyAuto
 	m_ScriptSystem->Set_Auto_Script(999,"EMPTY.hrs");

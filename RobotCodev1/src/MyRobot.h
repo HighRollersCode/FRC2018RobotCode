@@ -56,6 +56,7 @@ public:
 	bool isTracking;
 
 	Timer *turndelay;
+	Timer *matchTimer;
 
 	MyRobotClass();
 	virtual ~MyRobotClass();

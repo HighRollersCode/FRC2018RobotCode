@@ -26,7 +26,7 @@ enum LiftMode
 	Scale_Winning_Back_Level1,
 	Set_Up,
 	Climb,
-	Claw_Deploy,
+	Claw_Deploy_State,
 	Portal
 };
 class LiftManagerClass {

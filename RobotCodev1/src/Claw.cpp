@@ -51,7 +51,7 @@ void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowou
 	}
 	else if(slowout)
 	{
-		Claw1->Set(ControlMode::PercentOutput, -0.3);
+		Claw1->Set(ControlMode::PercentOutput, -0.4);
 	}
 	else
 	{

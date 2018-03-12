@@ -55,7 +55,7 @@ bool Auton::Running()
 	}
 	else if (ds->IsOperatorControl() == true)
 	{
-		printf("ABORTING: OPERATOR CONTROL %f \r\n", AutonTimer->Get());
+		//printf("ABORTING: OPERATOR CONTROL %f \r\n", AutonTimer->Get());
 		return false;
 	}
 	else if (ds->IsEnabled() == false)
@@ -430,6 +430,87 @@ void Auton::Auto_SEARCHFORCUBESTRAFE(float strafe, float heading,float time)
 	DriveTrain->SetRawTurnSpeed(0);
 	DriveTrain->SetRawStrafeSpeed(0);
 }
+void Auton::Auto_SEARCHFORCUBEFORWARD(float forward, float heading,float time)
+{
+	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
+	DriveTrain->headingTarget = heading;
+
+	DriveTrain->SetRawForwardSpeed(forward);
+	// Now grab the cube
+	bool gotcube = false;
+	int counter = 0;
+
+	IntakeTimer->Reset();
+	IntakeTimer->Start();
+
+	while(gotcube == false && (Running()))
+	{
+		Auto_System_Update();
+		/*float tv  = table->GetNumber("tv", 0);
+
+		float tx = 0;
+		float ty = 0;
+
+		if(tv != 0)
+		{
+			auto_tx = tx;
+			auto_ty = ty;
+
+			tx = table->GetNumber("tx", 0);
+			ty = table->GetNumber("ty", 0);
+		}
+
+		float distance_error = ty + 5;
+		float cube_error = tx;
+
+		if(tv == 0)
+		{
+			distance_error = 0;
+			auto_strafe = strafe;
+			auto_drive = 0;
+			auto_turn = 0;
+		}
+		else
+		{
+			auto_drive = distance_error * DriveTrain->Drive_P;
+			auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
+			auto_strafe = cube_error * DriveTrain->Strafe_P;
+		}
+
+		DriveTrain->SetRawForwardSpeed(auto_drive);
+		DriveTrain->SetRawTurnSpeed(auto_turn);
+		DriveTrain->SetRawStrafeSpeed(auto_strafe);
+*/
+		if(IntakeTimer->Get() > time)
+		{
+			gotcube = true;
+		}
+
+		if(Claw->GotCube())
+		{
+			counter++;
+		}
+		else
+		{
+			counter--;// = 0;
+			if(counter < 0)
+			{
+				counter = 0;
+			}
+		}
+
+		if (counter > 50)
+		{
+			printf("Got Cube !!!!");
+			gotcube = true;
+		}
+	}
+	DriveTrain->SetRawForwardSpeed(0);
+	DriveTrain->SetRawTurnSpeed(0);
+	DriveTrain->SetRawStrafeSpeed(0);
+}
+
 void Auton::Auto_TRACKSWITCH(float strafe,float heading,float time)
 {
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");

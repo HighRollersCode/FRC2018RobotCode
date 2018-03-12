@@ -142,17 +142,17 @@ void LiftManagerClass::UpdateLift(
 
 	if(!ClimbState_Prev && ClimbState_Cur)
 	{
-		changeMode(LiftMode::Climb);
+		//changeMode(LiftMode::Climb);
 	}
 
 	if(!ClawDeployState_Prev && ClawDeployState_Cur)
 	{
-		changeMode(LiftMode::Claw_Deploy);
+		changeMode(LiftMode::Claw_Deploy_State);
 	}
 
 	if(!PortalState_Prev && PortalState_Cur)
 	{
-		changeMode(LiftMode::Claw_Deploy);
+		//changeMode(LiftMode::Claw_Deploy);
 	}
 
 	if(_elevator->isreceivingelevatorinput || _arm->isreceivingarminput || _arm->isreceivingwristinput)
@@ -250,6 +250,11 @@ void LiftManagerClass::UpdateLift(
 						break;
 					}
 				case 3:
+					{
+						WaitForElevator(Elevator_Switch,Elevator_tolerance);
+						break;
+					}
+				case 4:
 					{
 						EndState();
 						break;
@@ -358,7 +363,7 @@ void LiftManagerClass::UpdateLift(
 					{
 						//WaitForWrist(Wrist_Folded,Wrist_tolerance,CurrentState);
 						_arm->SetWristTarg(Wrist_Folded);
-						if(_arm->WristOnTarg(Wrist_tolerance))
+						if(_arm->WristOnTarg(Wrist_tolerance * 3))
 						{
 							CurrentState = 2;
 						}
@@ -443,7 +448,7 @@ void LiftManagerClass::UpdateLift(
 					}
 			}
 		}
-		else if(CurrentLiftMode == LiftMode::Claw_Deploy)
+		/*else if(CurrentLiftMode == LiftMode::Claw_Deploy_State)
 		{
 			switch(CurrentState)
 			{
@@ -465,7 +470,7 @@ void LiftManagerClass::UpdateLift(
 					}
 				case 3:
 					{
-						_endgame->Update(false,true);
+						_endgame->Update(false,true,);
 						CurrentState = 4;
 						break;
 					}
@@ -499,7 +504,7 @@ void LiftManagerClass::UpdateLift(
 						break;
 					}
 			}
-		}
+		}*/
 		else if(CurrentLiftMode == LiftMode::Portal)
 		{
 			switch(CurrentState)

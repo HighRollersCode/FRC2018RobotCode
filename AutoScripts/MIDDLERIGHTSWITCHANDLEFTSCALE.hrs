@@ -1,4 +1,5 @@
 //////////////////////////////////////////////Start///////////////////////////////////////////////////////////
+SetLights 0
 SetPipeline 0
 
 SetActiveSonar 0 //Set to Left Sonar
@@ -13,9 +14,9 @@ DriveTicksHeadingDistance -.5 -50 0 60
 
 Conveyor -1
 
-DriveTicksHeadingDistance -1.0 -100 0 58
+DriveTicksHeadingDistance -0.75 -100 0 58
 
-DriveTicksHeading -1.0 -375 0
+DriveTicksHeading -0.75-375 0
 
 //DriveTimed 1.0 0 0 .3
 

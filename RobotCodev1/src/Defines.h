@@ -18,6 +18,7 @@ enum eSonar
 {
 	LEFT_SONAR = 0,
 	RIGHT_SONAR,
+	LEFT_AND_RIGHT_SONAR,
 	FRONT_SONAR
 };
 
@@ -27,16 +28,16 @@ enum eSonar
 
 #define Strafe_Command leftStick->GetX()
 
-#define Shifter_Command leftStick->GetTrigger()
+//#define Shifter_Command leftStick->GetTrigger()
 
 //#define Brake_Mode_Enable leftStick->GetRawButton(2)
 #define Portal_Preset leftStick->GetRawButton(2)
 
 #define Gyro_Correction_Enable leftStick->GetRawButton(3)
 
-#define Deploy_Lock leftStick->GetRawButton(7)
+//#define Deploy_Lock leftStick->GetRawButton(7)
 
-#define Deploy_Claw leftStick->GetRawButton(8)
+//#define Deploy_Claw leftStick->GetRawButton(8)
 
 #define Set_Up_Preset leftStick->GetRawButton(9)
 
@@ -60,9 +61,11 @@ enum eSonar
 
 #define Conveyor_Right rightStick->GetRawButton(7)
 
-#define Climb_Preset rightStick->GetRawButton(10)
+#define Deploy_Lock rightStick->GetRawButton(10)
+//#define Climb_Preset rightStick->GetRawButton(10)
 
-#define Claw_Deploy_Preset rightStick->GetRawButton(11)
+#define Claw_Deploy rightStick->GetRawButton(11)
+//#define Claw_Deploy_Preset rightStick->GetRawButton(11)
 
 
 //Turret Joystick Controls
@@ -85,6 +88,8 @@ enum eSonar
 #define Scale_Front_Level_1_Preset turretStick->GetRawButton(7)
 
 #define Scale_Back_Preset turretStick->GetRawButton(8)
+
+#define Claw_Retract turretStick->GetRawButton(9)
 
 #define Reset_Intake_Mode turretStick->GetRawButton(11)
 
@@ -132,14 +137,13 @@ enum eSonar
 #define Gyro 0
 
 //Solenoid
-#define Sol_High_Gear 6
-#define Sol_Low_Gear 7
+#define Sol_High_Gear 0
+#define Sol_Low_Gear 1
 
-#define Lock_On 5
-#define Lock_Off 4
+#define Lock_On 2
+#define Lock_Off 3
 
-#define Claw_Deploy_On 3
-#define Claw_Deploy_Off 2
+#define Claw_Deploy 4
 
 
 //Elevator Values
@@ -179,7 +183,7 @@ enum eSonar
 
 #define Wrist_Scale_Neutral -14000
 
-#define Wrist_tolerance 100
+#define Wrist_tolerance 150
 
 #define WristMaxLimEncoder 22400
 #define WristMinLimEncoder -17000
@@ -187,15 +191,15 @@ enum eSonar
 //PDP Channels
 #define Arm_PDPChannel 4
 
-#define Claw1_PDPChannel 5
-#define Claw2_PDPChannel 7
+#define Claw1_PDPChannel 10
+#define Claw2_PDPChannel 11
 
-#define Wrist_PDPChannel 12
+#define Wrist_PDPChannel 5
 
-#define Elevator_PDPChannel 12//Comp Bot:2
+#define Elevator_PDPChannel 2//Comp Bot:2
 
-#define Strafe1_PDPChannel 2
-#define Strafe2_PDPChannel 3
+#define Strafe1_PDPChannel 15
+#define Strafe2_PDPChannel 14
 
 
 #endif //DEFINES_H

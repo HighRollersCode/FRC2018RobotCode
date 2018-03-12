@@ -13,7 +13,7 @@
 #include "Preferences.h"
 #include "ctre/Phoenix.h"
 
-#define USINGGYRO 0
+#define USINGGYRO 1
 
 class Drivetrainclass
 {
@@ -163,6 +163,7 @@ public:
 	void StandardArcade_strafeOnly(float Strafe);
 
 	void Shifter_Update(bool ShifterUpdate);
+	void Shifter_High();
 
 	void Send_Data();
 

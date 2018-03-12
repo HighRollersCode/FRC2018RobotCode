@@ -6,12 +6,13 @@
  */
 
 #include "Endgame.h"
+#include "MyRobot.h"
 
 EndgameClass::EndgameClass()
 {
-	lock = new DoubleSolenoid(Lock_On,Lock_Off);
+	lock = new DoubleSolenoid(16,Lock_On,Lock_Off);
 
-	clawDeploy = new DoubleSolenoid(Claw_Deploy_Off,Claw_Deploy_On);
+	clawDeploy = new Solenoid(16,Claw_Deploy);
 
 	lockEnable_cur = false;
 	lockEnable_prev = false;
@@ -30,28 +31,33 @@ EndgameClass::~EndgameClass()
 	// TODO Auto-generated destructor stub
 }
 
-void EndgameClass::Update(bool LockEnable, bool ClawEnable)
+void EndgameClass::Update(bool LockEnable, bool ClawEnable,float timer)
 {
 	lockEnable_prev = lockEnable_cur;
 	lockEnable_cur = LockEnable;
 
 	clawDeploy_prev = clawDeploy_cur;
 	clawDeploy_cur = ClawEnable;
-
-	if(!lockEnable_prev && lockEnable_cur)
+	if(timer < shutOffTime || !DriverStation::GetInstance().IsFMSAttached())
 	{
-		lockToggleState = -lockToggleState;
-	}
+		if(!lockEnable_prev && lockEnable_cur)
+		{
+			lockToggleState = -lockToggleState;
+		}
 
-	if(lockToggleState == 1)
-	{
-		LockOff();
+		if(lockToggleState == 1)
+		{
+			LockOff();
+		}
+		else if(lockToggleState == -1)
+		{
+			LockOn();
+		}
 	}
-	else if(lockToggleState == -1)
+	else
 	{
 		LockOn();
 	}
-
 	if(!clawDeploy_prev && clawDeploy_cur)
 	{
 		clawToggleState = -clawToggleState;
@@ -68,7 +74,7 @@ void EndgameClass::Update(bool LockEnable, bool ClawEnable)
 }
 void EndgameClass::Send_Data()
 {
-	SmartDashboard::PutNumber("Claw Deployer", clawDeploy->Get());
+	SmartDashboard::PutBoolean("Claw Deployer", clawDeploy->Get());
 	SmartDashboard::PutNumber("Lock",lock->Get());
 }
 
@@ -84,9 +90,9 @@ void EndgameClass::LockOff()
 
 void EndgameClass::ClawDeployOn()
 {
-	clawDeploy->Set(DoubleSolenoid::Value::kForward);
+	clawDeploy->Set(true);
 }
 void EndgameClass::ClawDeployOff()
 {
-	clawDeploy->Set(DoubleSolenoid::Value::kReverse);
+	clawDeploy->Set(false);
 }

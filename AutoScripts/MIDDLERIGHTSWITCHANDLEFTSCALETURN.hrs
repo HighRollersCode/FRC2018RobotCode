@@ -1,4 +1,5 @@
 //////////////////////////////////////////////Start///////////////////////////////////////////////////////////
+SetLights 0
 SetPipeline 0
 
 DriveTimed 0 0 -0.5 .2
@@ -13,9 +14,9 @@ Conveyor -1
 
 DriveTicksHeadingDistance -.5 -100 0 58 //-125
 
-DriveTicksHeadingDistance -1.0 -150 0 56 //-125
+DriveTicksHeadingDistance -0.75 -125 0 56 //-125
 
-DriveTicksHeading -1.0 -200 0
+DriveTicksHeading -0.75 -200 0
 
 DriveTicksHeading -0.5 -100 0
 
@@ -73,7 +74,7 @@ BrakeWait .1 0
 
 WaitForTransition
 
-Intake -0.75
+Intake -0.6
 
 Wait 1.0
 

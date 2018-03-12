@@ -28,7 +28,7 @@ MyRobotClass::MyRobotClass()
 	AutonomousControl = new Auton(Drivetrain, &DriverStation::GetInstance(),Claw,LiftManager);
 	PDP = new PowerDistributionPanel();
 
-	Comp = new Compressor();
+	Comp = new Compressor(16);
 	Comp->SetClosedLoopControl(true);
 
 	forwardcommand = 0;
@@ -52,6 +52,9 @@ MyRobotClass::MyRobotClass()
 	turndelay->Reset();
 	turndelay->Start();
 
+	matchTimer = new Timer();
+	matchTimer->Reset();
+
 	m_ScriptSystem = 0;
 	Init_Scripts_System();
 }
@@ -65,6 +68,8 @@ void MyRobotClass::Disabled(void)
 
 	while(IsDisabled())
 	{
+		matchTimer->Stop();
+		matchTimer->Reset();
 		table->PutNumber("ledMode", 1);
 		//Arm->ArmPIDController->Disable();
 		Wait(0.005);
@@ -75,7 +80,8 @@ void MyRobotClass::Autonomous(void)
 {
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
-	table->PutNumber("ledMode", 1);
+	table->PutNumber("ledMode", 0);
+	Drivetrain->Shifter_High();
 
 	Load_Scripts();
 	printf("loaded\n");
@@ -109,10 +115,16 @@ void MyRobotClass::Autonomous(void)
 		Auto_Index = Auto_Index_RL;
 	}
 
+	Preferences *prefs = Preferences::GetInstance();
+	/*int script = prefs->GetInt("Auto Scripts", 0);
+	if(script != 0)
+	{
+		Auto_Index = script;
+	}*/
 	m_ScriptSystem->Run_Auto_Script(Auto_Index);
 	AutonomousControl->Auto_End();
 
-	table->PutNumber("ledMode", 1);
+	table->PutNumber("ledMode", 0);
 }
 void MyRobotClass::UpdateInputs()
 {
@@ -223,6 +235,8 @@ void MyRobotClass::Send_Data()
 	SmartDashboard::PutNumber("Claw1 Current",PDP->GetCurrent(Claw1_PDPChannel));
 	SmartDashboard::PutNumber("Claw2 Current",PDP->GetCurrent(Claw2_PDPChannel));
 	SmartDashboard::PutNumber("Elevator Current", PDP->GetCurrent(Elevator_PDPChannel));
+	SmartDashboard::PutNumber("Pressure Sensor", Comp->GetPressureSwitchValue());
+	SmartDashboard::PutNumber("Match Timer", matchTimer->Get());
 
 	Drivetrain->Send_Data();
 	AutonomousControl->SendData();
@@ -241,6 +255,7 @@ void MyRobotClass::OperatorControl(void)
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
 
 	table->PutNumber("ledMode", 0);
+	table->PutNumber("pipeline", 4);
 
 	Arm->PIDOff();
 	Elevator->PIDOff();
@@ -248,6 +263,8 @@ void MyRobotClass::OperatorControl(void)
 	LiftManager->changeMode(LiftMode::Free);
 
 	Comp->SetClosedLoopControl(true);
+
+	matchTimer->Start();
 
 	while(IsOperatorControl() && IsEnabled())
 	{
@@ -288,7 +305,7 @@ void MyRobotClass::OperatorControl(void)
 		}*/
 
 		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
-		Drivetrain->Shifter_Update(Shifter_Command);
+		Drivetrain->Shifter_Update(leftStick->GetTrigger());
 
 		if(Reset_Intake_Mode)
 		{
@@ -296,7 +313,7 @@ void MyRobotClass::OperatorControl(void)
 			Elevator->ResetElevatorEncoder();
 		}
 
-		Endgame->Update(Deploy_Lock,Deploy_Claw);
+		Endgame->Update(rightStick->GetRawButton(10),rightStick->GetRawButton(11),matchTimer->Get());
 
 		if(Enable_Elevator)
 		{
@@ -316,8 +333,7 @@ void MyRobotClass::OperatorControl(void)
 				Turret_Slow_Outake,Track_Enable);
 
 		LiftManager->UpdateLift(Intake_Mode_Preset,Switch_Mode_Preset ,Scale_Front_Level_1_Preset,
-				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Claw_Deploy_Preset,Climb_Preset,Portal_Preset);
-
+				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,false,false,Portal_Preset); //Claw_Deploy_Preset,Climb_Preset,Portal_Preset);
 		Conveyor->Update(Conveyor_Left, Conveyor_Right);
 
 		Wait(0.005);

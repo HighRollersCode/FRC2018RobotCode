@@ -1,21 +1,22 @@
 /////////////////////////////////////////////Start///////////////////////////////////////////////////////////
+SetLights 0
 SetPipeline 0
 
 DriveTimed 0 0 -0.5 .2
 
 SetActiveSonar 0
 
-DriveTicksStrafeHeading -0.5 -450 -1.0 -2175 0 //-2300
+DriveTicksStrafeHeading -0.5 -375 -1.0 -2175 0 //-2300
 
 DriveTimed -0.75 0 1.0 .1
 
 Conveyor -1
 
-DriveTicksHeadingDistance -.5 -50 0 58 //-125
+DriveTicksHeadingDistance -.5 -100 0 58 //-125
 
-DriveTicksHeadingDistance -1.0 -200 0 56 //-125
+DriveTicksHeadingDistance -0.75 -125 0 56 //-125
 
-DriveTicksHeading -1.0 -200 0
+DriveTicksHeading -0.75 -200 0
 
 DriveTicksHeading -0.5 -100 0
 
