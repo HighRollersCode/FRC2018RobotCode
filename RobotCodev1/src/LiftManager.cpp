@@ -179,17 +179,22 @@ void LiftManagerClass::UpdateLift(
 			{
 				case 0 :
 					{
-						_arm->SetWristTarg(Wrist_Folded);
+						_elevator->SetElevatorTarg(2000);
+						//_arm->SetWristTarg(Wrist_Folded);
 						CurrentState = 1;
 						break;
 					}
 				case 1 :
 					{
-						_elevator->SetElevatorTarg(Elevator_Intake);
+						if(_elevator->ElevatorOnTarg(Elevator_tolerance))
+						{
+							EndState();
+						}
+						/*_elevator->SetElevatorTarg(Elevator_Intake);
 						if(_arm->WristOnTarg(Wrist_tolerance))
 						{
 							CurrentState = 2;
-						}
+						}*/
 						break;
 					}
 				case 2 :
@@ -204,10 +209,13 @@ void LiftManagerClass::UpdateLift(
 					}
 				case 3:
 					{
-						_arm->SetWristTarg(Wrist_Intake);
-						if(_arm->WristOnTarg(Wrist_tolerance) && _arm->ArmOnTarg(Arm_tolerance))
+						if(_claw->isIntaking)
 						{
-							CurrentState = 4;
+							_arm->SetWristTarg(Wrist_Intake);
+							if(_arm->WristOnTarg(Wrist_tolerance) && _arm->ArmOnTarg(Arm_tolerance))
+							{;
+								CurrentState = 4;
+							}
 						}
 						break;
 					}
@@ -273,12 +281,16 @@ void LiftManagerClass::UpdateLift(
 					}
 				case 1:
 					{
+						if(_elevator->ElevatorOnTarg(Elevator_tolerance))
+						{
+							EndState();
+						}
 						//WaitForWrist(Wrist_Folded,Wrist_tolerance,CurrentState);
-						_arm->SetWristTarg(Wrist_Folded);
+						/*_arm->SetWristTarg(Wrist_Folded);
 						if(_arm->WristOnTarg(Wrist_tolerance))
 						{
 							CurrentState = 2;
-						}
+						}*/
 						break;
 					}
 				case 2:

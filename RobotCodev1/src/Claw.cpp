@@ -40,6 +40,7 @@ void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowou
 	if(intake || istracking)
 	{
 		Claw1->Set(ControlMode::PercentOutput, 1.0);
+		isIntaking = true;
 	}
 	else if(switchouttake)
 	{
@@ -56,6 +57,7 @@ void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowou
 	else
 	{
 		Claw1->Set(ControlMode::PercentOutput, 0);
+		isIntaking = false;
 	}
 }
 void ClawClass::Auto_Update()
@@ -84,6 +86,7 @@ void ClawClass::Send_Data()
 	SmartDashboard::PutNumber("Claw2 Filter Current",rightCurrent);
 	SmartDashboard::PutNumber("Claw2 Raw Current",MyRobotClass::Get()->PDP->GetCurrent(Claw2_PDPChannel));
 	SmartDashboard::PutBoolean("Got Cube",GotCube());
+	SmartDashboard::PutBoolean("Is Intaking",isIntaking);
 
 }
 bool ClawClass::GotCube()

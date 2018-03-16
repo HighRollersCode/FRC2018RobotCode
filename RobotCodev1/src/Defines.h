@@ -35,10 +35,6 @@ enum eSonar
 
 #define Gyro_Correction_Enable leftStick->GetRawButton(3)
 
-//#define Deploy_Lock leftStick->GetRawButton(7)
-
-//#define Deploy_Claw leftStick->GetRawButton(8)
-
 #define Set_Up_Preset leftStick->GetRawButton(9)
 
 #define Random_Number leftStick->GetRawButton(11)
@@ -64,7 +60,7 @@ enum eSonar
 #define Deploy_Lock rightStick->GetRawButton(10)
 //#define Climb_Preset rightStick->GetRawButton(10)
 
-#define Claw_Deploy rightStick->GetRawButton(11)
+#define Deploy_Claw rightStick->GetRawButton(11)
 //#define Claw_Deploy_Preset rightStick->GetRawButton(11)
 
 
@@ -88,8 +84,6 @@ enum eSonar
 #define Scale_Front_Level_1_Preset turretStick->GetRawButton(7)
 
 #define Scale_Back_Preset turretStick->GetRawButton(8)
-
-#define Claw_Retract turretStick->GetRawButton(9)
 
 #define Reset_Intake_Mode turretStick->GetRawButton(11)
 
@@ -126,12 +120,6 @@ enum eSonar
 #define Elevator_Encoder_1 6
 #define Elevator_Encoder_2 7
 
-#define Arm_Encoder_1 8
-#define Arm_Encoder_2 9
-
-#define Wrist_Encoder_1 10
-#define Wrist_Encoder_2 11
-
 //Gyro
 #define Pigeon_IMU 6
 #define Gyro 0
@@ -148,7 +136,7 @@ enum eSonar
 
 //Elevator Values
 #define Elevator_Intake 200 //100
-#define Elevator_Switch 13500
+#define Elevator_Switch 15150
 //#define Elevator_Scale_Level_1 11000
 #define Elevator_Scale_Level_1 7250
 #define Elevator_Scale_Level_1_Back 12000

@@ -33,10 +33,15 @@ ElevatorClass::ElevatorClass()
 
 	Preferences *prefs = Preferences::GetInstance();
 
-	ElevatorTalon->Config_kP(0,prefs->GetDouble("Elevator_P", 1.0f),1.0);
-	ElevatorTalon->Config_kI(0,prefs->GetDouble("Elevator_I", 0.0f),1.0);
-	ElevatorTalon->Config_kD(0,prefs->GetDouble("Elevator_D", 0.0005f),1.0);
+	ElevatorTalon->Config_kP(0,prefs->GetDouble("Elevator_P_0", 1.0f),1.0);
+	ElevatorTalon->Config_kI(0,prefs->GetDouble("Elevator_I_0", 0.0f),1.0);
+	ElevatorTalon->Config_kD(0,prefs->GetDouble("Elevator_D_0", 0.0005f),1.0);
 	ElevatorTalon->Config_kF(0,0,1.0);
+
+	ElevatorTalon->Config_kP(1,prefs->GetDouble("Elevator_P_1", 1.0f),1.0);
+	ElevatorTalon->Config_kI(1,prefs->GetDouble("Elevator_I_1", 0.0f),1.0);
+	ElevatorTalon->Config_kD(1,prefs->GetDouble("Elevator_D_1", 0.0005f),1.0);
+	ElevatorTalon->Config_kF(1,0,1.0);
 
 	currentverticalcommand = 0;
 	prevverticalcommand = 0;
@@ -60,6 +65,14 @@ void ElevatorClass::ResetElevatorEncoder()
 }
 void ElevatorClass::SetElevatorTarg(float targ)
 {
+	if(targ > GetElevatorEncoder())
+	{
+		ElevatorTalon->SelectProfileSlot(0,0);
+	}
+	else if(targ < GetElevatorEncoder())
+	{
+		ElevatorTalon->SelectProfileSlot(1,0);
+	}
 	ElevatorTalon->Set(ControlMode::Position,targ);
 }
 

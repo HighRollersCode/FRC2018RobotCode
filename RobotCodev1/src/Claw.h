@@ -22,6 +22,8 @@ public:
 	float leftCurrent = 0.0f;
 	float rightCurrent = 0.0f;
 
+	bool isIntaking = false;
+
 	ClawClass();
 	virtual ~ClawClass();
 	void Update(bool intake, bool switchouttake, bool outtake,bool slowout,bool istracking);

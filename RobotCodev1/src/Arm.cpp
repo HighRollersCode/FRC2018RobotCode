@@ -178,11 +178,11 @@ void ArmClass::Wrist_Update(float upcommand, float downcommand)
 
 	if(upcommand)
 	{
-		wristCommand = .5;
+		wristCommand = .75;
 	}
 	else if(downcommand)
 	{
-		wristCommand = -.5;
+		wristCommand = -.75;
 	}
 	else
 	{

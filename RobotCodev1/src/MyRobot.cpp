@@ -313,7 +313,7 @@ void MyRobotClass::OperatorControl(void)
 			Elevator->ResetElevatorEncoder();
 		}
 
-		Endgame->Update(rightStick->GetRawButton(10),rightStick->GetRawButton(11),matchTimer->Get());
+		Endgame->Update(Deploy_Lock,Deploy_Claw,matchTimer->Get());
 
 		if(Enable_Elevator)
 		{

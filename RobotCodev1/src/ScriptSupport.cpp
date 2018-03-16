@@ -605,21 +605,40 @@ void MyRobotClass::Load_Scripts()
 	m_ScriptSystem->Load_And_Run_Script("RobotSettings.hrs");
 
 	// Load all of the auto-mode scripts
-	m_ScriptSystem->Set_Auto_Script(111,"MIDDLERIGHTSWITCHANDSCALE.hrs");
-	m_ScriptSystem->Set_Auto_Script(112,"MIDDLERIGHTSWITCHANDLEFTSCALE.hrs");
-	m_ScriptSystem->Set_Auto_Script(113,"MIDDLEALLSCALERIGHT.hrs");
-	m_ScriptSystem->Set_Auto_Script(114,"MIDDLELEFTSWITCHANDSCALE.hrs");
-	m_ScriptSystem->Set_Auto_Script(115,"MIDDLELEFTSWITCHANDRIGHTSCALE.hrs");
-	m_ScriptSystem->Set_Auto_Script(116,"MIDDLERIGHTSWITCHANDLEFTSCALETURN.hrs");
-	m_ScriptSystem->Set_Auto_Script(117,"MIDDLELEFTSWITCHANDRIGHTSCALETURN.hrs");
-	m_ScriptSystem->Set_Auto_Script(118,"RIGHTALLSCALERIGHT.hrs");
-	m_ScriptSystem->Set_Auto_Script(119,"MIDDLELEFTSWITCH.hrs");
-	m_ScriptSystem->Set_Auto_Script(120,"MIDDLERIGHTSWITCH.hrs");
-	m_ScriptSystem->Set_Auto_Script(121,"LEFTALLSCALERIGHT.hrs");
-	m_ScriptSystem->Set_Auto_Script(122,"LEFTALLSCALELEFT.hrs");
-	m_ScriptSystem->Set_Auto_Script(123,"MIDDLEPYRAMIDRIGHT.hrs");
-	m_ScriptSystem->Set_Auto_Script(124,"MIDDLEPYRAMIDLEFT.hrs");
 
+	//Scale and Switch
+	m_ScriptSystem->Set_Auto_Script(11,"MIDDLERIGHTSWITCHANDSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(12,"MIDDLELEFTSWITCHANDSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(13,"MIDDLELEFTSWITCHANDRIGHTSCALETURN.hrs");
+	m_ScriptSystem->Set_Auto_Script(14,"MIDDLERIGHTSWITCHANDLEFTSCALETURN.hrs");
+
+	//Only Scale Right Start
+	m_ScriptSystem->Set_Auto_Script(21,"RIGHTALLSCALERIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(23,"RIGHTALLSCALELEFT.hrs");
+
+	//Only Scale Left Start
+	m_ScriptSystem->Set_Auto_Script(22,"LEFTALLSCALERIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(24,"LEFTALLSCALELEFT.hrs");
+
+	//Only Switch
+	m_ScriptSystem->Set_Auto_Script(31,"MIDDLELEFTSWITCH.hrs");
+	m_ScriptSystem->Set_Auto_Script(32,"MIDDLERIGHTSWITCH.hrs");
+
+	//Pyramid
+	m_ScriptSystem->Set_Auto_Script(41,"MIDDLEPYRAMIDRIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(42,"MIDDLEPYRAMIDLEFT.hrs");
+
+	//Switch and Scale No Backpack
+	m_ScriptSystem->Set_Auto_Script(51,"MIDDLERIGHTSWITCHANDSCALENOPACK.hrs");
+	m_ScriptSystem->Set_Auto_Script(52,"MIDDLELEFTSWITCHANDSCALENOPACK.hrs");
+	m_ScriptSystem->Set_Auto_Script(53,"MIDDLELEFTSWITCHANDRIGHTSCALETURNNOPACK.hrs");
+	m_ScriptSystem->Set_Auto_Script(54,"MIDDLERIGHTSWITCHANDLEFTSCALETURNNOPACK.hrs");
+
+	//Spare Autos
+	m_ScriptSystem->Set_Auto_Script(112,"MIDDLERIGHTSWITCHANDLEFTSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(115,"MIDDLELEFTSWITCHANDRIGHTSCALE.hrs");
+
+	m_ScriptSystem->Set_Auto_Script(113,"MIDDLEALLSCALERIGHT.hrs");
 
 	//EmptyAuto
 	m_ScriptSystem->Set_Auto_Script(999,"EMPTY.hrs");
