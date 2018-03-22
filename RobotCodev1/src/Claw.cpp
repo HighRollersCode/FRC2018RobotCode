@@ -45,6 +45,7 @@ void ClawClass::Update(bool intake, bool switchouttake, bool outtake,bool slowou
 	else if(switchouttake)
 	{
 		Claw1->Set(ControlMode::PercentOutput, -1.0);
+		isIntaking = true;
 	}
 	else if(outtake)
 	{
@@ -68,6 +69,7 @@ void ClawClass::Auto_Update()
 void ClawClass::Claw_Intake(float value)
 {
 	Claw1->Set(ControlMode::PercentOutput, value);
+	isIntaking = true;
 }
 
 void ClawClass::Claw_Outake(float value)
@@ -77,6 +79,7 @@ void ClawClass::Claw_Outake(float value)
 void ClawClass::Claw_Off()
 {
 	Claw1->Set(ControlMode::PercentOutput, 0.0);
+	isIntaking = false;
 }
 
 void ClawClass::Send_Data()

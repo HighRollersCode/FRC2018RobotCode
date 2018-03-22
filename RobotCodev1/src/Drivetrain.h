@@ -68,6 +68,8 @@ public:
 	bool shifterCur;
 	float toggleState;
 
+	bool isPossibleHighCenter = false;
+
 	Victor *leftMotor;
 	Victor *leftMotor1;
 	Victor *rightMotor;
@@ -130,6 +132,7 @@ public:
 
 	float ComputeAngleDelta(float t);
 	float GetHeading();
+	float GetRoll();
 
 	float GetTurnRate();
 

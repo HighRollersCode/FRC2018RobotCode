@@ -441,6 +441,19 @@ public:
 	}
 };
 
+class SetScaleBackLobModeCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "ScaleBackLobMode"; }
+	virtual int Get_Parameter_Count() { return 0; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetScaleBackLobModeCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Scale_Back_Lob);
+	}
+};
+
 class SetSwitchModeCommand : public HrScriptCommandClass
 {
 
@@ -583,6 +596,7 @@ void MyRobotClass::Init_Scripts_System()
 
 	m_ScriptSystem->Add_Command(new SetIntakeModeCommand());
 	m_ScriptSystem->Add_Command(new SetScaleBackModeCommand());
+	m_ScriptSystem->Add_Command(new SetScaleBackLobModeCommand());
 	m_ScriptSystem->Add_Command(new SetSwitchModeCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////

@@ -37,7 +37,7 @@ Drivetrainclass::Drivetrainclass(WPI_TalonSRX *GyroTalon)
 	Strafe_P = prefs->GetDouble("Sonar_P",.05f);
 
 	forwardramp = .01f; //.001f
-	straferamp = .2f; //.01f saturday after build //.003f
+	straferamp = .01f; //.01f saturday after build //.003f
 
 
 	leftcommand = 0;
@@ -186,6 +186,15 @@ float Drivetrainclass::GetHeading()
 #else
 	return -(imu->GetFusedHeading());
 #endif
+}
+
+float Drivetrainclass::GetRoll()
+{
+	double xyz[3] = {0,0,0};
+
+	imu->GetYawPitchRoll(xyz);
+
+	return -(xyz[1]);
 }
 
 float Drivetrainclass::GetLeftSonar()
@@ -404,7 +413,6 @@ void Drivetrainclass::StandardArcade_forwardOnly(float left,float right)
 
 void Drivetrainclass::StandardArcade_strafeOnly(float Strafe)
 {
-	//strafeHasTraction = true;
 	if(MyRobotClass::Get()->AutonomousControl->Running())
 	{
 		if((leftCurrent > 1.4) || (rightCurrent > 1.4))
@@ -424,6 +432,10 @@ void Drivetrainclass::StandardArcade_strafeOnly(float Strafe)
 			{
 				Strafe = strafeMotor->Get() - straferamp;
 			}
+		}
+		else
+		{
+			strafeHasTraction = false;
 		}
 		if(sign(Strafe) == 1)
 		{
@@ -452,7 +464,7 @@ void Drivetrainclass::StandardArcade_strafeOnly(float Strafe)
 	prevStrafeCommand = Strafe;
 	float finalstrafecommand = Strafe;
 
-	if(!strafeHasTraction)
+	if(!strafeHasTraction && MyRobotClass::Get()->AutonomousControl->Running())
 	{
 		if(finalstrafecommand > .2f)
 		{
@@ -795,10 +807,6 @@ void Drivetrainclass::Send_Data()
 	SmartDashboard::PutNumber("Right Sonar Value", GetRightSonar());
 	SmartDashboard::PutNumber("Active Sonar Value", GetActiveSonar());
 	SmartDashboard::PutNumber("Active Sonar", currentActiveSonar);
-	SmartDashboard::PutNumber("Maxbotics Sonar", maxboticsonar->GetValue());
-	SmartDashboard::PutNumber("Maxbotics Sonar Conversion", (maxboticsonar->GetValue()/.0098f));
-
-	SmartDashboard::PutNumber("LastDistance", lastdistance);
 
 	SmartDashboard::PutNumber("Left Encoder", GetLeftEncoder());
 	SmartDashboard::PutNumber("Right Encoder", GetRightEncoder());
@@ -814,6 +822,8 @@ void Drivetrainclass::Send_Data()
 	SmartDashboard::PutNumber("Left Current", leftCurrent);
 	SmartDashboard::PutNumber("Right Current", rightCurrent);
 	SmartDashboard::PutBoolean("TRACTION",strafeHasTraction);
+	SmartDashboard::PutNumber("Roll", GetRoll());
+
 	bool shiftPosition = true;
 	if(shifterPiston->Get() == 1)
 	{

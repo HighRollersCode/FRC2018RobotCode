@@ -162,57 +162,29 @@ void MyRobotClass::UpdateInputs()
 	float targetA = table->GetNumber("ta", 0);
 	float targetV = table->GetNumber("tv", 0);
 
-
-	/*if(fabs(targetX) > 1)
-	{
-		steering_adjust = -0.015f * targetX;
-
-		//min
-		if(targetX > 0.0f)
-		{
-			steering_adjust -= 0.1f;
-		}
-		else
-		{
-			steering_adjust += 0.1f;
-		}
-	}*/
 	tracking_prev = tracking_cur;
 	tracking_cur = Track_Enable;
 
 	if(Track_Enable)
 	{
-		Preferences *prefs = Preferences::GetInstance();
+		table->PutNumber("pipeline", 0);
+		float tx = table->GetNumber("tx", 0);
+		float ty = table->GetNumber("ty", 0);
 
-		float track_area = prefs->GetDouble("Track_Area",50);
-		float track_kforward = prefs->GetDouble("Track_kForward",.025f);
-		float track_kturn = prefs->GetDouble("Track_kTurn",-.0125f);
-		float track_kstrafe = prefs->GetDouble("Track_kStrafe",-.015f);
+		float distance_error = ty + 5;
+		float cube_error = tx;
 
-		float steering_adjust = track_kturn * targetX;
-		float strafe_adjust = track_kstrafe * targetX;
+		float tracking_drive = distance_error * Drivetrain->Drive_P;
+		float tracking_turn = 0; //cube_error * DriveTrain->Gyro_P;
+		float tracking_strafe = cube_error * Drivetrain->Strafe_P;
 
-		isTracking = true;
-		if(targetV)
-		{
-			forwardcommand = (track_area-targetA)*track_kforward;
-
-			float transition_range = prefs->GetDouble("Transition_Range", 20);
-
-			if(fabs(targetX) > transition_range)
-			{
-				turnbias = .7;
-			}
-			else
-			{
-				turnbias = .3;
-			}
-			turncommand = turnbias * -steering_adjust;
-			strafecommand = (1 - turnbias) * strafe_adjust;
-		}
+		forwardcommand += tracking_drive;
+		turncommand += tracking_turn;
+		strafecommand += tracking_strafe;
 	}
 	else
 	{
+		table->PutNumber("pipeline", 4);
 		isTracking = false;
 	}
 
@@ -232,9 +204,6 @@ void MyRobotClass::Send_Data()
 
 	SmartDashboard::PutBoolean("Is Tracking", isTracking);
 	SmartDashboard::PutString("Game Data", DriverStation::GetInstance().GetGameSpecificMessage());
-	SmartDashboard::PutNumber("Claw1 Current",PDP->GetCurrent(Claw1_PDPChannel));
-	SmartDashboard::PutNumber("Claw2 Current",PDP->GetCurrent(Claw2_PDPChannel));
-	SmartDashboard::PutNumber("Elevator Current", PDP->GetCurrent(Elevator_PDPChannel));
 	SmartDashboard::PutNumber("Pressure Sensor", Comp->GetPressureSwitchValue());
 	SmartDashboard::PutNumber("Match Timer", matchTimer->Get());
 
@@ -307,12 +276,6 @@ void MyRobotClass::OperatorControl(void)
 		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
 		Drivetrain->Shifter_Update(leftStick->GetTrigger());
 
-		if(Reset_Intake_Mode)
-		{
-			Arm->ResetEncoder();
-			Elevator->ResetElevatorEncoder();
-		}
-
 		Endgame->Update(Deploy_Lock,Deploy_Claw,matchTimer->Get());
 
 		if(Enable_Elevator)
@@ -333,8 +296,15 @@ void MyRobotClass::OperatorControl(void)
 				Turret_Slow_Outake,Track_Enable);
 
 		LiftManager->UpdateLift(Intake_Mode_Preset,Switch_Mode_Preset ,Scale_Front_Level_1_Preset,
-				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,false,false,Portal_Preset); //Claw_Deploy_Preset,Climb_Preset,Portal_Preset);
+				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Scale_Back_Lob_Preset,false,Portal_Preset); //Climb_Preset,Portal_Preset);
+
 		Conveyor->Update(Conveyor_Left, Conveyor_Right);
+
+		if(Reset_Encoders)
+		{
+			Arm->ResetEncoder();
+			Elevator->ResetElevatorEncoder();
+		}
 
 		Wait(0.005);
 	}

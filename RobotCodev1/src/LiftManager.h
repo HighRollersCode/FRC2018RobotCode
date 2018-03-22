@@ -26,7 +26,7 @@ enum LiftMode
 	Scale_Winning_Back_Level1,
 	Set_Up,
 	Climb,
-	Claw_Deploy_State,
+	Scale_Back_Lob,
 	Portal
 };
 class LiftManagerClass {
@@ -59,8 +59,8 @@ bool ScaleLevel1BackState_Prev = false;
 bool SetUpState_Cur = false;
 bool SetUpState_Prev = false;
 
-bool ClawDeployState_Cur = false;
-bool ClawDeployState_Prev = false;
+bool ScaleBackLobState_Cur = false;
+bool ScaleBackLobState_Prev = false;
 
 bool ClimbState_Cur = false;
 bool ClimbState_Prev = false;

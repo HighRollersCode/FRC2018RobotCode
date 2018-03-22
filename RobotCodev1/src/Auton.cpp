@@ -226,24 +226,47 @@ void Auton::Auto_STRAFE(float strafe, float strafeTicks, float desheading)
 void Auton::Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance)
 {
 	DriveTrain->ResetEncoders_Timers();
-	DriveTrain->SetRawStrafeSpeed(strafe);
 	DriveTrain->headingTarget = desheading;
 
 	float currentdistance = DriveTrain->GetActiveSonar();
 	float initialerror = desdistance - currentdistance;
+	float error = desdistance - DriveTrain->GetActiveSonar();
+	bool goingLeft = false;
+
+	if((initialerror < 0 && DriveTrain->currentActiveSonar == eSonar::LEFT_SONAR)||(initialerror > 0 && DriveTrain->currentActiveSonar == eSonar::RIGHT_SONAR))
+	{
+		goingLeft = true;
+	}
+	else
+	{
+		goingLeft = false;
+	}
+
+	if(goingLeft)
+	{
+		strafe = -fabs(strafe);
+	}
+	else
+	{
+		strafe = fabs(strafe);
+	}
+
+	DriveTrain->SetRawStrafeSpeed(strafe);
 
 	if(initialerror > 0)
 	{
-		while (Running() && (DriveTrain->GetActiveSonar() < desdistance))
+		while (Running() && (DriveTrain->GetActiveSonar() < desdistance) && fabs(error) > 3)
 		{
 			Auto_System_Update();
+			 error = desdistance - DriveTrain->GetActiveSonar();
 		}
 	}
 	else if(initialerror < 0)
 	{
-		while (Running() && (DriveTrain->GetActiveSonar() > desdistance))
+		while (Running() && (DriveTrain->GetActiveSonar() > desdistance) && fabs(error) > 3)
 		{
 			Auto_System_Update();
+			 error = desdistance - DriveTrain->GetActiveSonar();
 		}
 	}
 
@@ -353,7 +376,7 @@ void Auton::Auto_SEARCHFORCUBESTRAFE(float strafe, float heading,float time)
 		}
 		auto_tx = tx;
 		auto_ty = ty;
-		saw_cube = ((tv != 0) && (fabs(tx) < 3.0));
+		saw_cube = ((tv != 0) && (fabs(tx) < 2.0));
 		Auto_System_Update();
 	}
 

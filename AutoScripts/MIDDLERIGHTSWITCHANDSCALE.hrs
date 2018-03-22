@@ -20,9 +20,9 @@ DriveTicksHeading -0.75 -200 0
 
 DriveTicksHeading -0.5 -100 0
 
-DriveTicksHeading -0.2 -200 0
+DriveTicksHeading -0.2 -300 0
 
-BrakeWait .2 0
+BrakeWait .4 0
 
 //DriveTimed 1.0 0 0 .3
 
@@ -33,7 +33,9 @@ IntakeMode
 
 Intake 1
 
-SearchForCubeStrafeTimed 0.75 0 2.0
+WaitForTransition
+
+SearchForCubeStrafeTimed 0.5 0 2.0
 
 /////////  Drive Back for Cube 1 ////////////
 
@@ -41,7 +43,7 @@ DriveTicksHeading -0.75 -5 0
 
 Intake 0
 
-ScaleBackMode
+ScaleBackLobMode
 
 DriveTicksHeading -0.75 -120 0
 //DriveTicksHeadingDistance -0.75 -100 0 70 //-250
@@ -53,11 +55,13 @@ BrakeWait .1 0
 
 //DriveTimed 0.75 0 0 .1
 
-//GyroTurnTimed -15 0.25
+GyroTurnTimed -15 0.5
 
 /////////  Score Cube 1 ////////////
 
 WaitForTransition
+
+Wait 0.5
 
 Intake -0.5
 
@@ -80,7 +84,9 @@ BrakeWait .1 0
 //Search for second cube and intake cube
 Intake 1
 
-SearchForCubeStrafeTimed 1.0 0 2.0
+WaitForTransition
+
+SearchForCubeStrafeTimed 0.5 0 2.0
 
 //Drive to scale and set up to score
 DriveTicksStrafeHeading -0.5 -25 -0.75 -475 0 //425

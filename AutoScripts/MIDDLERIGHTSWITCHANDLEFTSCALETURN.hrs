@@ -20,9 +20,9 @@ DriveTicksHeading -0.75 -200 0
 
 DriveTicksHeading -0.5 -100 0
 
-DriveTicksHeading -0.2 -200 0
+DriveTicksHeading -0.2 -300 0
 
-BrakeWait .2 0
+BrakeWait .4 0
 
 //DriveTimed 1.0 0 0 .3
 
@@ -37,7 +37,9 @@ IntakeMode
 
 Intake 1
 
-SearchForCubeStrafeTimed 0.9 0 5.0
+WaitForTranistion
+
+SearchForCubeStrafeTimed 0.5 0 7.0
 
 SetElevator 6500
 
@@ -62,29 +64,36 @@ DriveTicksHeading -0.3 -50 -90
 
 BrakeWait .1 0
 
-GyroTurnTimed 10 1.0
+GyroTurnTimed 30 1.0
 
-ScaleBackMode
+ScaleBackLobMode
 
-DriveTicksHeading -0.5 -200 10
+DriveTicksHeading -0.3 -200 30
 
-DriveTicksHeading -0.3 -40 10
+DriveTicksHeading -0.3 -40 30
 
-BrakeWait .1 0
+BrakeWait .2 0
 
 WaitForTransition
 
-Intake -0.6
+Wait 0.5
+
+Intake -0.75
 
 Wait 1.0
 
 Intake 0
 
 SetPipeline 1
+SetActiveSonar 1
 
 IntakeMode
 
-DriveTicksHeading 0.5 175 0
+DriveTicksHeading 0.5 75 0
+
+BrakeWait .3 0
+
+Wait 100
 
 WaitForTransition
 
@@ -94,14 +103,14 @@ SearchForCubeStrafeTimed -0.5 0 5.0
 
 Intake 0
 
-
-
 //Score Cube 2
 DriveTicksHeading -0.75 -25 0
 
 Intake 0
 
-ScaleBackMode
+ScaleBackLobMode
+
+StrafeHeadingDIstance 0.5 0 75
 
 DriveTicksHeadingDistance -0.75 -200 0 70
 

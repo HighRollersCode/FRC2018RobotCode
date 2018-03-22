@@ -16,8 +16,6 @@ using namespace frc;
 
 class ClawClass {
 public:
-	VictorSPX *Claw1;
-	VictorSPX *Claw2;
 
 	float leftCurrent = 0.0f;
 	float rightCurrent = 0.0f;
@@ -35,6 +33,11 @@ public:
 	void Claw_Intake(float value = 1.0f);
 	void Claw_Outake(float value = -1.0f);
 	void Claw_Off();
+
+private:
+	VictorSPX *Claw1;
+	VictorSPX *Claw2;
+
 };
 
 #endif /* SRC_CLAW_H_ */

@@ -26,6 +26,8 @@
 
 //SetAuto 999 is EMPTY
 
+//SetAutoLL 115
+
 //Switch and Scale
 SetAutoRR 11
 SetAutoLL 12

@@ -85,7 +85,9 @@ enum eSonar
 
 #define Scale_Back_Preset turretStick->GetRawButton(8)
 
-#define Reset_Intake_Mode turretStick->GetRawButton(11)
+#define Scale_Back_Lob_Preset turretStick->GetRawButton(9)
+
+#define Reset_Encoders turretStick->GetRawButton(11)
 
 
 
@@ -142,6 +144,7 @@ enum eSonar
 #define Elevator_Scale_Level_1_Back 12000
 #define Elevator_Claw_Deploy 15150
 #define Elevator_Portal 10600
+#define Elevator_Scale_Back_Lob 6850
 
 #define Elevator_tolerance 500
 
@@ -154,6 +157,7 @@ enum eSonar
 #define Arm_Scale_Level_1 22000
 #define Arm_Scale_Neutral 22000
 #define Arm_Portal 2300
+#define Arm_Scale_Back_Lob 21950
 
 #define ArmMaxLimEncoder 23000
 #define ArmMinLimEncoder 0
@@ -166,6 +170,7 @@ enum eSonar
 #define Wrist_Scale_Level_1 -14750
 #define Wrist_Folded 0
 #define Wrist_Scale_Level_1_Back 10000
+#define Wrist_Scale_Back_Lob 6900
 //#define Wrist_Scale_Level_1_Back 14000
 #define Wrist_Portal -14100
 

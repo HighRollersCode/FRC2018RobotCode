@@ -127,7 +127,7 @@ void HrScriptSystemClass::Add_Command(HrScriptCommandClass * command)
 	{
 		m_CommandPrototypes[m_CommandPrototypeCount] = command;
 		m_CommandPrototypeCount++;
-		printf("Added Command %s \r\n", command->Get_Command_Name());
+		//printf("Added Command %s \r\n", command->Get_Command_Name());
 	}
 }
 

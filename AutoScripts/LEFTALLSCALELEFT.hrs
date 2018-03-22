@@ -1,12 +1,13 @@
 //////////////////////////////////////////////Start///////////////////////////////////////////////////////////
 SetLights 0
 SetActiveSonar 1
+SetPipeline 1
 
 DriveTimed 0 0 -.2 .2
 
 DriveTicksHeading -1.0 -400 0
 
-DriveTicksHeadingDistance -0.75 -525 0 55
+DriveTicksHeadingDistance -0.5 -525 0 55
 
 DriveTicksHeading -0.6 -100 0
 
@@ -31,13 +32,15 @@ BrakeWait .3 0
 
 ScaleBackMode
 
-StrafeHeadingDistance -0.75 10 70
+StrafeHeadingDistance -0.5 10 70
 
 //DriveTimed 0.75 0 0 .1
 
 WaitForTransition
 
-Wait 1.0
+GyroTurnTimed 45 1.0
+
+Wait 0.1
 
 Intake -0.5
 
@@ -61,7 +64,7 @@ BrakeWait .2 0
 
 Intake 1
 
-SearchForCubeStrafeTimed -0.75 0 2.0
+SearchForCubeStrafeTimed -0.5 0 2.0
 
 /////////  Drive Back for Cube 1 ////////////
 
@@ -71,17 +74,19 @@ Intake 0
 
 ScaleBackMode
 
+StrafeHeadingDistance 0.75 10 75
+
 DriveTicksHeadingDistance -0.75 -180 0 70
 
 DriveTicksHeadingDistance -0.3 -50 0 70
 
 BrakeWait .2 0
 
-StrafeHeadingDistance 0.75 10 70
+//StrafeHeadingDistance 0.75 10 70
 
 //DriveTimed 0.75 0 0 .1
 
-//GyroTurnTimed -15 0.25
+GyroTurnTimed 45 0.5
 
 /////////  Score Cube 1 ////////////
 
