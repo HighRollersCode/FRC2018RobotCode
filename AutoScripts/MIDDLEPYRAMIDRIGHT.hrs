@@ -5,7 +5,7 @@ DriveTimed 0 0 1.0 .2
 
 SwitchMode
 
-DriveTicksStrafeHeading 0.75 300 0.75 650 0
+DriveTicksStrafeHeading 0.75 200 0.75 650 0
 
 Intake 1
 
@@ -35,6 +35,8 @@ DriveTicksHeading -0.2 -150 0
 
 BrakeWait .1 0
 
+Intake 1
+
 IntakeMode
 
 GyroTurnTimed -50 1.0
@@ -42,8 +44,6 @@ GyroTurnTimed -50 1.0
 WaitForTransition
 
 Wait 0.25
-
-Intake 1
 
 DriveTicksHeading 0.5 100 -55
 
@@ -68,9 +68,9 @@ SetElevator 15100
 
 Intake 1
 
-DriveTicksStrafeHeading 0.5 100  0.75 200 5
+DriveTicksStrafeHeading 0.5 100  0.75 50 5
 
-DriveTimed 0.5 0 0 3.0
+DriveTimed 0.5 0 0 1.5
 
 Intake 0
 

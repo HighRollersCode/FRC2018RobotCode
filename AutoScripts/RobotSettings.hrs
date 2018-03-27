@@ -29,10 +29,10 @@
 //SetAutoLL 115
 
 //Switch and Scale
-SetAutoRR 11
-SetAutoLL 12
-SetAutoLR 13
-SetAutoRL 14
+//SetAutoRR 11
+//SetAutoLL 12
+//SetAutoLR 13
+//SetAutoRL 14
 
 //Switch and Scale No BackPack
 //SetAutoRR 51
@@ -59,9 +59,15 @@ SetAutoRL 14
 //SetAutoRL 23
 
 //Pyramid
-//SetAutoLL 42
-//SetAutoRR 41
-//SetAutoLR 42
-//SetAutoRL 41
+SetAutoLL 42
+SetAutoRR 41
+SetAutoLR 42
+SetAutoRL 41
+
+//Straight Forward
+//SetAutoLL 112
+//SetAutoRR 112
+//SetAutoLR 112
+//SetAutoRL 112
 
 DriveTrainSettings .01

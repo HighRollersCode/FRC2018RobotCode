@@ -6,15 +6,15 @@ DriveTimed 0 0 -0.5 .2
 
 SetActiveSonar 0
 
-DriveTicksStrafeHeading -0.5 -375 -1.0 -2175 0 //-2300
+DriveTicksStrafeHeading -0.5 -225 -0.85 -2175 0 //-2300 forward: -375
 
-DriveTimed -0.75 0 1.0 .1
+//DriveTimed -0.5 0 1.0 .1
 
 Conveyor -1
 
 DriveTicksHeadingDistance -.5 -100 0 58 //-125
 
-DriveTicksHeadingDistance -0.75 -125 0 56 //-125
+DriveTicksHeadingDistance -0.5 -125 0 56 //-125
 
 DriveTicksHeading -0.75 -200 0
 
@@ -35,7 +35,7 @@ Intake 1
 
 WaitForTransition
 
-SearchForCubeStrafeTimed 0.5 0 2.0
+SearchForCubeStrafeTimed 0.5 0 7.0
 
 /////////  Drive Back for Cube 1 ////////////
 

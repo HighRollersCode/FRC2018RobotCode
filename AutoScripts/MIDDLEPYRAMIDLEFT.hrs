@@ -5,7 +5,7 @@ DriveTimed 0 0 -1.0 .2
 
 SwitchMode
 
-DriveTicksStrafeHeading 0.75 300 -0.75 -1200 0
+DriveTicksStrafeHeading 0.75 200 -0.75 -650 0
 
 Intake 1
 
@@ -76,7 +76,7 @@ Intake 0
 
 //StrafeTrackToSwitch -0.5 0 2.0
 
-DriveTicksStrafeHeading 0.5 200 -0.75 -200 0
+DriveTicksStrafeHeading 0.5 200 -0.75 -50 0
 
 DriveTimed 0.5 1.5
 

@@ -100,6 +100,8 @@ enum eSonar
 #define Strafe_Motor_2 5
 
 #define Elevator_Motor 1
+#define Elevator_Motor_2 7
+
 #define Arm_Motor 2
 
 #define Claw_Motor_1 3
@@ -190,6 +192,7 @@ enum eSonar
 #define Wrist_PDPChannel 5
 
 #define Elevator_PDPChannel 2//Comp Bot:2
+#define Elevator2_PDPChannel 3
 
 #define Strafe1_PDPChannel 15
 #define Strafe2_PDPChannel 14

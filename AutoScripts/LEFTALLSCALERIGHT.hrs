@@ -19,7 +19,7 @@ DriveTicksHeadingDistance -0.75 -225 0 55
 
 DriveTicksHeading -0.3 -200 0
 
-DriveTicksHeading -0.2 -50 0
+DriveTicksHeading -0.2 -125 0
 
 DriveTicksHeading -0.2 -50 0
 
@@ -54,9 +54,9 @@ WaitForTransition
 
 Wait 0.75
 
-Intake -1.0
+Intake -0.6
 
-Wait 0.5
+Wait 1.0
 
 IntakeMode
 

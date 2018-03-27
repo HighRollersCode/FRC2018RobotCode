@@ -13,6 +13,7 @@
 #include "ctre/Phoenix.h"
 
 using namespace frc;
+#define DUALMOTOR 0
 
 class ElevatorClass
 {
@@ -20,6 +21,9 @@ public:
 
 	WPI_TalonSRX *ElevatorTalon;
 
+#if DUALMOTOR
+	WPI_TalonSRX *ElevatorTalon2;
+#endif
 	float currentverticalcommand;
 	float prevverticalcommand;
 
@@ -32,6 +36,9 @@ public:
 
 	void SetElevatorTarg(float targ);
 	bool ElevatorOnTarg(float tolerance = 5);
+
+	void TurnOffLimits();
+	void TurnOnLimits();
 
 	void PIDOff();
 	void Update(float verticalcommand);

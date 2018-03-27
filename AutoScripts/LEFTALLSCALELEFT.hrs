@@ -7,64 +7,68 @@ DriveTimed 0 0 -.2 .2
 
 DriveTicksHeading -1.0 -400 0
 
-DriveTicksHeadingDistance -0.5 -525 0 55
+DriveTicksHeading -0.5 -525 0
 
 DriveTicksHeading -0.6 -100 0
 
-DriveTicksHeadingDistance -0.5 -75 0 70
+DriveTicksHeading -0.5 -75 0
 
 //Make Sure Cube is in claw
 Intake 1
 
-DriveTicksHeadingDistance -0.5 -75 0 70
+DriveTicksHeading -0.5 -75 0
 
 Intake 0
 
-DriveTicksHeadingDistance -0.3 -175 0 70
+DriveTicksHeading -0.3 -200 0
 
-DriveTicksHeadingDistance -0.3 -25 0 70
+DriveTicksHeading -0.3 -25 0
 
-DriveTicksHeadingDistance -0.3 -50 0 70
+DriveTicksHeading -0.3 -25 0
 
-DriveTicksHeadingDistance -0.2 -50 0 70
+DriveTicksHeading -0.2 -25 0
+
+//BrakeWait .3 0
+
+//GyroTurnTimed 55 1.0
+
+ScaleBackLobMode
+
+Intake 1
+
+DriveTicksHeading -0.2 -75 60
 
 BrakeWait .3 0
 
-ScaleBackMode
-
-StrafeHeadingDistance -0.5 10 70
-
-//DriveTimed 0.75 0 0 .1
-
 WaitForTransition
 
-GyroTurnTimed 45 1.0
-
-Wait 0.1
-
-Intake -0.5
+Intake 0
 
 Wait 0.5
+
+Intake -0.6
+
+Wait 1.0
 
 Intake 0
 
 IntakeMode
 
-DriveTicksHeading 0.5 75 0
+Intake 1
 
-BrakeWait .1 0
+GyroTurnTimed -20 0.5
+
+DriveTicksHeading 0.5 125 -20
 
 WaitForTransition
 
-DriveTicksHeading 0.2 150 0
+DriveTicksHeading 0.3 125 -20
 
 BrakeWait .2 0
 
 ///////// Find cube 1 ////////////
 
-Intake 1
-
-SearchForCubeStrafeTimed -0.5 0 2.0
+SearchForCubeStrafeTimed -0.5 0 7.0
 
 /////////  Drive Back for Cube 1 ////////////
 
@@ -72,17 +76,17 @@ DriveTicksHeading -0.75 -25 0
 
 Intake 0
 
-ScaleBackMode
+ScaleBackLobMode
 
-StrafeHeadingDistance 0.75 10 75
+StrafeHeadingDistance 0.5 0 75
 
-DriveTicksHeadingDistance -0.75 -180 0 70
+DriveTicksHeadingDistance -0.5 -180 0 75
 
-DriveTicksHeadingDistance -0.3 -50 0 70
+DriveTicksHeadingDistance -0.3 -50 0 75
 
 BrakeWait .2 0
 
-//StrafeHeadingDistance 0.75 10 70
+//StrafeHeadingDistance 0.75 10 75
 
 //DriveTimed 0.75 0 0 .1
 
@@ -92,9 +96,9 @@ GyroTurnTimed 45 0.5
 
 WaitForTransition
 
-Wait 0.25
+Wait 1.0
 
-Intake -0.5
+Intake -1.0
 
 Wait 0.5
 
@@ -144,7 +148,7 @@ GyroTurnTimed -20 0.5
 //Score cube
 WaitForTransition
 
-Intake -0.5
+Intake -0.6
 
 Wait 2.0
 

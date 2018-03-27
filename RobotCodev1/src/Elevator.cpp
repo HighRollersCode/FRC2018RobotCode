@@ -10,13 +10,20 @@
 ElevatorClass::ElevatorClass()
 {
 	ElevatorTalon = new WPI_TalonSRX(Elevator_Motor);
+#if DUALMOTOR
+	ElevatorTalon->SetInverted(false);
+#else
 	ElevatorTalon->SetInverted(true);
+#endif
 
 	ElevatorTalon->Set(ControlMode::PercentOutput, 0.0);
 
 	ElevatorTalon->ConfigSelectedFeedbackSensor(FeedbackDevice::CTRE_MagEncoder_Relative,0,1.0f);
+#if DUALMOTOR
+	ElevatorTalon->SetSensorPhase(false);
+#else
 	ElevatorTalon->SetSensorPhase(true);
-
+#endif
 	ElevatorTalon->ConfigNominalOutputForward(0.0,1.0);
 	ElevatorTalon->ConfigNominalOutputReverse(0.0,1.0);
 
@@ -38,11 +45,48 @@ ElevatorClass::ElevatorClass()
 	ElevatorTalon->Config_kD(0,prefs->GetDouble("Elevator_D_0", 0.0005f),1.0);
 	ElevatorTalon->Config_kF(0,0,1.0);
 
-	ElevatorTalon->Config_kP(1,prefs->GetDouble("Elevator_P_1", 1.0f),1.0);
+	ElevatorTalon->Config_kP(1,prefs->GetDouble("Elevator_P_1", 0.06f),1.0);
 	ElevatorTalon->Config_kI(1,prefs->GetDouble("Elevator_I_1", 0.0f),1.0);
-	ElevatorTalon->Config_kD(1,prefs->GetDouble("Elevator_D_1", 0.0005f),1.0);
+	ElevatorTalon->Config_kD(1,prefs->GetDouble("Elevator_D_1", 0.001f),1.0);
 	ElevatorTalon->Config_kF(1,0,1.0);
 
+#if DUALMOTOR
+	ElevatorTalon2 = new WPI_TalonSRX(Elevator_Motor_2);
+	ElevatorTalon2->Set(ControlMode::Follower,Elevator_Motor);
+
+	ElevatorTalon2->SetInverted(false);
+#endif
+
+	/*ElevatorTalon2->SetInverted(true);
+
+	ElevatorTalon2->Set(ControlMode::PercentOutput, 0.0);
+
+	ElevatorTalon2->ConfigNominalOutputForward(0.0,1.0);
+	ElevatorTalon2->ConfigNominalOutputReverse(0.0,1.0);
+
+	ElevatorTalon2->SetSelectedSensorPosition(0,0,1.0f);
+
+	ElevatorTalon2->ConfigForwardSoftLimitThreshold(ElevatorMaxLimEncoder,1.0);
+	ElevatorTalon2->ConfigReverseSoftLimitThreshold(ElevatorMinLimEncoder,1.0);
+
+	ElevatorTalon2->ConfigForwardSoftLimitEnable(true,1.0);
+	ElevatorTalon2->ConfigReverseSoftLimitEnable(true,1.0);
+
+	ElevatorTalon2->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
+	ElevatorTalon2->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
+
+	//Preferences *prefs = Preferences::GetInstance();
+
+	ElevatorTalon2->Config_kP(0,prefs->GetDouble("Elevator_P_0", 1.0f),1.0);
+	ElevatorTalon2->Config_kI(0,prefs->GetDouble("Elevator_I_0", 0.0f),1.0);
+	ElevatorTalon2->Config_kD(0,prefs->GetDouble("Elevator_D_0", 0.0005f),1.0);
+	ElevatorTalon2->Config_kF(0,0,1.0);
+
+	ElevatorTalon2->Config_kP(1,prefs->GetDouble("Elevator_P_1", 0.06f),1.0);
+	ElevatorTalon2->Config_kI(1,prefs->GetDouble("Elevator_I_1", 0.0f),1.0);
+	ElevatorTalon2->Config_kD(1,prefs->GetDouble("Elevator_D_1", 0.001f),1.0);
+	ElevatorTalon2->Config_kF(1,0,1.0);
+*/
 	currentverticalcommand = 0;
 	prevverticalcommand = 0;
 
@@ -59,6 +103,7 @@ float ElevatorClass::GetElevatorEncoder()
 void ElevatorClass::ResetElevatorEncoder()
 {
 	ElevatorTalon->Set(ControlMode::PercentOutput,0);
+
 	SetElevatorTarg(0);
 
 	ElevatorTalon->SetSelectedSensorPosition(0,0,1.0f);
@@ -93,6 +138,16 @@ void ElevatorClass::PIDOff()
 {
 	ElevatorTalon->Set(ControlMode::PercentOutput, 0);
 }
+void ElevatorClass::TurnOffLimits()
+{
+	ElevatorTalon->ConfigForwardSoftLimitEnable(false,1.0);
+	ElevatorTalon->ConfigReverseSoftLimitEnable(false,1.0);
+}
+void ElevatorClass::TurnOnLimits()
+{
+	ElevatorTalon->ConfigForwardSoftLimitEnable(true,1.0);
+	ElevatorTalon->ConfigForwardSoftLimitEnable(true, 1.0);
+}
 void ElevatorClass::Update(float verticalcommand)
 {
 	prevverticalcommand = currentverticalcommand;
@@ -101,7 +156,6 @@ void ElevatorClass::Update(float verticalcommand)
 	if(fabs(verticalcommand) > .1f)
 	{
 		ElevatorTalon->Set(ControlMode::PercentOutput, verticalcommand);
-		isreceivingelevatorinput = true;
 	}
 
 	if((fabs(prevverticalcommand) > .1) && (fabs(currentverticalcommand) <= .1))//.2
@@ -109,6 +163,9 @@ void ElevatorClass::Update(float verticalcommand)
 		SetElevatorTarg(GetElevatorEncoder());
 		isreceivingelevatorinput = false;
 	}
+	//float elevator2command = ElevatorTalon->GetMotorOutputPercent();
+	//ElevatorTalon2->Set(ControlMode::PercentOutput, elevator2command);
+
 }
 
 void ElevatorClass::Send_Data()

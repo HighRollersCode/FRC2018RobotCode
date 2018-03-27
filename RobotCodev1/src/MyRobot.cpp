@@ -97,7 +97,7 @@ void MyRobotClass::Autonomous(void)
 	{
 		message = DriverStation::GetInstance().GetGameSpecificMessage();
 	}
-
+	printf("GOT MATCH DATA: %s",message.c_str());
 	if(message[0] == 'R' && message[1] == 'R')
 	{
 		Auto_Index = Auto_Index_RR;
@@ -121,6 +121,9 @@ void MyRobotClass::Autonomous(void)
 	{
 		Auto_Index = script;
 	}*/
+
+	printf("Selected Auto Index: %d",Auto_Index);
+
 	m_ScriptSystem->Run_Auto_Script(Auto_Index);
 	AutonomousControl->Auto_End();
 
@@ -206,6 +209,9 @@ void MyRobotClass::Send_Data()
 	SmartDashboard::PutString("Game Data", DriverStation::GetInstance().GetGameSpecificMessage());
 	SmartDashboard::PutNumber("Pressure Sensor", Comp->GetPressureSwitchValue());
 	SmartDashboard::PutNumber("Match Timer", matchTimer->Get());
+	SmartDashboard::PutNumber("Elevator 1 Current",PDP->GetCurrent(Elevator_PDPChannel));
+	SmartDashboard::PutNumber("Elevator 2 Current",PDP->GetCurrent(Elevator2_PDPChannel));
+
 
 	Drivetrain->Send_Data();
 	AutonomousControl->SendData();
@@ -282,9 +288,11 @@ void MyRobotClass::OperatorControl(void)
 		{
 			Elevator->Update(Elevator_Command);
 			Arm->Update(0,Wrist_Up_Command,Wrist_Down_Command);
+			Elevator->TurnOffLimits();
 		}
 		else
 		{
+			Elevator->TurnOnLimits();
 			Elevator->Update(0);
 			Arm->Update(Arm_Command,Wrist_Up_Command,Wrist_Down_Command);
 		}
