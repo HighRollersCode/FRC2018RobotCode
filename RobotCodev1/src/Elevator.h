@@ -13,7 +13,7 @@
 #include "ctre/Phoenix.h"
 
 using namespace frc;
-#define DUALMOTOR 0
+#define DUALMOTOR 1
 
 class ElevatorClass
 {
@@ -36,6 +36,7 @@ public:
 
 	void SetElevatorTarg(float targ);
 	bool ElevatorOnTarg(float tolerance = 5);
+	float GetElevatorTarg();
 
 	void TurnOffLimits();
 	void TurnOnLimits();

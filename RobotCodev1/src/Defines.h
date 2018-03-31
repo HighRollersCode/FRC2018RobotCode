@@ -49,9 +49,9 @@ enum eSonar
 
 #define Track_Enable rightStick->GetRawButton(3)
 
-#define Intake_Mode_Preset rightStick->GetRawButton(4)
+#define Intake_Down_Mode_Preset rightStick->GetRawButton(4)
 
-#define Switch_Mode_Preset rightStick->GetRawButton(5)
+#define Intake_Mode_Preset rightStick->GetRawButton(5)
 
 #define Conveyor_Left rightStick->GetRawButton(6)
 

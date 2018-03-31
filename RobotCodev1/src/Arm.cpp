@@ -139,6 +139,10 @@ bool ArmClass::WristOnTarg(float tolerance)
 		return false;
 	}
 }
+float ArmClass::GetWristTarg()
+{
+	return WristTalon->GetClosedLoopTarget(0);
+}
 bool ArmClass::ArmOnTarg(float tolerance)
 {
 	if(fabs(GetArmEncoder() - ArmTalon->GetClosedLoopTarget(0)) < tolerance)

@@ -55,6 +55,9 @@ ElevatorClass::ElevatorClass()
 	ElevatorTalon2->Set(ControlMode::Follower,Elevator_Motor);
 
 	ElevatorTalon2->SetInverted(false);
+
+	ElevatorTalon2->ConfigForwardSoftLimitEnable(false,1.0);
+	ElevatorTalon2->ConfigReverseSoftLimitEnable(false,1.0);
 #endif
 
 	/*ElevatorTalon2->SetInverted(true);
@@ -132,6 +135,11 @@ bool ElevatorClass::ElevatorOnTarg(float tolerance)
 		return false;
 	}
 	return false;
+}
+
+float ElevatorClass::GetElevatorTarg()
+{
+	return ElevatorTalon->GetClosedLoopTarget(0);
 }
 
 void ElevatorClass::PIDOff()

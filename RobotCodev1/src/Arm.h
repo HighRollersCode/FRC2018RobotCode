@@ -54,6 +54,7 @@ public:
 	void Send_Data();
 	void SetWristTarg(float targ);
 	void SetArmTarg(float targ);
+	float GetWristTarg();
 	bool WristOnTarg(float tolerance = 5);
 	bool ArmOnTarg(float tolerance = 5);
 };

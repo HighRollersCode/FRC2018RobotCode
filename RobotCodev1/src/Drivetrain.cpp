@@ -166,7 +166,7 @@ float Drivetrainclass::GyroCorrection(float desheading)
 
 	Preferences *prefs = Preferences::GetInstance();
 
-	Gyro_P = prefs->GetDouble("Gyro_P", 0.03f);
+	Gyro_P = prefs->GetDouble("Gyro_P", 0.025f);
 
 	float GyroRate_P = prefs->GetDouble("GyroRate_P", 0.01f);
 

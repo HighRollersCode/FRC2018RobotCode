@@ -159,43 +159,74 @@ void MyRobotClass::UpdateInputs()
 	}
 
 	//limelight aiming
-	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
-
-	float targetX = table->GetNumber("tx", 0);
-	float targetA = table->GetNumber("ta", 0);
-	float targetV = table->GetNumber("tv", 0);
 
 	tracking_prev = tracking_cur;
 	tracking_cur = Track_Enable;
 
+	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
+
 	if(Track_Enable)
 	{
-		table->PutNumber("pipeline", 0);
-		float tx = table->GetNumber("tx", 0);
-		float ty = table->GetNumber("ty", 0);
+		LiftManager->CurrentLiftMode = LiftMode::Intake_Down;
+		table->PutNumber("pipeline", 6);
+		float tv = table->GetNumber("tv",0);
+		if (tv == 1)
+		{
+			float alpha = 0.5f;
+			trackX = table->GetNumber("tx", 0);//alpha * table->GetNumber("tx", 0) + (1.0f-alpha)*trackX;
+			trackY = table->GetNumber("ty", 0);
+			sawCube = true;
+		}
+		else
+		{
+			trackX = 0.0f;
+			trackY = 0.0f;
+		}
 
-		float distance_error = ty + 5;
-		float cube_error = tx;
+		if(sawCube)
+		{
+			//float distance_error = trackY;
+			float cube_error = trackX;
 
-		float tracking_drive = distance_error * Drivetrain->Drive_P;
-		float tracking_turn = 0; //cube_error * DriveTrain->Gyro_P;
-		float tracking_strafe = cube_error * Drivetrain->Strafe_P;
+			//float tracking_drive = distance_error * Drivetrain->Drive_P;
+			float tracking_turn = cube_error * 0.03f; //Drivetrain->Gyro_P;
+			float tracking_strafe = 0; //cube_error * Drivetrain->Strafe_P;
 
-		forwardcommand += tracking_drive;
-		turncommand += tracking_turn;
-		strafecommand += tracking_strafe;
+			float mincmd = 0.25f;
+
+			if(fabs(tracking_turn) < mincmd)
+			{
+				if(tracking_turn < 0)
+				{
+					tracking_turn = -mincmd;
+				}
+				else if(tracking_turn > 0)
+				{
+					tracking_turn = mincmd;
+				}
+			}
+
+			//forwardcommand += tracking_drive;
+			turncommand += tracking_turn;
+			strafecommand += tracking_strafe;
+			SmartDashboard::PutNumber("track turn", turncommand);
+
+		}
 	}
 	else
 	{
 		table->PutNumber("pipeline", 4);
 		isTracking = false;
+		sawCube = false;
+		trackX = 0;
+		trackY = 0;
 	}
 
 	if(Random_Number)
-		{
-		int newNum = rand() % 4 + 1; // number 1 through 4
-		SmartDashboard::PutNumber("Random Number", newNum);
-		}
+	{
+	int newNum = rand() % 4 + 1; // number 1 through 4
+	SmartDashboard::PutNumber("Random Number", newNum);
+	}
 
 }
 void MyRobotClass::Send_Data()
@@ -207,11 +238,11 @@ void MyRobotClass::Send_Data()
 
 	SmartDashboard::PutBoolean("Is Tracking", isTracking);
 	SmartDashboard::PutString("Game Data", DriverStation::GetInstance().GetGameSpecificMessage());
-	SmartDashboard::PutNumber("Pressure Sensor", Comp->GetPressureSwitchValue());
 	SmartDashboard::PutNumber("Match Timer", matchTimer->Get());
 	SmartDashboard::PutNumber("Elevator 1 Current",PDP->GetCurrent(Elevator_PDPChannel));
 	SmartDashboard::PutNumber("Elevator 2 Current",PDP->GetCurrent(Elevator2_PDPChannel));
-
+	SmartDashboard::PutNumber("Track X",trackX);
+	SmartDashboard::PutBoolean("Saw Cube",sawCube);
 
 	Drivetrain->Send_Data();
 	AutonomousControl->SendData();
@@ -270,14 +301,6 @@ void MyRobotClass::OperatorControl(void)
 				gyromode = GYRO_CORRECTION_OFF;
 			}
 		}
-		/*if(Brake_Mode_Enable)
-		{
-			brakemode = BRAKE_MODE_ON;
-		}
-		else
-		{
-			brakemode = BRAKE_MODE_OFF;
-		}*/
 
 		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
 		Drivetrain->Shifter_Update(leftStick->GetTrigger());
@@ -286,13 +309,13 @@ void MyRobotClass::OperatorControl(void)
 
 		if(Enable_Elevator)
 		{
+			//Elevator->TurnOffLimits();
 			Elevator->Update(Elevator_Command);
 			Arm->Update(0,Wrist_Up_Command,Wrist_Down_Command);
-			Elevator->TurnOffLimits();
 		}
 		else
 		{
-			Elevator->TurnOnLimits();
+			//Elevator->TurnOnLimits();
 			Elevator->Update(0);
 			Arm->Update(Arm_Command,Wrist_Up_Command,Wrist_Down_Command);
 		}
@@ -303,7 +326,7 @@ void MyRobotClass::OperatorControl(void)
 		Claw->Update(Intake_Command, Outake_Command, Turret_Outake,
 				Turret_Slow_Outake,Track_Enable);
 
-		LiftManager->UpdateLift(Intake_Mode_Preset,Switch_Mode_Preset ,Scale_Front_Level_1_Preset,
+		LiftManager->UpdateLift(Intake_Mode_Preset,(Intake_Down_Mode_Preset || Track_Enable),Scale_Front_Level_1_Preset,
 				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Scale_Back_Lob_Preset,false,Portal_Preset); //Climb_Preset,Portal_Preset);
 
 		Conveyor->Update(Conveyor_Left, Conveyor_Right);

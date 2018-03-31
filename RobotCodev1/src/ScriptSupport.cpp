@@ -463,7 +463,7 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new SetSwitchModeCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Switch_Front_Level);
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Intake_Down);
 	}
 };
 

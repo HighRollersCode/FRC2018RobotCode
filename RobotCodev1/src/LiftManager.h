@@ -20,7 +20,7 @@ enum LiftMode
 {
 	Free = 0,
 	Intake,
-	Switch_Front_Level,
+	Intake_Down,
 	Scale_Losing_Level_Front,
 	Scale_Neutral_Front,
 	Scale_Winning_Back_Level1,
@@ -44,8 +44,8 @@ LiftMode CurrentLiftMode;
 bool IntakeState_Cur = false;
 bool IntakeState_Prev = false;
 
-bool SwitchState_Cur = false;
-bool SwitchState_Prev = false;
+bool IntakeDownState_Cur = false;
+bool IntakeDownState_Prev = false;
 
 bool ScaleLevel1State_Cur = false;
 bool ScaleLevel1State_Prev = false;
@@ -78,7 +78,7 @@ void changeMode(LiftMode desiredLiftMode);
 
 void Send_Data();
 
-void UpdateLift(bool IntakeState,bool SwitchState, bool ScaleLevel1State,bool ScaleLevel1BackState, bool ScaleNeutralLevelState,
+void UpdateLift(bool IntakeState,bool IntakeDownState, bool ScaleLevel1State,bool ScaleLevel1BackState, bool ScaleNeutralLevelState,
 		bool SetUpState,bool ClawDeployState, bool ClimbState, bool PortalState);
 void DisablePID();
 void WaitForArm(float targ, float tolerance);

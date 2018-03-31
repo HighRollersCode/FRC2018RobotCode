@@ -54,6 +54,10 @@ public:
 	Compressor *Comp;
 
 	bool isTracking;
+	bool sawCube = false;
+
+	float trackX = 0;
+	float trackY = 0;
 
 	Timer *turndelay;
 	Timer *matchTimer;

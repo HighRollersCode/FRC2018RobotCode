@@ -6,6 +6,7 @@
  */
 
 #include <LiftManager.h>
+#include "MyRobot.h"
 
 LiftManagerClass::LiftManagerClass(ElevatorClass *_Elevator, ArmClass *_Arm, ClawClass *_Claw,EndgameClass *_Endgame)
 {
@@ -80,14 +81,14 @@ void LiftManagerClass::EndState()
 	transitioning = false;
 }
 void LiftManagerClass::UpdateLift(
-		bool IntakeState, bool SwitchState,bool ScaleLevel1State,bool ScaleLevel1BackState,bool ScaleNeutralLevelState,
+		bool IntakeState, bool IntakeDownState,bool ScaleLevel1State,bool ScaleLevel1BackState,bool ScaleNeutralLevelState,
 		bool SetUpState,bool ScaleBackLobState,bool ClimbState, bool PortalState)
  {
 	IntakeState_Prev = IntakeState_Cur;
 	IntakeState_Cur = IntakeState;
 
-	SwitchState_Prev = SwitchState_Cur;
-	SwitchState_Cur = SwitchState;
+	IntakeDownState_Prev = IntakeDownState_Cur;
+	IntakeDownState_Cur = IntakeDownState;
 
 	ScaleLevel1State_Prev = ScaleLevel1State_Cur;
 	ScaleLevel1State_Cur = ScaleLevel1State;
@@ -115,9 +116,9 @@ void LiftManagerClass::UpdateLift(
 		changeMode(LiftMode::Intake);
 	}
 
-	if(!SwitchState_Prev && SwitchState_Cur)
+	if(!IntakeDownState_Prev && IntakeDownState_Cur)
 	{
-		changeMode(LiftMode::Switch_Front_Level);
+		changeMode(LiftMode::Intake_Down);
 	}
 
 	if(!ScaleLevel1State_Prev && ScaleLevel1State_Cur)
@@ -179,9 +180,15 @@ void LiftManagerClass::UpdateLift(
 			{
 				case 0 :
 					{
-						//_elevator->SetElevatorTarg(2000);
-						_arm->SetWristTarg(Wrist_Folded);
-						CurrentState = 1;
+						if ((_elevator->GetElevatorTarg() == Elevator_Intake) && (_elevator->ElevatorOnTarg(Elevator_tolerance)))
+						{
+							CurrentState = 3;
+						}
+						else
+						{
+							_arm->SetWristTarg(Wrist_Folded);
+							CurrentState = 1;
+						}
 						break;
 					}
 				case 1 :
@@ -207,13 +214,9 @@ void LiftManagerClass::UpdateLift(
 						}*/
 						break;
 					}
-				case 3:
+				case 3 :
 					{
-						_arm->SetWristTarg(Wrist_Intake);
-						if(_arm->WristOnTarg(Wrist_tolerance) && _arm->ArmOnTarg(Arm_tolerance))
-						{;
-							CurrentState = 4;
-						}
+						WaitForWrist(-3000, Wrist_tolerance);
 						break;
 					}
 				case 4:
@@ -223,47 +226,56 @@ void LiftManagerClass::UpdateLift(
 					}
 			}
 		}
-		else if(CurrentLiftMode == LiftMode::Switch_Front_Level)
+		else if(CurrentLiftMode == LiftMode::Intake_Down)
 		{
 			switch(CurrentState)
 			{
-				case 0:
+			case 0 :
+				{
+					if ((_elevator->GetElevatorTarg() == Elevator_Intake) && (_elevator->ElevatorOnTarg(Elevator_tolerance)))
 					{
-						_elevator->SetElevatorTarg(Elevator_Switch);
+						CurrentState = 3;
+					}
+					else
+					{
+						_arm->SetWristTarg(Wrist_Folded);
 						CurrentState = 1;
-						break;
 					}
-
-				case 1:
-					{
-						WaitForWrist(Wrist_Switch,Wrist_tolerance);
-						/*_arm->SetWristTarg(Wrist_Switch);
-						if(_arm->WristOnTarg())
-						{
-							CurrentState = 2;
-						}*/
-						break;
-					}
-				case 2:
-					{
-						WaitForArm(Arm_Switch,Arm_tolerance);
-						/*_arm->SetArmTarg(Arm_Switch);
-						if(_arm->ArmOnTarg(Arm_tolerance))
-						{
-							CurrentState = 3;
-						}*/
-						break;
-					}
-				case 3:
-					{
-						WaitForElevator(Elevator_Switch,Elevator_tolerance);
-						break;
-					}
-				case 4:
+					break;
+				}
+			case 1 :
+				{
+					/*if(_elevator->ElevatorOnTarg(Elevator_tolerance))
 					{
 						EndState();
-						break;
+					}*/
+					_elevator->SetElevatorTarg(Elevator_Intake);
+					if(_arm->WristOnTarg(Wrist_tolerance))
+					{
+						CurrentState = 2;
 					}
+					break;
+				}
+			case 2 :
+				{
+					WaitForArm(Arm_Intake,Arm_tolerance * 2);
+					/*_arm->SetArmTarg(Arm_Intake);
+					if(_arm->ArmOnTarg(Arm_tolerance * 2))
+					{
+						CurrentState = 3;
+					}*/
+					break;
+				}
+			case 3 :
+				{
+					WaitForWrist(Wrist_Intake, Wrist_tolerance);
+					break;
+				}
+			case 4:
+				{
+					EndState();
+					break;
+				}
 			}
 		}
 		else if(CurrentLiftMode == LiftMode::Scale_Losing_Level_Front)
@@ -552,17 +564,5 @@ void LiftManagerClass::UpdateLift(
 			}
 		}
 
-	}
-
-	if(CurrentLiftMode == LiftMode::Intake && transitioning == false)
-	{
-		if(_claw->isIntaking)
-		{
-			_arm->SetWristTarg(Wrist_Intake);
-		}
-		else
-		{
-			_arm->SetWristTarg(Wrist_Folded);
-		}
 	}
 }
