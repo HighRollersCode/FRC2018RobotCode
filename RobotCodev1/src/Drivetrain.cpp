@@ -600,7 +600,14 @@ void Drivetrainclass::AutoUpdate()
 	currentStrafeSpeed = AutoUpdate_Strafe();
 	currentTurnSpeed = AutoUpdate_Turn();
 
-	StandardArcade(currentForwardSpeed, currentTurnSpeed, currentStrafeSpeed, GYRO_CORRECTION_ON, BRAKE_MODE_OFF);
+	eGyroMode gyro = GYRO_CORRECTION_ON;
+
+	if(gyroOn == false)
+	{
+		gyro = GYRO_CORRECTION_OFF;
+	}
+
+	StandardArcade(currentForwardSpeed, currentTurnSpeed, currentStrafeSpeed, gyro, BRAKE_MODE_OFF);
 
 	if (currentForwardTarget > 0) {
 

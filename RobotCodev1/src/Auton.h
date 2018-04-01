@@ -58,7 +58,7 @@ class Auton
 		void Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance);
 
 		void Auto_SEARCHFORCUBESTRAFE(float strafe, float heading,float time);
-		void Auto_SEARCHFORCUBETURN(float strafe, float heading,float time);
+		void Auto_SEARCHFORCUBETURN(float turn,float time);
 		void Auto_SEARCHFORCUBEFORWARD(float forward, float heading, float time);
 
 		void Auto_TRACKSWITCH(float strafe, float heading,float time);

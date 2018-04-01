@@ -68,7 +68,7 @@ BrakeWait .2 0
 
 ///////// Find cube 1 ////////////
 
-SearchForCubeStrafeTimed -0.5 0 7.0
+SearchForCubeTurnTimed -0.5 7.0
 
 /////////  Drive Back for Cube 1 ////////////
 

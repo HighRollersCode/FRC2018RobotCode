@@ -233,7 +233,8 @@ void Auton::Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance)
 	float error = desdistance - DriveTrain->GetActiveSonar();
 	bool goingLeft = false;
 
-	if((initialerror < 0 && DriveTrain->currentActiveSonar == eSonar::LEFT_SONAR)||(initialerror > 0 && DriveTrain->currentActiveSonar == eSonar::RIGHT_SONAR))
+	if((initialerror < 0 && DriveTrain->currentActiveSonar == eSonar::LEFT_SONAR)
+			||(initialerror > 0 && DriveTrain->currentActiveSonar == eSonar::RIGHT_SONAR))
 	{
 		goingLeft = true;
 	}
@@ -272,17 +273,18 @@ void Auton::Auto_STRAFEUNTIL(float strafe, float desheading, float desdistance)
 
 	DriveTrain->SetRawStrafeSpeed(0);
 }
-void Auton::Auto_SEARCHFORCUBETURN(float strafe, float heading, float time)
+void Auton::Auto_SEARCHFORCUBETURN(float turn, float time)
 {
 	std::shared_ptr<NetworkTable> table = NetworkTable::GetTable("limelight");
-
-	DriveTrain->headingTarget = heading;
+	printf("Turn: %f and Time: %f",turn,time);
 
 	// strafe until we see the cube
 	while(fabs(table->GetNumber("tv",0) == 0) && (Running()))
 	{
+		DriveTrain->SetRawTurnSpeed(turn);
+		DriveTrain->EnableGyroCorrection(false);
+
 		Auto_System_Update();
-		DriveTrain->StandardArcade(0,0,strafe,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
 	}
 
 	// Now grab the cube
@@ -302,33 +304,18 @@ void Auton::Auto_SEARCHFORCUBETURN(float strafe, float heading, float time)
 		float distance_error = ty + 5;
 		float cube_error = tx;
 
-		auto_drive = distance_error * DriveTrain->Drive_P;
-		auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
-		auto_strafe = cube_error * DriveTrain->Strafe_P;
+		auto_drive = 0.15f;//distance_error * DriveTrain->Drive_P;
+		auto_turn = cube_error * .025f;
+		auto_strafe = 0; //cube_error * DriveTrain->Strafe_P;
 
-		DriveTrain->StandardArcade(auto_drive,auto_turn,auto_strafe,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
+		DriveTrain->SetRawForwardSpeed(auto_drive);
+		DriveTrain->SetRawTurnSpeed(auto_turn);
+		DriveTrain->SetRawStrafeSpeed(auto_strafe);
 
 		if(IntakeTimer->Get() > time)
 		{
 			gotcube = true;
 		}
-
-		/*if((fabs(cube_error) < 7) && (distance_error <= 1))
-		{
-			counter++;
-		}
-		else if((fabs(cube_error) < 2) && (distance_error <= .01))
-		{
-			counter++;
-		}
-		else
-		{
-			counter--;// = 0;
-			if(counter < 0)
-			{
-				counter = 0;
-			}
-		}*/
 
 		if(Claw->GotCube())
 		{
@@ -352,6 +339,7 @@ void Auton::Auto_SEARCHFORCUBETURN(float strafe, float heading, float time)
 	DriveTrain->SetRawForwardSpeed(0);
 	DriveTrain->SetRawTurnSpeed(0);
 	DriveTrain->SetRawStrafeSpeed(0);
+	DriveTrain->EnableGyroCorrection(true);
 
 }
 void Auton::Auto_SEARCHFORCUBESTRAFE(float strafe, float heading,float time)
@@ -693,7 +681,11 @@ void Auton::Auto_FOLLOWEDGE(float Forward, float desheading, float desdistance)
 		Sonar_error = SonarMaintain - DriveTrain->GetActiveSonar();
 		strafe = Sonar_error * Strafe_P;
 
-		DriveTrain->StandardArcade(Forward, 0,strafe,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
+		DriveTrain->SetRawForwardSpeed(Forward);
+		DriveTrain->SetRawStrafeSpeed(strafe);
+		DriveTrain->SetRawTurnSpeed(0);
+		DriveTrain->EnableGyroCorrection(true);
+
 		Auto_System_Update();
 	}
 	DriveTrain->StandardArcade(0,0,0,GYRO_CORRECTION_OFF,BRAKE_MODE_OFF);

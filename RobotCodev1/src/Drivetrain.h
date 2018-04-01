@@ -118,6 +118,8 @@ public:
 	int lastRawMiddleEncCount = 0;
 	//bool lastStrafeHadTraction = false;
 
+	bool gyroOn = true;
+
 	Drivetrainclass(WPI_TalonSRX *GyroTalon);
 	virtual ~Drivetrainclass();
 	void Zero_Yaw();
@@ -125,6 +127,8 @@ public:
 	void ResetEncoders_Timers();
 
 	float GyroCorrection(float desheading);
+	void EnableGyroCorrection(bool enable){gyroOn = enable;}
+	bool IsGyroCorrectionEnabled(){return gyroOn;}
 
 	float LockLeft(float desticks);
 	float LockRight(float desticks);

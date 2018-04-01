@@ -262,6 +262,19 @@ public:
 	}
 };
 
+class SearchForCubeTurnCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "SearchForCubeTurnTimed"; }
+	virtual int Get_Parameter_Count() { return 2; }
+	virtual HrScriptCommandClass * Create_Command() { return new SearchForCubeTurnCommand(); }
+	virtual void Execute()
+	{
+		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBETURN(m_Parameters[0],m_Parameters[1]);
+	}
+};
+
 class TrackSwitchCommand : public HrScriptCommandClass
 {
 
@@ -424,7 +437,7 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new SetIntakeModeCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Intake);
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Intake_Down);
 	}
 };
 
@@ -463,7 +476,7 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new SetSwitchModeCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Intake_Down);
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Intake);
 	}
 };
 
@@ -571,6 +584,7 @@ void MyRobotClass::Init_Scripts_System()
 
 	m_ScriptSystem->Add_Command(new SetActiveSonarCommand());
 	m_ScriptSystem->Add_Command(new SearchForCubeCommand());
+	m_ScriptSystem->Add_Command(new SearchForCubeTurnCommand());
 	m_ScriptSystem->Add_Command(new SearchForCubeForwardCommand());
 	m_ScriptSystem->Add_Command(new TrackSwitchCommand());
 	m_ScriptSystem->Add_Command(new SetPipelineCommand());
@@ -641,6 +655,8 @@ void MyRobotClass::Load_Scripts()
 	//Pyramid
 	m_ScriptSystem->Set_Auto_Script(41,"MIDDLEPYRAMIDRIGHT.hrs");
 	m_ScriptSystem->Set_Auto_Script(42,"MIDDLEPYRAMIDLEFT.hrs");
+	m_ScriptSystem->Set_Auto_Script(43,"MIDDLEPYRAMIDLOBLEFT.hrs");
+
 
 	//Switch and Scale No Backpack
 	m_ScriptSystem->Set_Auto_Script(51,"MIDDLERIGHTSWITCHANDSCALENOPACK.hrs");
@@ -649,7 +665,6 @@ void MyRobotClass::Load_Scripts()
 	m_ScriptSystem->Set_Auto_Script(54,"MIDDLERIGHTSWITCHANDLEFTSCALETURNNOPACK.hrs");
 
 	//Spare Autos
-	m_ScriptSystem->Set_Auto_Script(112,"MIDDLERIGHTSWITCHANDLEFTSCALE.hrs");
 	m_ScriptSystem->Set_Auto_Script(115,"MIDDLELEFTSWITCHANDRIGHTSCALE.hrs");
 
 	m_ScriptSystem->Set_Auto_Script(113,"MIDDLEALLSCALERIGHT.hrs");

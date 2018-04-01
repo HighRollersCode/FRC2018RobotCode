@@ -14,6 +14,7 @@
 
 //SetAuto 41 MIDDLEPYRAMIDRIGHT
 //SetAuto 42 MIDDLEPYRAMIDLEFT
+//SetAuto 43 MIDDLEPYRAMIDLOBLEFT
 
 //SetAuto 51 MIDDLERIGHTSWITCHANDSCALENOPACK
 //SetAuto 52 MIDDLELEFTSWITCHANDSCALENOPACK
@@ -27,6 +28,12 @@
 //SetAuto 999 is EMPTY
 
 //SetAutoLL 115
+
+//New Pyramid
+//SetAutoLL 43
+//SetAutoRR 43
+//SetAutoLR 43
+//SetAutoRL 43
 
 //Switch and Scale
 //SetAutoRR 11
@@ -47,10 +54,10 @@
 //SetAutoRL 32
 
 //Scale Only Left
-//SetAutoLL 24
-//SetAutoRR 22
-//SetAutoLR 22
-//SetAutoRL 24
+SetAutoLL 24
+SetAutoRR 22
+SetAutoLR 22
+SetAutoRL 24
 
 //Scale Only Right
 //SetAutoLL 23
@@ -59,10 +66,10 @@
 //SetAutoRL 23
 
 //Pyramid
-SetAutoLL 42
-SetAutoRR 41
-SetAutoLR 42
-SetAutoRL 41
+//SetAutoLL 42
+//SetAutoRR 41
+//SetAutoLR 42
+//SetAutoRL 41
 
 //Straight Forward
 //SetAutoLL 112
