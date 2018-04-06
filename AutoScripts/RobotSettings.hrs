@@ -9,12 +9,15 @@
 //SetAuto 22 LEFTALLSCALERIGHT
 //SetAuto 24 LEFTALLSCALELEFT
 
-//SetAuto 31 MIDDLELEFTSWITCH
-//SetAuto 32 MIDDLERIGHTSWITCH
+//SetAuto 31 LEFTLEFTSWITCHCOOP
+//SetAuto 32 RIGHTRIGHTSWITCHCOOP
 
 //SetAuto 41 MIDDLEPYRAMIDRIGHT
 //SetAuto 42 MIDDLEPYRAMIDLEFT
 //SetAuto 43 MIDDLEPYRAMIDLOBLEFT
+//SetAuto 44 MIDDLEPYRAMIDLOBRIGHT
+//SetAuto 45 MIDDLEPYRAMIDLOBLEFTSCALE
+//SetAuto 46 MIDDLEPYRAMIDLOBRIGHTSCALE
 
 //SetAuto 51 MIDDLERIGHTSWITCHANDSCALENOPACK
 //SetAuto 52 MIDDLELEFTSWITCHANDSCALENOPACK
@@ -29,17 +32,23 @@
 
 //SetAutoLL 115
 
-//New Pyramid
+//Pyramid Lob Scale
+//SetAutoLL 45
+//SetAutoRR 46
+//SetAutoLR 45
+//SetAutoRL 46
+
+//Pyramid Lob
 //SetAutoLL 43
-//SetAutoRR 43
+//SetAutoRR 44
 //SetAutoLR 43
-//SetAutoRL 43
+//SetAutoRL 44
 
 //Switch and Scale
-//SetAutoRR 11
-//SetAutoLL 12
-//SetAutoLR 13
-//SetAutoRL 14
+SetAutoRR 11
+SetAutoLL 12
+SetAutoLR 13
+SetAutoRL 14
 
 //Switch and Scale No BackPack
 //SetAutoRR 51
@@ -47,17 +56,23 @@
 //SetAutoLR 53
 //SetAutoRL 54
 
-//Switch Only
+//Switch Coop Only
 //SetAutoLL 31
 //SetAutoRR 32
 //SetAutoLR 31
 //SetAutoRL 32
 
 //Scale Only Left
-SetAutoLL 24
-SetAutoRR 22
-SetAutoLR 22
-SetAutoRL 24
+//SetAutoLL 24
+//SetAutoRR 22
+//SetAutoLR 22
+//SetAutoRL 24
+
+//Scale Only Cooperative Left
+//SetAutoLL 26
+//SetAutoRR 26
+//SetAutoLR 26
+//SetAutoRL 26
 
 //Scale Only Right
 //SetAutoLL 23

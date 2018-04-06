@@ -94,7 +94,7 @@ void ClawClass::Send_Data()
 }
 bool ClawClass::GotCube()
 {
-	if((leftCurrent > 40) && (rightCurrent > 40))
+	if((leftCurrent > 30) && (rightCurrent > 30))
 	{
 		return true;
 	}

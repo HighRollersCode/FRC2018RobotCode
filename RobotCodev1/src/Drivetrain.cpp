@@ -173,8 +173,6 @@ float Drivetrainclass::GyroCorrection(float desheading)
 	float error = MAINTAIN - GetHeading();
 	float command = error * Gyro_P - (GyroRate_P * GetTurnRate());
 
-	SmartDashboard::PutNumber("Gyro_P", Gyro_P);
-	SmartDashboard::PutNumber("GyroRate_P", GyroRate_P);
 	SmartDashboard::PutNumber("Gyro Correction Command", command);
 
 	return command;

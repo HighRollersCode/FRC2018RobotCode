@@ -95,11 +95,13 @@ void Auton::Auto_DriveTimer(float Forward, float Turn, float Strafe, float secon
 {
 	DriveTrain->SetRawForwardSpeed(Forward);
 	DriveTrain->SetRawStrafeSpeed(Strafe);
+	DriveTrain->EnableGyroCorrection(false);
 
 	AutonWait(seconds);
 
 	DriveTrain->SetRawForwardSpeed(0);
 	DriveTrain->SetRawStrafeSpeed(0);
+	DriveTrain->EnableGyroCorrection(true);
 }
 void Auton::EBrake(float Seconds,int enctarg)
 {
@@ -573,15 +575,15 @@ void Auton::Auto_TRACKSWITCH(float strafe,float heading,float time)
 		if(tv == 0)
 		{
 			distance_error = 0;
-			auto_strafe = 0;
+			auto_strafe = strafe;
 			auto_drive = 0;
 			auto_turn = 0;
 		}
 		else
 		{
-			auto_drive = distance_error * DriveTrain->Drive_P;
+			auto_drive = 0.4f; //distance_error * DriveTrain->Drive_P;
 			auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
-			auto_strafe = cube_error * DriveTrain->Strafe_P;
+			auto_strafe = (cube_error * DriveTrain->Strafe_P)/2;
 		}
 
 		DriveTrain->SetRawForwardSpeed(auto_drive);
@@ -593,7 +595,7 @@ void Auton::Auto_TRACKSWITCH(float strafe,float heading,float time)
 			done = true;
 		}
 
-		if(distance_error < 5)
+		if((fabs(distance_error) < 1.5) && (tv == 1))
 		{
 			done = true;
 		}
@@ -704,7 +706,7 @@ bool Auton::Auto_System_Update()
 	{
 		SendData();
 
-		LiftManager->UpdateLift(false,false,false,false,false,false,false,false,false);
+		LiftManager->UpdateLift(false,false,false,false,false,false,false,false,false,false);
 
 		DriveTrain->AutoUpdate();
 

@@ -327,7 +327,7 @@ void MyRobotClass::OperatorControl(void)
 				Turret_Slow_Outake,Track_Enable);
 
 		LiftManager->UpdateLift(Intake_Mode_Preset,(Intake_Down_Mode_Preset || Track_Enable),Scale_Front_Level_1_Preset,
-				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Scale_Back_Lob_Preset,false,Portal_Preset); //Climb_Preset,Portal_Preset);
+				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Scale_Back_Lob_Preset,false,Portal_Preset,false); //Climb_Preset,Portal_Preset);
 
 		Conveyor->Update(Conveyor_Left, Conveyor_Right);
 
