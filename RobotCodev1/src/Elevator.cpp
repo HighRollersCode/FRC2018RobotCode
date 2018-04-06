@@ -60,36 +60,6 @@ ElevatorClass::ElevatorClass()
 	ElevatorTalon2->ConfigReverseSoftLimitEnable(false,1.0);
 #endif
 
-	/*ElevatorTalon2->SetInverted(true);
-
-	ElevatorTalon2->Set(ControlMode::PercentOutput, 0.0);
-
-	ElevatorTalon2->ConfigNominalOutputForward(0.0,1.0);
-	ElevatorTalon2->ConfigNominalOutputReverse(0.0,1.0);
-
-	ElevatorTalon2->SetSelectedSensorPosition(0,0,1.0f);
-
-	ElevatorTalon2->ConfigForwardSoftLimitThreshold(ElevatorMaxLimEncoder,1.0);
-	ElevatorTalon2->ConfigReverseSoftLimitThreshold(ElevatorMinLimEncoder,1.0);
-
-	ElevatorTalon2->ConfigForwardSoftLimitEnable(true,1.0);
-	ElevatorTalon2->ConfigReverseSoftLimitEnable(true,1.0);
-
-	ElevatorTalon2->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
-	ElevatorTalon2->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
-
-	//Preferences *prefs = Preferences::GetInstance();
-
-	ElevatorTalon2->Config_kP(0,prefs->GetDouble("Elevator_P_0", 1.0f),1.0);
-	ElevatorTalon2->Config_kI(0,prefs->GetDouble("Elevator_I_0", 0.0f),1.0);
-	ElevatorTalon2->Config_kD(0,prefs->GetDouble("Elevator_D_0", 0.0005f),1.0);
-	ElevatorTalon2->Config_kF(0,0,1.0);
-
-	ElevatorTalon2->Config_kP(1,prefs->GetDouble("Elevator_P_1", 0.06f),1.0);
-	ElevatorTalon2->Config_kI(1,prefs->GetDouble("Elevator_I_1", 0.0f),1.0);
-	ElevatorTalon2->Config_kD(1,prefs->GetDouble("Elevator_D_1", 0.001f),1.0);
-	ElevatorTalon2->Config_kF(1,0,1.0);
-*/
 	currentverticalcommand = 0;
 	prevverticalcommand = 0;
 

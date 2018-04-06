@@ -82,7 +82,7 @@ void LiftManagerClass::EndState()
 }
 void LiftManagerClass::UpdateLift(
 		bool IntakeState, bool IntakeDownState,bool ScaleLevel1State,bool ScaleLevel1BackState,bool ScaleNeutralLevelState,
-		bool SetUpState,bool ScaleBackLobState,bool ClimbState, bool PortalState)
+		bool SetUpState,bool ScaleBackLobState,bool ClimbState, bool PortalState, bool AutoSwitchState)
  {
 	IntakeState_Prev = IntakeState_Cur;
 	IntakeState_Cur = IntakeState;
@@ -110,6 +110,9 @@ void LiftManagerClass::UpdateLift(
 
 	PortalState_Prev = PortalState_Cur;
 	PortalState_Cur = PortalState;
+
+	AutoSwitchState_Prev = AutoSwitchState_Cur;
+	AutoSwitchState_Cur = AutoSwitchState;
 
 	if(!IntakeState_Prev && IntakeState_Cur)
 	{
@@ -154,6 +157,11 @@ void LiftManagerClass::UpdateLift(
 	if(!PortalState_Prev && PortalState_Cur)
 	{
 		//changeMode(LiftMode::Claw_Deploy);
+	}
+
+	if(!PortalState_Prev && PortalState_Cur)
+	{
+		changeMode(LiftMode::Auto_Switch);
 	}
 
 	if(_elevator->isreceivingelevatorinput || _arm->isreceivingarminput || _arm->isreceivingwristinput)
@@ -220,6 +228,32 @@ void LiftManagerClass::UpdateLift(
 						break;
 					}
 				case 4:
+					{
+						EndState();
+						break;
+					}
+			}
+		}
+		else if(CurrentLiftMode == LiftMode::Auto_Switch)
+		{
+			switch(CurrentState)
+			{
+				case 0 :
+					{
+						WaitForElevator(6000,Elevator_tolerance);
+						break;
+					}
+				case 1 :
+					{
+						WaitForArm(Arm_Intake,Arm_tolerance * 2);
+						break;
+					}
+				case 2 :
+					{
+						WaitForWrist(-3000, Wrist_tolerance);
+						break;
+					}
+				case 3:
 					{
 						EndState();
 						break;

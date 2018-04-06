@@ -27,7 +27,8 @@ enum LiftMode
 	Set_Up,
 	Climb,
 	Scale_Back_Lob,
-	Portal
+	Portal,
+	Auto_Switch
 };
 class LiftManagerClass {
 public:
@@ -68,6 +69,9 @@ bool ClimbState_Prev = false;
 bool PortalState_Cur = false;
 bool PortalState_Prev = false;
 
+bool AutoSwitchState_Cur = false;
+bool AutoSwitchState_Prev = false;
+
 bool transitioning;
 
 bool isreceivinginput;
@@ -79,7 +83,7 @@ void changeMode(LiftMode desiredLiftMode);
 void Send_Data();
 
 void UpdateLift(bool IntakeState,bool IntakeDownState, bool ScaleLevel1State,bool ScaleLevel1BackState, bool ScaleNeutralLevelState,
-		bool SetUpState,bool ClawDeployState, bool ClimbState, bool PortalState);
+		bool SetUpState,bool ClawDeployState, bool ClimbState, bool PortalState, bool AutoSwitchState);
 void DisablePID();
 void WaitForArm(float targ, float tolerance);
 void WaitForWrist(float targ, float tolerance);
