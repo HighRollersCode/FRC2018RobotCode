@@ -35,10 +35,12 @@ ArmClass::ArmClass()
 	ArmTalon->ConfigReverseSoftLimitThreshold(ArmMinLimEncoder,1.0f);
 	ArmTalon->ConfigForwardSoftLimitEnable(true,1.0);
 	ArmTalon->ConfigReverseSoftLimitEnable(true,1.0);
+	ArmTalon->ConfigPeakOutputForward(1.0,1.0);
+	ArmTalon->ConfigPeakOutputReverse(-1.0,1.0);
 
 	Preferences *prefs = Preferences::GetInstance();
 
-	ArmTalon->Config_kP(0,prefs->GetDouble("Arm_P",0.6f), 1.0);
+	ArmTalon->Config_kP(0,prefs->GetDouble("Arm_P",0.8f), 1.0);
 	ArmTalon->Config_kI(0,prefs->GetDouble("Arm_I",0.0f), 1.0);
 	ArmTalon->Config_kD(0,prefs->GetDouble("Arm_D",0.0f), 1.0);
 
@@ -72,12 +74,14 @@ ArmClass::ArmClass()
 	WristTalon->ConfigReverseSoftLimitEnable(false,1.0);
 
 	WristTalon->ConfigForwardLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
-	WristTalon->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);\
+	WristTalon->ConfigReverseLimitSwitchSource(LimitSwitchSource::LimitSwitchSource_Deactivated,LimitSwitchNormal::LimitSwitchNormal_Disabled,1.0);
 
-	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.7f),1.0); //0.9
+	WristTalon->Config_kP(0,prefs->GetDouble("Wrist_P",0.3f),1.0); //0.9
 	WristTalon->Config_kI(0,prefs->GetDouble("Wrist_I",0.0f),1.0);
 	WristTalon->Config_kD(0,prefs->GetDouble("Wrist_D",0.0f),1.0);
 	WristTalon->Config_kF(0,0,1.0);
+
+	LimitSwitch = new DigitalInput(10);
 
 	prevWristCommand = 0;
 	curWristCommand = 0;
@@ -93,14 +97,21 @@ void ArmClass::PIDOff()
 	ArmTalon->Set(ControlMode::PercentOutput,0);
 	WristTalon->Set(ControlMode::PercentOutput,0);
 }
+
+bool ArmClass::GetLimtiSwitch()
+{
+	return !LimitSwitch->Get();
+}
 float ArmClass::GetArmEncoder()
 {
 	return ArmTalon->GetSelectedSensorPosition(0);
 }
+
 float ArmClass::GetWristEncoder()
 {
 	return WristTalon->GetSelectedSensorPosition(0);
 }
+
 void ArmClass::ResetEncoder()
 {
 	hold_Wrist = 0;
@@ -112,6 +123,7 @@ void ArmClass::ResetEncoder()
 	ArmTalon->SetSelectedSensorPosition(0,0,1.0f);
 	WristTalon->SetSelectedSensorPosition(0,0,1.0f);
 }
+
 void ArmClass::SetArmTarg(float targ)
 {
 	if(targ < GetArmEncoder())
@@ -124,10 +136,12 @@ void ArmClass::SetArmTarg(float targ)
 	}
 	ArmTalon->Set(ControlMode::Position, targ);
 }
+
 void ArmClass::SetWristTarg(float targ)
 {
 	WristTalon->Set(ControlMode::Position, targ);
 }
+
 bool ArmClass::WristOnTarg(float tolerance)
 {
 	if(fabs(GetWristEncoder() - WristTalon->GetClosedLoopTarget(0)) < tolerance)
@@ -139,10 +153,12 @@ bool ArmClass::WristOnTarg(float tolerance)
 		return false;
 	}
 }
+
 float ArmClass::GetWristTarg()
 {
 	return WristTalon->GetClosedLoopTarget(0);
 }
+
 bool ArmClass::ArmOnTarg(float tolerance)
 {
 	if(fabs(GetArmEncoder() - ArmTalon->GetClosedLoopTarget(0)) < tolerance)
@@ -154,11 +170,13 @@ bool ArmClass::ArmOnTarg(float tolerance)
 		return false;
 	}
 }
+
 void ArmClass::Update(float arm_Command,float wrist_Up, float wrist_Down)
 {
 	Arm_Update(arm_Command);
 	Wrist_Update(wrist_Up,wrist_Down);
 }
+
 void ArmClass::Arm_Update(float command)
 {
 	prevArmCommand = curArmCommand;
@@ -176,6 +194,7 @@ void ArmClass::Arm_Update(float command)
 		isreceivingarminput = false;
 	}
 }
+
 void ArmClass::Wrist_Update(float upcommand, float downcommand)
 {
 	float wristCommand = 0;
@@ -199,6 +218,10 @@ void ArmClass::Wrist_Update(float upcommand, float downcommand)
 
 	if(fabs(curWristCommand) > .1f)
 	{
+		if(GetLimtiSwitch())
+		{
+			ResetEncoder();
+		}
 		WristTalon->Set(ControlMode::PercentOutput,wristCommand);
 		hold_Wrist = GetWristEncoder();
 		isreceivingwristinput = true;
@@ -210,6 +233,7 @@ void ArmClass::Wrist_Update(float upcommand, float downcommand)
 		isreceivingwristinput = false;
 	}
 }
+
 void ArmClass::Send_Data()
 {
 	SmartDashboard::PutNumber("Arm Encoder", GetArmEncoder());
@@ -218,5 +242,6 @@ void ArmClass::Send_Data()
 	SmartDashboard::PutNumber("Hold Wrist", hold_Wrist);
 	SmartDashboard::PutNumber("Wrist Control Mode", (int)WristTalon->GetControlMode());
 	SmartDashboard::PutNumber("Wrist Error", WristTalon->GetClosedLoopError(0));
-	SmartDashboard::PutNumber("Arm Setpoint",ArmTalon->GetClosedLoopTarget(0));
+	SmartDashboard::PutNumber("Arm Setpoint", ArmTalon->GetClosedLoopTarget(0));
+	SmartDashboard::PutBoolean("Wrist Proximity Switch", GetLimtiSwitch());
 }

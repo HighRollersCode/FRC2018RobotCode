@@ -11,6 +11,7 @@
 #include "WPILib.h"
 #include "Defines.h"
 #include "ctre/Phoenix.h"
+#include "DigitalInput.h"
 
 class ArmClass
 {
@@ -35,6 +36,8 @@ public:
 
 	TalonSRX *WristTalon;
 
+	DigitalInput *LimitSwitch;
+
 	float prevWristCommand;
 	float curWristCommand;
 
@@ -47,6 +50,7 @@ public:
 
 	ArmClass();
 	virtual ~ArmClass();
+
 	void PIDOff();
 	void Update(float arm_Command,float wrist_Up,float wrist_Down);
 	void Arm_Update(float command);
@@ -57,5 +61,7 @@ public:
 	float GetWristTarg();
 	bool WristOnTarg(float tolerance = 5);
 	bool ArmOnTarg(float tolerance = 5);
+
+	bool GetLimtiSwitch();
 };
 #endif /* SRC_ARM_H_ */
