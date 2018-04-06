@@ -6,19 +6,23 @@ DriveTimed 0 0 0.5 .2
 
 SetActiveSonar 1
 
-DriveTicksStrafeHeading -0.5 -225 0.75 2250 0 //-375
+DriveTicksHeading -0.5 -100 0
+
+StrafeTicksHeading 0.6 2250 0
+
+DriveTicksHeading -0.5 -125 0
+
+//DriveTicksStrafeHeading -0.5 -225 0.75 2250 0 //-375
 
 //DriveTimed -0.5 0 -1.0 .1
 
+DriveTicksHeadingDistance -0.4 -235 0 60 //-125
+
 Conveyor 1
 
-DriveTicksHeadingDistance -.5 -10 0 58 //-125
+DriveTicksHeading -0.75 -100 0
 
-DriveTicksHeadingDistance -0.5 -125 0 56 //-125
-
-DriveTicksHeading -0.75 -200 0
-
-DriveTicksHeading -0.5 -100 0
+DriveTicksHeading -0.5 -350 0
 
 DriveTicksHeading -0.2 -300 0
 
@@ -36,7 +40,9 @@ Intake 1
 
 WaitForTransition
 
-SearchForCubeStrafeTimed -0.5 0 2.0
+GyroTurnTimed -45 0.5
+
+SearchForCubeTurnTimed -0.6 7.0
 
 /////////  Drive Back for Cube 1 ////////////
 
@@ -46,14 +52,14 @@ Intake 0
 
 ScaleBackLobMode
 
-DriveTicksHeading -0.75 -120 0 
+DriveTicksHeading -0.75 -120 20 
 
-DriveTicksHeading -0.4 -100 0
+DriveTicksHeading -0.4 -75 30
 
 BrakeWait .1 0
 //DriveTimed 0.75 0 0 .1
 
-GyroTurnTimed 15 0.5
+GyroTurnTimed 55 0.5
 
 /////////  Score Cube 1 ////////////
 

@@ -108,7 +108,7 @@ public:
 	int MidSideTicks = 0;
 	int RightSideTicks = 0;
 
-	float Ebrakemult = .150f;
+	float Ebrakemult = .20f;
 	bool PrevBrakeEnabled = 0;
 
 	bool brakeEnabled = false;

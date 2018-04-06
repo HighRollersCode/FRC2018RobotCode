@@ -390,6 +390,16 @@ void Drivetrainclass::StandardArcade( float Forward, float Turn, float Strafe, e
 		float Lerror = LeftSideTicks+brakeTarg;
 		float Rerror = RightSideTicks+brakeTarg;
 
+		if(fabs(Lerror) < 3)
+		{
+			Lerror = 0;
+		}
+
+		if(fabs(Rerror) < 3)
+		{
+			Rerror = 0;
+		}
+
 		float Leftout = -Lerror*Ebrakemult;
 		float Rightout = Rerror*Ebrakemult;
 
