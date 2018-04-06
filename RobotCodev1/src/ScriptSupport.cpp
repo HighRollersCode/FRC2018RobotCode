@@ -284,7 +284,7 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new TrackSwitchCommand(); }
 	virtual void Execute()
 	{
-		MyRobotClass::Get()->AutonomousControl->Auto_SEARCHFORCUBESTRAFE(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
+		MyRobotClass::Get()->AutonomousControl->Auto_TRACKSWITCH(m_Parameters[0],m_Parameters[1],m_Parameters[2]);
 	}
 };
 class SearchForCubeForwardCommand : public HrScriptCommandClass
@@ -476,6 +476,19 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new SetSwitchModeCommand(); }
 	virtual void Execute()
 	{
+		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Auto_Switch);
+	}
+};
+
+class SetTeleopSwitchModeCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "TeleopSwitchMode"; }
+	virtual int Get_Parameter_Count() { return 0; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetTeleopSwitchModeCommand(); }
+	virtual void Execute()
+	{
 		MyRobotClass::Get()->LiftManager->changeMode(LiftMode::Intake);
 	}
 };
@@ -612,6 +625,7 @@ void MyRobotClass::Init_Scripts_System()
 	m_ScriptSystem->Add_Command(new SetScaleBackModeCommand());
 	m_ScriptSystem->Add_Command(new SetScaleBackLobModeCommand());
 	m_ScriptSystem->Add_Command(new SetSwitchModeCommand());
+	m_ScriptSystem->Add_Command(new SetTeleopSwitchModeCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -647,15 +661,19 @@ void MyRobotClass::Load_Scripts()
 	//Only Scale Left Start
 	m_ScriptSystem->Set_Auto_Script(22,"LEFTALLSCALERIGHT.hrs");
 	m_ScriptSystem->Set_Auto_Script(24,"LEFTALLSCALELEFT.hrs");
+	m_ScriptSystem->Set_Auto_Script(26,"LEFTALLSCALELEFTCOOP.hrs");
 
-	//Only Switch
-	m_ScriptSystem->Set_Auto_Script(31,"MIDDLELEFTSWITCH.hrs");
-	m_ScriptSystem->Set_Auto_Script(32,"MIDDLERIGHTSWITCH.hrs");
+	//Only Switch Coop
+	m_ScriptSystem->Set_Auto_Script(31,"LEFTLEFTSWITCHCOOP.hrs");
+	m_ScriptSystem->Set_Auto_Script(32,"RIGHTRIGHTSWITCHCOOP.hrs");
 
 	//Pyramid
 	m_ScriptSystem->Set_Auto_Script(41,"MIDDLEPYRAMIDRIGHT.hrs");
 	m_ScriptSystem->Set_Auto_Script(42,"MIDDLEPYRAMIDLEFT.hrs");
 	m_ScriptSystem->Set_Auto_Script(43,"MIDDLEPYRAMIDLOBLEFT.hrs");
+	m_ScriptSystem->Set_Auto_Script(44,"MIDDLEPYRAMIDLOBRIGHT.hrs");
+	m_ScriptSystem->Set_Auto_Script(45,"MIDDLEPYRAMIDLOBLEFTSCALE.hrs");
+	m_ScriptSystem->Set_Auto_Script(46,"MIDDLEPYRAMIDLOBRIGHTSCALE.hrs");
 
 
 	//Switch and Scale No Backpack

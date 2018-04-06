@@ -1,0 +1,75 @@
+SetLights 0
+SetPipeline 2
+SetActiveSonar 1
+
+DriveTimed 0 0 1.0 .2
+
+SwitchMode
+
+//DriveTicksHeading 0.4 125 -60
+
+Intake 0.5
+
+DriveTicksStrafeHeading 0.6 125 0.8 750 0
+
+DriveTicksHeading 0.4 125 0
+
+Intake 0
+
+StrafeTrackToSwitch 0.4 0 7.0
+
+Wiat 0.25
+
+//DriveTimed 0.3 0 0 2.0
+
+Intake -0.75
+
+Wait 0.5
+
+Intake 0
+
+SetPipeline 5
+
+DriveTicksHeading -0.5 -125 0
+
+IntakeMode
+
+DriveTicksHeading -0.3 -150 0
+
+BrakeWait .2 0
+
+GyroTurnTimed -50 0.75
+
+WaitForTransition
+
+Intake 0.75
+
+DriveTicksHeading 0.5 100 -55
+
+SearchForCubeForward 0.3 -55 10.0
+
+Intake 0.5
+
+Wait 0.5
+
+TeleopSwitchMode
+
+Intake 0
+
+DriveTicksHeading -0.6 -450 -120
+
+DriveTicksHeading -0.3 -50 -120
+
+BrakeWait .2 0
+
+GyroTurnTimed -180 0.75
+
+//StrafeHeadingDistance 0.6 180 20
+
+DriveTicksHeading -0.75 -500 -180
+
+BrakeWait .3 0
+
+ScaleBackLobMode
+
+Wait 100

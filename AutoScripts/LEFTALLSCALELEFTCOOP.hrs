@@ -1,0 +1,61 @@
+//////////////////////////////////////////////Start///////////////////////////////////////////////////////////
+SetLights 0
+SetActiveSonar 1
+SetPipeline 1
+
+DriveTimed 0 0 -.2 .2
+
+DriveTicksHeading -1.0 -400 0
+
+DriveTicksHeading -0.5 -525 0
+
+DriveTicksHeading -0.6 -100 0
+
+DriveTicksHeading -0.5 -75 0
+
+//Make Sure Cube is in claw
+Intake 1
+
+DriveTicksHeading -0.5 -75 0
+
+Intake 0
+
+DriveTicksHeading -0.4 -200 0
+
+DriveTicksHeading -0.3 -25 0
+
+DriveTicksHeading -0.3 -150 0
+
+DriveTicksHeading -0.2 -250 0
+
+BrakeWait .2 0
+
+GyroTurnTimed 90 1.25
+
+ScaleBackLobMode
+
+Intake 1
+
+DriveTicksHeading -0.2 -50 90
+
+BrakeWait .2 0
+
+WaitForTransition
+
+Intake 0
+
+Wait 0.5
+
+Intake -0.6
+
+Wait 1.0
+
+Intake 0
+
+DriveTicksHeading 0.2 50 90
+
+IntakeMode
+
+GyroTurnTimed 203 1.5
+
+Wait 100
