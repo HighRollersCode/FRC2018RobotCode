@@ -220,10 +220,27 @@ float Drivetrainclass::GetActiveSonar()
 		return 0;
 	}
 }
+
+float Drivetrainclass::GetSecondarySonar()
+{
+	if(currentActiveSonar == eSonar::LEFT_SONAR)
+	{
+		return GetRightSonar();
+	}
+	else if(currentActiveSonar == eSonar::RIGHT_SONAR)
+	{
+		return GetLeftSonar();
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 void Drivetrainclass::SetActiveSonar(eSonar sonar)
 {
 	currentActiveSonar = sonar;
-	if(currentActiveSonar == eSonar::LEFT_SONAR)
+	/*if(currentActiveSonar == eSonar::LEFT_SONAR)
 	{
 		leftsonar->SetEnabled(true);
 		leftsonar->SetAutomaticMode(true);
@@ -236,19 +253,17 @@ void Drivetrainclass::SetActiveSonar(eSonar sonar)
 		leftsonar->SetEnabled(false);
 	}
 	else if(currentActiveSonar == eSonar::LEFT_AND_RIGHT_SONAR)
-	{
-		rightsonar->SetEnabled(true);
-		rightsonar->SetAutomaticMode(true);
-		leftsonar->SetEnabled(true);
-		leftsonar->SetAutomaticMode(true);
-
-
-	}
+	{*/
+	rightsonar->SetEnabled(true);
+	rightsonar->SetAutomaticMode(true);
+	leftsonar->SetEnabled(true);
+	leftsonar->SetAutomaticMode(true);
+	/*}
 	else
 	{
 		rightsonar->SetEnabled(false);
 		leftsonar->SetEnabled(false);
-	}
+	}*/
 }
 /*float Drivetrainclass::GetFrontSonar()
 {

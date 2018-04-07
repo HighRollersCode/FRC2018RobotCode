@@ -37,12 +37,17 @@ class Auton
 		float auto_turn = 0;
 		float auto_strafe = 0;
 
+		float auto_Conveyor = 0;
+		float auto_Conveyor_Distance = 0;
+
 		bool Running();
 		void AutonWait(float Seconds);
 		void AutonWait2(float Seconds, int brake);
 		void AutonWaitForTransition();
 		void EBrake(float Seconds, int enctarg);
 		bool Auto_System_Update();
+
+		void SetConveyorSpeed(float value);
 
 		void Auto_DriveTimer(float Forward, float Turn, float Strafe, float seconds);
 		void Auto_Intake_In(float value);

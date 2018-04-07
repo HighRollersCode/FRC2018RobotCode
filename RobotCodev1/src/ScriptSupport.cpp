@@ -407,20 +407,26 @@ public:
 	virtual HrScriptCommandClass * Create_Command() { return new SetConveyorCommand(); }
 	virtual void Execute()
 	{
-		if(m_Parameters[0] == 1)
-		{
-			MyRobotClass::Get()->Conveyor->Conveyor_For();
-		}
-		else if (m_Parameters[0] == 0)
-		{
-			MyRobotClass::Get()->Conveyor->Conveyor_Off();
-		}
-		else if (m_Parameters[0] == -1)
-		{
-			MyRobotClass::Get()->Conveyor->Conveyor_Rev();
-		}
+		MyRobotClass::Get()->AutonomousControl->SetConveyorSpeed(m_Parameters[0]);
 	}
 };
+
+class SetAutoTriggerConveyorCommand : public HrScriptCommandClass
+{
+
+public:
+	virtual const char * Get_Command_Name() { return "AutoTriggerConveyor"; }
+	virtual int Get_Parameter_Count() { return 2; }
+	virtual HrScriptCommandClass * Create_Command() { return new SetAutoTriggerConveyorCommand(); }
+	virtual void Execute()
+	{
+
+		MyRobotClass::Get()->AutonomousControl->auto_Conveyor = m_Parameters[0];
+		MyRobotClass::Get()->AutonomousControl->auto_Conveyor_Distance = m_Parameters[1];
+
+	}
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -618,6 +624,7 @@ void MyRobotClass::Init_Scripts_System()
 	///////////////////////////////////////////////////////////////////////////////////////////////
 
 	m_ScriptSystem->Add_Command(new SetConveyorCommand());
+	m_ScriptSystem->Add_Command(new SetAutoTriggerConveyorCommand());
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 

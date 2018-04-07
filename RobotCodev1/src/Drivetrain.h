@@ -145,6 +145,8 @@ public:
 	//float GetFrontSonar();
 
 	float GetActiveSonar();
+	float GetSecondarySonar();
+
 
 	void SetActiveSonar(eSonar sonar);
 

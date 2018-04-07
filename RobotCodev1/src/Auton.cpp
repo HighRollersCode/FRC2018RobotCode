@@ -306,7 +306,7 @@ void Auton::Auto_SEARCHFORCUBETURN(float turn, float time)
 		float distance_error = ty + 5;
 		float cube_error = tx;
 
-		auto_drive = 0.15f;//distance_error * DriveTrain->Drive_P;
+		auto_drive = 0.22f;//distance_error * DriveTrain->Drive_P;
 		auto_turn = cube_error * .025f;
 		auto_strafe = 0; //cube_error * DriveTrain->Strafe_P;
 
@@ -700,6 +700,22 @@ void Auton::Auto_DriveGyro_Encoder(float Forward, float Angle, float Ticks)
 	Auto_GYROSTRAIGHT(Forward, Ticks, Angle);
 }
 
+void Auton::SetConveyorSpeed(float value)
+{
+	if(value == 1)
+	{
+		MyRobotClass::Get()->Conveyor->Conveyor_For();
+	}
+	else if (value == 0)
+	{
+		MyRobotClass::Get()->Conveyor->Conveyor_Off();
+	}
+	else if (value == -1)
+	{
+		MyRobotClass::Get()->Conveyor->Conveyor_Rev();
+	}
+
+}
 bool Auton::Auto_System_Update()
 {
 	if(Running())
@@ -714,6 +730,14 @@ bool Auton::Auto_System_Update()
 
 		if(AutonTimer->Get() > 14.95)
 		{
+		}
+
+		if(auto_Conveyor != 0)
+		{
+			if(auto_Conveyor_Distance > DriveTrain->GetSecondarySonar())
+			{
+				SetConveyorSpeed(auto_Conveyor);
+			}
 		}
 		Wait(.001f);
 	}

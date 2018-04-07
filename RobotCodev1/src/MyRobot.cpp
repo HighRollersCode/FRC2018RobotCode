@@ -302,7 +302,19 @@ void MyRobotClass::OperatorControl(void)
 			}
 		}
 
-		Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
+		if(leftStick->GetRawButton(7))
+		{
+			Drivetrain->StandardArcade(0,0,-0.5,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
+		}
+		else if(leftStick->GetRawButton(10))
+		{
+			Drivetrain->StandardArcade(0,0,0.5,GYRO_CORRECTION_ON,BRAKE_MODE_OFF);
+		}
+		else
+		{
+			Drivetrain->StandardArcade(forwardcommand, turncommand, strafecommand, gyromode, brakemode);
+		}
+
 		Drivetrain->Shifter_Update(leftStick->GetTrigger());
 
 		Endgame->Update(Deploy_Lock,Deploy_Claw,matchTimer->Get());
