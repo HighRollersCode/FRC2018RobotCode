@@ -10,21 +10,22 @@ DriveTicksHeading -0.5 -150 0
 
 BrakeWait .1 0
 
-StrafeTicksHeading 0.6 2250 0
+//StrafeTicksHeading -0.6 -2250 0
+StrafeHeadingDistance 0.6 0 58
 
-DriveTicksHeading -0.5 -100 0
+DriveTicksHeading -0.5 -225 0
 
-//DriveTicksStrafeHeading -0.5 -225 0.75 2250 0 //-375
+//DriveTicksStrafeHeading -0.5 -225 0.75 2300 0 //-375
 
-DriveTimed 0 0 -1.0 .1
+DriveTimed 0 0 1.0 .1
 
-DriveTicksHeadingDistance -0.4 -235 0 60 //-125
+DriveTicksHeadingDistance -0.4 -200 0 60 //-125
 
-Conveyor 1
+AutoTriggerConveyor 1 17
 
-DriveTicksHeading -0.75 -100 0
+DriveTicksHeading -0.75 -135 0
 
-DriveTicksHeading -0.5 -350 0
+DriveTicksHeading -0.5 -250 0
 
 IntakeMode
 
