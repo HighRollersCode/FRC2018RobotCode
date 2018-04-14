@@ -1,95 +1,105 @@
 //////////////////////////////////////////////Start///////////////////////////////////////////////////////////
 SetLights 0
-SetActiveSonar 0
+SetActiveSonar 1
+SetPipeline 1
 
-DriveTimed 0 0 -.2 .2
+DriveTimed 0 0 .2 .2
 
-DriveTicksHeading -1.0 -400 0
+DriveTicksHeading -1.0 -100 0
 
-DriveTicksHeading -0.75 -425 0 //55
+SetWrist 0
 
-DriveTicksHeading -0.2 -250 0
+Intake 1
 
-BrakeWait 0.4 0
-
-GyroTurnTimed -90 0.3
-
-DriveTimed 0 0 0 1.0
-
-DriveTicksHeading -0.5 -415 -90
-//StrafeTicksHeading .9 3100 0
-
-DriveTicksHeading -0.5 -325 -90
-
-DriveTicksHeading -0.3 -300 -90
-
-BrakeWait .1 0
-
-GyroTurnTimed 10 1.0
-
-Intake 1.0
-
-ScaleBackMode
-
-DriveTicksHeading -0.5 -175 10
+DriveTicksHeading -1.0 -100 0
 
 Intake 0
 
-DriveTicksHeading -0.3 -40 10
+DriveTicksHeading -1.0 -200 0
+
+DriveTicksHeadingDistance -0.75 -225 0 55
+
+DriveTicksHeading -0.3 -200 0
+
+DriveTicksHeading -0.2 -200 0
+
+DriveTicksHeading -0.2 -125 0
+
+//BrakeWait 0.4 0
+
+GyroTurnTimed -50 0.25
+
+DriveTicksHeading -0.5 -515 -90
+
+DriveTicksHeading -0.5 -250 -90
+
+DriveTicksHeading -0.3 -250 -90
 
 BrakeWait .1 0
 
+GyroTurnTimed 25 1.0
+
+Intake 1.0
+
+ScaleBackLobMode
+
+DriveTicksHeading -0.5 -175 25
+
+Intake 0
+
+DriveTicksHeading -0.3 -75 25
+
+BrakeWait .2 0
+
 WaitForTransition
+
+Wait 0.75
 
 Intake -0.6
 
 Wait 1.0
-///////// Go Get Cube 2 ////////////
 
-DriveTicksHeading 0.5 150 0
+IntakeMode
 
-Intake 0
-
-DriveTicksHeading 0.3 50 0
-
-BrakeWait .2 0
-//DriveTimed -0.75 0 0 .1
-
-//Search for second cube and intake cube
 Intake 1
 
-SearchForCubeStrafeTimed 1.0 0 2.0
+DriveTicksHeading 0.3 75 0
 
-//Drive to scale and set up to score
-DriveTicksStrafeHeading -0.5 -25 -0.75 -425 0
+WaitForTransition
+
+SearchForCubeTurnTimed -0.5 7.0
+
+DriveTicksHeading -0.5 -25 0
+
+GyroTurnTimed 0 0.25
+
+StrafeHeadingDistance -0.3 0 68
 
 Intake 0
 
-ScaleBackMode
+ScaleBackLobMode
 
-DriveTicksStrafeHeading -0.5 -5 -0.75 -350 0
- //-900
-
-//DistanceHeading 70 0
-
-//DriveTimed 0 0 1.0 .1
+DriveTicksHeading -0.5 -5 0
 
 DriveTicksHeadingDistance -0.5 -50 0 70
 
-DriveTicksHeadingDistance -0.3 -50 0 70
+DriveTicksHeadingDistance -0.3 -175 0 70
 
 BrakeWait .2 0
-//DriveTimed 0.75 0 0 .05
 
 Wait 0.1
 
-GyroTurnTimed -20 0.5
+GyroTurnTimed -30 0.5
 
 //Score cube
 WaitForTransition
 
-Intake -0.75
+Wait 0.5
+
+Intake -1.0
 
 Wait 2.0
 
 Intake 0
+
+IntakeMode
