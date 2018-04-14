@@ -13,7 +13,7 @@
 #include "ctre/Phoenix.h"
 
 using namespace frc;
-#define DUALMOTOR 0
+#define DUALMOTOR 1
 
 class ElevatorClass
 {
