@@ -10,6 +10,36 @@
 #include "stdio.h"
 #include "MyRobot.h"
 
+static float sign(float val)
+{
+	if(val > 0)
+	{
+		return 1.0f;
+	}
+	else if(val < 0)
+	{
+		return -1.0f;
+	}
+	else
+	{
+		return 0.0f;
+	}
+
+}
+
+static float clamp(float val,float min, float max)
+{
+	if(val < min)
+	{
+		return min;
+	}
+	else if(val > max)
+	{
+		return max;
+	}
+	else
+		return val;
+}
 
 Auton::Auton
 (
@@ -307,8 +337,12 @@ void Auton::Auto_SEARCHFORCUBETURN(float turn, float time)
 		float cube_error = tx;
 
 		auto_drive = 0.22f;//distance_error * DriveTrain->Drive_P;
-		auto_turn = cube_error * .025f;
+		auto_turn = cube_error * .05f;
 		auto_strafe = 0; //cube_error * DriveTrain->Strafe_P;
+
+		auto_turn += sign(auto_turn) * 0.1f;
+
+		auto_turn = clamp(auto_turn,-0.2f,0.2f);
 
 		DriveTrain->SetRawForwardSpeed(auto_drive);
 		DriveTrain->SetRawTurnSpeed(auto_turn);
@@ -581,7 +615,7 @@ void Auton::Auto_TRACKSWITCH(float strafe,float heading,float time)
 		}
 		else
 		{
-			auto_drive = 0.4f; //distance_error * DriveTrain->Drive_P;
+			auto_drive = 0.5f; //distance_error * DriveTrain->Drive_P;
 			auto_turn = 0; //cube_error * DriveTrain->Gyro_P;
 			auto_strafe = (cube_error * DriveTrain->Strafe_P)/2;
 		}
@@ -595,7 +629,11 @@ void Auton::Auto_TRACKSWITCH(float strafe,float heading,float time)
 			done = true;
 		}
 
-		if((fabs(distance_error) < 1.5) && (tv == 1))
+		if((fabs(distance_error) < 5.0) && (tv == 1))
+		{
+			done = true;
+		}
+		if((DriveTrain->GetActiveSonar() < 95) && (tv == 0))
 		{
 			done = true;
 		}
@@ -722,7 +760,7 @@ bool Auton::Auto_System_Update()
 	{
 		SendData();
 
-		LiftManager->UpdateLift(false,false,false,false,false,false,false,false,false,false);
+		LiftManager->UpdateLift(false,false,false,false,false,false,false,false,false,false,false);
 
 		DriveTrain->AutoUpdate();
 
@@ -737,6 +775,7 @@ bool Auton::Auto_System_Update()
 			if(auto_Conveyor_Distance > DriveTrain->GetSecondarySonar())
 			{
 				SetConveyorSpeed(auto_Conveyor);
+				auto_Conveyor = 0;
 			}
 		}
 		Wait(.001f);
