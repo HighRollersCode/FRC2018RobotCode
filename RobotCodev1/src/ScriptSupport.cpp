@@ -681,7 +681,8 @@ void MyRobotClass::Load_Scripts()
 	m_ScriptSystem->Set_Auto_Script(44,"MIDDLEPYRAMIDLOBRIGHT.hrs");
 	m_ScriptSystem->Set_Auto_Script(45,"MIDDLEPYRAMIDLOBLEFTSCALE.hrs");
 	m_ScriptSystem->Set_Auto_Script(46,"MIDDLEPYRAMIDLOBRIGHTSCALE.hrs");
-
+	m_ScriptSystem->Set_Auto_Script(47,"MIDDLEPYRAMIDLOBLEFTFAST.hrs");
+	m_ScriptSystem->Set_Auto_Script(48,"MIDDLEPYRAMIDLOBRIGHTFAST.hrs");
 
 	//Switch and Scale No Backpack
 	m_ScriptSystem->Set_Auto_Script(51,"MIDDLERIGHTSWITCHANDSCALENOPACK.hrs");
