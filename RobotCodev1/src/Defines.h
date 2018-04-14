@@ -156,7 +156,7 @@ enum eSonar
 //Arm Values
 #define Arm_Intake 3500 //2300
 #define Arm_Switch 100
-#define Arm_Scale_Level_1 22000
+#define Arm_Scale_Back 22000
 #define Arm_Scale_Neutral 22000
 #define Arm_Portal 2300
 #define Arm_Scale_Back_Lob 21950
@@ -171,7 +171,7 @@ enum eSonar
 #define Wrist_Switch -14000
 #define Wrist_Scale_Level_1 -14750
 #define Wrist_Folded 0
-#define Wrist_Scale_Level_1_Back 10000
+#define Wrist_Scale_Back 10000
 #define Wrist_Scale_Back_Lob 6900
 //#define Wrist_Scale_Level_1_Back 14000
 #define Wrist_Portal -14100
