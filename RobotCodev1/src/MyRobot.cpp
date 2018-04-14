@@ -321,15 +321,15 @@ void MyRobotClass::OperatorControl(void)
 
 		if(Enable_Elevator)
 		{
-			//Elevator->TurnOffLimits();
+			Elevator->TurnOffLimits();
 			Elevator->Update(Elevator_Command);
-			Arm->Update(0,Wrist_Up_Command,Wrist_Down_Command);
+			Arm->Update(0,Wrist_Up_Command,Wrist_Down_Command,0);
 		}
 		else
 		{
-			//Elevator->TurnOnLimits();
+			Elevator->TurnOnLimits();
 			Elevator->Update(0);
-			Arm->Update(Arm_Command,Wrist_Up_Command,Wrist_Down_Command);
+			Arm->Update(Arm_Command,Wrist_Up_Command,Wrist_Down_Command,0);
 		}
 
 		//Elevator->Update(Elevator_Command);
@@ -339,15 +339,15 @@ void MyRobotClass::OperatorControl(void)
 				Turret_Slow_Outake,Track_Enable);
 
 		LiftManager->UpdateLift(Intake_Mode_Preset,(Intake_Down_Mode_Preset || Track_Enable),Scale_Front_Level_1_Preset,
-				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Scale_Back_Lob_Preset,false,Portal_Preset,false); //Climb_Preset,Portal_Preset);
+				Scale_Back_Preset,Scale_Neutral_Preset,Set_Up_Preset,Reset_Encoders,Scale_Back_Lob_Preset,false,Portal_Preset,false); //Climb_Preset,Portal_Preset);
 
 		Conveyor->Update(Conveyor_Left, Conveyor_Right);
 
-		if(Reset_Encoders)
+		/*if(Reset_Encoders)
 		{
 			Arm->ResetEncoder();
 			Elevator->ResetElevatorEncoder();
-		}
+		}*/
 
 		Wait(0.005);
 	}
