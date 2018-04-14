@@ -7,6 +7,8 @@ DriveTimed 0 0 -.2 .2
 
 DriveTicksHeading -1.0 -400 0
 
+SetWrist 0
+
 DriveTicksHeading -0.5 -525 0
 
 DriveTicksHeading -0.6 -100 0
@@ -28,25 +30,23 @@ DriveTicksHeading -0.3 -25 0
 
 DriveTicksHeading -0.2 -25 0
 
+ScaleBackLobMode
+
 //BrakeWait .3 0
 
 //GyroTurnTimed 55 1.0
 
-ScaleBackLobMode
+Intake 0.5
 
-Intake 1
+DriveTicksHeading -0.2 -125 70
 
-DriveTicksHeading -0.2 -75 60
-
-BrakeWait .3 0
+BrakeWait .2 0
 
 WaitForTransition
 
 Intake 0
 
-Wait 0.5
-
-Intake -0.6
+Intake -0.75
 
 Wait 1.0
 
@@ -58,11 +58,11 @@ Intake 1
 
 GyroTurnTimed -20 0.5
 
-DriveTicksHeading 0.5 125 -20
+DriveTicksHeading 0.5 100 -20
 
 WaitForTransition
 
-DriveTicksHeading 0.3 125 -20
+DriveTicksHeading 0.3 75 -30
 
 BrakeWait .2 0
 
@@ -78,11 +78,11 @@ Intake 0
 
 ScaleBackLobMode
 
-StrafeHeadingDistance 0.5 0 75
+//StrafeHeadingDistance 0.5 0 70
 
-DriveTicksHeadingDistance -0.5 -180 0 75
+DriveTicksHeadingDistance -0.3 -180 0 68
 
-DriveTicksHeadingDistance -0.3 -50 0 75
+DriveTicksHeadingDistance -0.3 -70 0 68
 
 BrakeWait .2 0
 
@@ -90,29 +90,29 @@ BrakeWait .2 0
 
 //DriveTimed 0.75 0 0 .1
 
-GyroTurnTimed 45 0.5
+GyroTurnTimed 35 0.5
 
 /////////  Score Cube 1 ////////////
 
 WaitForTransition
 
-Wait 1.0
+//Wait 1.0
 
-Intake -1.0
+Intake -0.75
 
-Wait 0.5
+Wait 0.75
 
 IntakeMode
 
 ///////// Go Get Cube 2 ////////////
 
-DriveTicksHeading 0.5 200 0
+DriveTicksHeading 0.5 100 -15
 
-Intake 0
+WaitForTransition
 
-DriveTicksHeading 0.3 400 0
+DriveTicksHeading 0.3 125 -20
 
-BrakeWait .2 0
+BrakeWait .1 0
 //DriveTimed -0.75 0 0 .1
 
 //Search for second cube and intake cube

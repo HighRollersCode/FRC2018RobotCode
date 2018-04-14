@@ -6,14 +6,15 @@ DriveTimed 0 0 -0.5 .2
 
 SetActiveSonar 0
 
-DriveTicksHeading -0.5 -125 0
+DriveTicksHeading -0.5 -175 0
 
 BrakeWait .1 0
 
-//StrafeTicksHeading -0.6 -2250 0
+StrafeTicksHeading -0.6 -1125 0
+
 StrafeHeadingDistance -0.6 0 58
 
-DriveTicksHeading -0.5 -225 0
+DriveTicksHeading -0.5 -175 0
 
 //DriveTicksStrafeHeading -0.5 -225 0.75 2300 0 //-375
 
@@ -55,7 +56,7 @@ Intake 0
 
 ScaleBackLobMode
 
-DriveTicksHeading -0.75 -125 -20 
+DriveTicksHeading -0.75 -100 -20 
 
 DriveTicksHeading -0.4 -100 -30
 
@@ -67,9 +68,9 @@ GyroTurnTimed -40 0.5
 
 WaitForTransition
 
-Wait 0.5
+Wait 0.75
 
-Intake -0.5
+Intake -0.75
 
 Wait 0.2
 
