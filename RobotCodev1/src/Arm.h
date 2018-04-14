@@ -52,9 +52,9 @@ public:
 	virtual ~ArmClass();
 
 	void PIDOff();
-	void Update(float arm_Command,float wrist_Up,float wrist_Down);
+	void Update(float arm_Command,float wrist_Up,float wrist_Down,float wrist_Reset);
 	void Arm_Update(float command);
-	void Wrist_Update(float upcommand, float downcommand);
+	void Wrist_Update(float upcommand, float downcommand,float resetcommand);
 	void Send_Data();
 	void SetWristTarg(float targ);
 	void SetArmTarg(float targ);

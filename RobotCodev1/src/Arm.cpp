@@ -44,7 +44,7 @@ ArmClass::ArmClass()
 	ArmTalon->Config_kI(0,prefs->GetDouble("Arm_I",0.0f), 1.0);
 	ArmTalon->Config_kD(0,prefs->GetDouble("Arm_D",0.0f), 1.0);
 
-	ArmTalon->Config_kP(1,0.1f, 1.0);
+	ArmTalon->Config_kP(1,0.05f, 1.0);
 	ArmTalon->Config_kI(1,0.0f, 1.0);
 	ArmTalon->Config_kD(1,0.0f, 1.0);
 
@@ -171,10 +171,10 @@ bool ArmClass::ArmOnTarg(float tolerance)
 	}
 }
 
-void ArmClass::Update(float arm_Command,float wrist_Up, float wrist_Down)
+void ArmClass::Update(float arm_Command,float wrist_Up, float wrist_Down,float wrist_Reset)
 {
 	Arm_Update(arm_Command);
-	Wrist_Update(wrist_Up,wrist_Down);
+	Wrist_Update(wrist_Up,wrist_Down,wrist_Reset);
 }
 
 void ArmClass::Arm_Update(float command)
@@ -195,7 +195,7 @@ void ArmClass::Arm_Update(float command)
 	}
 }
 
-void ArmClass::Wrist_Update(float upcommand, float downcommand)
+void ArmClass::Wrist_Update(float upcommand, float downcommand,float resetcommand)
 {
 	float wristCommand = 0;
 
@@ -206,6 +206,10 @@ void ArmClass::Wrist_Update(float upcommand, float downcommand)
 	else if(downcommand)
 	{
 		wristCommand = -.75;
+	}
+	else if(resetcommand)
+	{
+		wristCommand = .25;
 	}
 	else
 	{
