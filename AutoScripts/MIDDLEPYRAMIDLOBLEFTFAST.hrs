@@ -1,0 +1,125 @@
+SetLights 0
+SetPipeline 3
+SetActiveSonar 0
+
+DriveTimed 0 0 -1.0 .2
+
+SwitchMode
+
+//DriveTicksHeading 0.4 125 -60
+
+Intake 0.5
+
+DriveTicksStrafeHeading 0.9 125 -1.0 -750 0
+
+DriveTicksHeading 0.7 125 0
+
+Intake 0
+
+StrafeTrackToSwitch -0.4 0 7.0
+
+Wait 0.1
+
+//Score Preset Cube
+
+Intake -0.5
+
+Wait 0.5
+
+Intake 0
+
+SetPipeline 1
+
+DriveTicksHeading -0.5 -25 0
+
+IntakeMode
+
+//DriveTicksHeading -0.3 -125 0
+
+DriveTicksStrafeHeading -0.5 -200 0.75 700 0
+
+BrakeWait .1 0
+
+GyroTurnTimed 35 0.5
+
+Intake 1
+
+//StrafeTicksHeading 0.5 700 15
+
+SearchForCubeTurnTimed 0.1 7.0
+
+DriveTicksHeading -0.5 -5 0
+
+SwitchMode
+
+SetPipeline 3
+
+StrafeTicksHeading -1.0 -200 0
+
+WaitForTransition
+
+Intake 1.0
+
+Wait .1
+
+Intake 0
+
+StrafeTrackToSwitch -0.4 0 7.0
+
+Wait 0.1
+
+//Score First Intook Cube
+
+Intake -0.5
+
+Wait 0.5
+
+Intake 0
+
+SetPipeline 5
+
+DriveTicksHeading -0.5 -25 0
+
+IntakeMode
+
+DriveTicksStrafeHeading -0.5 -75 0.75 600 0
+
+//DriveTicksHeading -0.3 -100 0
+
+BrakeWait .1 0
+
+Intake 1
+
+//StrafeTicksHeading 1.0 400 15
+
+GyroTurnTimed 45 0.5
+
+SearchForCubeTurnTimed 0.1 7.0
+
+DriveTicksHeading -0.5 -5 0
+
+SwitchMode
+
+StrafeTicksHeading -1.0 -300 0
+
+WaitForTransition
+
+SetPipeline 3
+
+Intake 1.0
+
+Wait .1
+
+Intake 0
+
+StrafeTrackToSwitch -0.4 0 7.0
+
+Wait 0.25
+
+Intake -0.75
+
+Wait 1.0
+
+Intake 0
+
+Wait 100
