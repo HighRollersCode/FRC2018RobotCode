@@ -284,7 +284,7 @@ void LiftManagerClass::UpdateLift(
 			{
 				case 0 :
 					{
-						WaitForElevator(6000,Elevator_tolerance);
+						WaitForElevator(7000,Elevator_tolerance);
 						break;
 					}
 				case 1 :
@@ -294,7 +294,7 @@ void LiftManagerClass::UpdateLift(
 					}
 				case 2 :
 					{
-						WaitForWrist(-3000, Wrist_tolerance);
+						WaitForWrist(-4000, Wrist_tolerance);
 						break;
 					}
 				case 3:
