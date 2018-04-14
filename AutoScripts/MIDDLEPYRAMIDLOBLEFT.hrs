@@ -17,7 +17,7 @@ Intake 0
 
 StrafeTrackToSwitch -0.4 0 7.0
 
-//DriveTimed 0.3 0 0 2.0
+Wait 0.25
 
 Intake -0.75
 
@@ -71,7 +71,7 @@ Intake 0
 
 StrafeTrackToSwitch -0.4 0 7.0
 
-//DriveTimed 0.5 1.5
+Wait 0.25
 
 Intake -0.75
 
