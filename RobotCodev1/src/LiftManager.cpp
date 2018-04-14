@@ -23,6 +23,9 @@ LiftManagerClass::LiftManagerClass(ElevatorClass *_Elevator, ArmClass *_Arm, Cla
 
 	CurrentLiftMode = LiftMode::Free;
 
+	ReZeroTimer = new Timer();
+	ReZeroTimer->Reset();
+
 }
 
 LiftManagerClass::~LiftManagerClass() {
@@ -57,12 +60,45 @@ void LiftManagerClass::WaitForArm(float targ,float tolerance)
 	}
 }
 
+void LiftManagerClass::WaitForArm_AboveHorizontal(float targ)
+{
+	_arm->SetArmTarg(targ);
+	if(_arm->GetArmEncoder() > 15000)
+	{
+		CurrentState += 1;
+	}
+}
+
 void LiftManagerClass::WaitForWrist(float targ,float tolerance)
 {
 	_arm->SetWristTarg(targ);
 	if(_arm->WristOnTarg(tolerance))
 	{
 		CurrentState += 1;
+	}
+}
+
+void LiftManagerClass::WaitForLimitSwitch()
+{
+	if(_arm->GetLimtiSwitch())
+	{
+		_arm->ResetEncoder();
+		_arm->Update(0,0,0,0);
+		CurrentState += 1;
+	}
+	else
+	{
+		_arm->Update(0,0,0,0.1);
+
+		ReZeroTimer->Start();
+		if(ReZeroTimer->Get() > .5f)
+		{
+			_arm->Update(0,0,0,0);
+			_arm->ResetEncoder();
+			ReZeroTimer->Stop();
+			ReZeroTimer->Reset();
+			CurrentState += 1;
+		}
 	}
 }
 
@@ -82,7 +118,7 @@ void LiftManagerClass::EndState()
 }
 void LiftManagerClass::UpdateLift(
 		bool IntakeState, bool IntakeDownState,bool ScaleLevel1State,bool ScaleLevel1BackState,bool ScaleNeutralLevelState,
-		bool SetUpState,bool ScaleBackLobState,bool ClimbState, bool PortalState, bool AutoSwitchState)
+		bool SetUpState, bool ResetState, bool ScaleBackLobState,bool ClimbState, bool PortalState, bool AutoSwitchState)
  {
 	IntakeState_Prev = IntakeState_Cur;
 	IntakeState_Cur = IntakeState;
@@ -101,6 +137,9 @@ void LiftManagerClass::UpdateLift(
 
 	SetUpState_Prev = SetUpState_Cur;
 	SetUpState_Cur = SetUpState;
+
+	ResetState_Prev = ResetState_Cur;
+	ResetState_Cur = ResetState;
 
 	ClimbState_Prev = ClimbState_Cur;
 	ClimbState_Cur = ClimbState;
@@ -142,6 +181,11 @@ void LiftManagerClass::UpdateLift(
 	if(!SetUpState_Prev && SetUpState_Cur)
 	{
 		changeMode(LiftMode::Set_Up);
+	}
+
+	if(!ResetState_Prev && ResetState_Cur)
+	{
+		changeMode(LiftMode::Reset);
 	}
 
 	if(!ClimbState_Prev && ClimbState_Cur)
@@ -190,7 +234,7 @@ void LiftManagerClass::UpdateLift(
 					{
 						if ((_elevator->GetElevatorTarg() == Elevator_Intake) && (_elevator->ElevatorOnTarg(Elevator_tolerance)))
 						{
-							CurrentState = 3;
+						CurrentState = 3;
 						}
 						else
 						{
@@ -339,7 +383,7 @@ void LiftManagerClass::UpdateLift(
 				case 2:
 					{
 						//WaitForArm(Arm_Scale_Level_1,Arm_tolerance,CurrentState);
-						_arm->SetArmTarg(Arm_Scale_Level_1);
+						_arm->SetArmTarg(Arm_Scale_Back);
 						if(_arm->ArmOnTarg(Arm_tolerance))
 						{
 							CurrentState = 3;
@@ -426,16 +470,17 @@ void LiftManagerClass::UpdateLift(
 					}
 				case 2:
 					{
-						_arm->SetArmTarg(Arm_Scale_Level_1);
+						WaitForArm_AboveHorizontal(Arm_Scale_Back);
+						/*_arm->SetArmTarg(Arm_Scale_Level_1);
 						if(_arm->ArmOnTarg(Arm_tolerance * 2.5))
 						{
 							CurrentState = 3;
-						}
+						}*/
 						break;
 					}
 				case 3:
 					{
-						_arm->SetWristTarg(Wrist_Scale_Level_1_Back);
+						_arm->SetWristTarg(Wrist_Scale_Back);
 						if(_arm->WristOnTarg(Wrist_tolerance) && _arm->ArmOnTarg(Arm_tolerance) && _elevator->ElevatorOnTarg(Elevator_tolerance))
 						{
 							CurrentState = 4;
@@ -503,13 +548,56 @@ void LiftManagerClass::UpdateLift(
 					}
 			}
 		}
+		else if(CurrentLiftMode == LiftMode::Reset)
+		{
+			switch(CurrentState)
+			{
+				case 0 :
+					{
+						_elevator->SetElevatorTarg(2000);
+						CurrentState = 1;
+						break;
+					}
+				case 1:
+					{
+						if ((_arm->GetArmEncoder() == 0) && (_elevator->ElevatorOnTarg(Arm_tolerance)))
+						{
+							CurrentState =2;
+						}
+						else
+						{
+							_arm->SetArmTarg(0);
+							CurrentState = 2;
+						}
+						break;
+
+					}
+				case 2:
+					{
+						WaitForElevator(0,200);
+						break;
+					}
+				case 3:
+					{
+						WaitForLimitSwitch();
+						break;
+					}
+				case 4:
+					{
+						EndState();
+
+						break;
+					}
+			}
+		}
+
 		else if(CurrentLiftMode == LiftMode::Scale_Back_Lob)
 		{
 			switch(CurrentState)
 			{
 				case 0 :
 					{
-						WaitForWrist(Wrist_Folded,Wrist_tolerance);
+						WaitForWrist(Wrist_Folded,Wrist_tolerance * 2);
 						break;
 					}
 				case 1:
@@ -520,7 +608,9 @@ void LiftManagerClass::UpdateLift(
 					}
 				case 2:
 					{
-						WaitForArm(Arm_Scale_Back_Lob,Arm_tolerance);
+						WaitForArm_AboveHorizontal(Arm_Scale_Back_Lob);
+
+						//WaitForArm(Arm_Scale_Back_Lob,Arm_tolerance);
 						break;
 					}
 				case 3:

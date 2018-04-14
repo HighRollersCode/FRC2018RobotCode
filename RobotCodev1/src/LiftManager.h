@@ -25,6 +25,7 @@ enum LiftMode
 	Scale_Neutral_Front,
 	Scale_Winning_Back_Level1,
 	Set_Up,
+	Reset,
 	Climb,
 	Scale_Back_Lob,
 	Portal,
@@ -60,6 +61,9 @@ bool ScaleLevel1BackState_Prev = false;
 bool SetUpState_Cur = false;
 bool SetUpState_Prev = false;
 
+bool ResetState_Cur = false;
+bool ResetState_Prev = false;
+
 bool ScaleBackLobState_Cur = false;
 bool ScaleBackLobState_Prev = false;
 
@@ -78,15 +82,22 @@ bool isreceivinginput;
 
 int CurrentState;
 
+Timer *ReZeroTimer;
+
 void changeMode(LiftMode desiredLiftMode);
 
 void Send_Data();
 
 void UpdateLift(bool IntakeState,bool IntakeDownState, bool ScaleLevel1State,bool ScaleLevel1BackState, bool ScaleNeutralLevelState,
-		bool SetUpState,bool ClawDeployState, bool ClimbState, bool PortalState, bool AutoSwitchState);
+		bool SetUpState, bool ResetState, bool ClawDeployState, bool ClimbState, bool PortalState, bool AutoSwitchState);
 void DisablePID();
+
 void WaitForArm(float targ, float tolerance);
+void WaitForArm_AboveHorizontal(float targ);
+
 void WaitForWrist(float targ, float tolerance);
+void WaitForLimitSwitch();
+
 void WaitForElevator(float targ, float tolerance);
 
 void EndState();
