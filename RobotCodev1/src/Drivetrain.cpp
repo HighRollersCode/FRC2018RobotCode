@@ -11,7 +11,7 @@
 using namespace frc;
 
 
-float sign(float value)
+static float sign(float value)
 {
 	if(value > 0.0f)
 	{
@@ -26,6 +26,20 @@ float sign(float value)
 		value = 0.0f;
 	}
 	return value;
+}
+
+static float clamp(float val,float min, float max)
+{
+	if(val < min)
+	{
+		return min;
+	}
+	else if(val > max)
+	{
+		return max;
+	}
+	else
+		return val;
 }
 
 Drivetrainclass::Drivetrainclass(WPI_TalonSRX *GyroTalon)
@@ -703,6 +717,10 @@ float Drivetrainclass::AutoUpdate_Forward()
 		forward = 1;
 	}
 
+	if(MyRobotClass::Get()->AutonomousControl->auto_Conveyor != 0)
+	{
+		forward = clamp(forward,-.2f,.2f);
+	}
 	return forward;
 }
 
