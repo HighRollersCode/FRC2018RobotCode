@@ -32,12 +32,12 @@ void ConveyorClass::Update(bool forward, bool backward)
 
 void ConveyorClass::Conveyor_For()
 {
-	Conveyor->Set(-1.0);
+	Conveyor->Set(1.0);
 }
 
 void ConveyorClass::Conveyor_Rev()
 {
-	Conveyor->Set(1.0);
+	Conveyor->Set(-1.0);
 }
 
 void ConveyorClass::Conveyor_Off()
